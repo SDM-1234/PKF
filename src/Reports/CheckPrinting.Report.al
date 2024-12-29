@@ -1,0 +1,229 @@
+report 50077 "Check Printing"
+{
+    DefaultLayout = RDLC;
+    RDLCLayout = './CheckPrinting.rdlc';
+    PreviewMode = PrintLayout;
+
+    dataset
+    {
+        dataitem("Gen. Journal Line"; "Gen. Journal Line")
+        {
+            DataItemTableView = SORTING (Document No.);
+            RequestFilterFields = "Journal Template Name", "Document No.";
+            column(Company_Name; CompanyInformation.Name)
+            {
+            }
+            column(Pay_Name; PayName)
+            {
+            }
+            column(Posting_Date; FORMAT("Gen. Journal Line"."Posting Date"))
+            {
+            }
+            column(Document_No; "Gen. Journal Line"."Document No.")
+            {
+            }
+            column(Account_No; "Gen. Journal Line"."Account No.")
+            {
+            }
+            column(Description_Val; "Gen. Journal Line".Description)
+            {
+            }
+            column(Debit_Amount; "Gen. Journal Line"."Debit Amount")
+            {
+            }
+            column(Credit_Amount; "Gen. Journal Line"."Credit Amount")
+            {
+            }
+            column(Narrations_Val; VarNarration)
+            {
+            }
+            column(BankAccount_No; BankAccountNo)
+            {
+            }
+            column(BankAccount_Name; BankAccountName)
+            {
+            }
+            column(Check_No; CheckNo)
+            {
+            }
+            column(Check_Date; FORMAT(CheckDate))
+            {
+            }
+            column(Bank_Amount; BankAmount)
+            {
+            }
+            column(TotalAmountInwords_1; TotalAmountInwords[1])
+            {
+            }
+            column(TotalAmountInwords_2; TotalAmountInwords[2])
+            {
+            }
+            column(TotalNet_Amount; TotalNetAmount)
+            {
+            }
+            column(StoreDate_1; StoreDate[1])
+            {
+            }
+            column(StoreDate_2; StoreDate[2])
+            {
+            }
+            column(StoreDate_3; StoreDate[3])
+            {
+            }
+            column(StoreDate_4; StoreDate[4])
+            {
+            }
+            column(StoreDate_5; StoreDate[5])
+            {
+            }
+            column(StoreDate_6; StoreDate[6])
+            {
+            }
+            column(StoreDate_7; StoreDate[7])
+            {
+            }
+            column(StoreDate_8; StoreDate[8])
+            {
+            }
+            column(VendInfo_1; VendInfo[1])
+            {
+            }
+            column(VendInfo_2; VendInfo[2])
+            {
+            }
+            column(VendInfo_4; VendInfo[4])
+            {
+            }
+            column(VendInfo_3; VendInfo[3])
+            {
+            }
+            column(VendInfo_5; VendInfo[5])
+            {
+            }
+
+            trigger OnAfterGetRecord()
+            begin
+                IF TempDocumentNo <> "Document No." THEN BEGIN
+                    PayName := '';
+                    BankAccountNo := '';
+                    BankAccountName := '';
+                    CheckNo := '';
+                    CheckDate := 0D;
+                    BankAmount := 0;
+                    TotalNetAmount := 0;
+                    CheckDateFormat := '';
+                    CLEAR(StoreDate);
+                    CLEAR(VendInfo);
+                END;
+                TempDocumentNo := "Document No.";
+                IF PayName = '' THEN BEGIN
+                    IF "Account Type" = "Account Type"::Vendor THEN
+                        GetVendor.GET("Account No.");
+                    PayName := "Payee Name";
+                    VendInfo[1] := GetVendor.Address;
+                    VendInfo[2] := GetVendor."Address 2" + ',';
+                    VendInfo[3] := GetVendor.City + '-' + GetVendor."Post Code" + ',';
+                    IF State.GET(GetVendor."State Code") THEN
+                        VendInfo[4] := State.Description + ',';
+                    IF CountryRegion.GET(GetVendor."Country/Region Code") THEN
+                        VendInfo[5] := CountryRegion.Name;
+                    IF "Account Type" = "Account Type"::"G/L Account" THEN
+                        PayName := "Payee Name";
+                END;
+
+
+                IF "Cheque No." <> '' THEN BEGIN
+                    IF "Account Type" = "Account Type"::"Bank Account" THEN BEGIN
+                        BankAccount.GET("Account No.");
+                        BankAccountNo := "Account No.";
+                    END;
+                    IF "Bal. Account Type" = "Bal. Account Type"::"Bank Account" THEN BEGIN
+                        BankAccount.GET("Bal. Account No.");
+                        BankAccountNo := "Bal. Account No.";
+                    END;
+
+                    BankAccountName := BankAccount.Name;
+                    CheckNo := "Cheque No.";
+                    CheckDate := "Cheque Date";
+                    BankAmount := ABS(Amount);
+                    CheckDateFormat := FORMAT("Posting Date", 0, '<Day,2><Month,2><Year4>');
+                    StoreDate[1] := COPYSTR(CheckDateFormat, 1, 1);
+                    StoreDate[2] := COPYSTR(CheckDateFormat, 2, 1);
+                    StoreDate[3] := COPYSTR(CheckDateFormat, 3, 1);
+                    StoreDate[4] := COPYSTR(CheckDateFormat, 4, 1);
+                    StoreDate[5] := COPYSTR(CheckDateFormat, 5, 1);
+                    StoreDate[6] := COPYSTR(CheckDateFormat, 6, 1);
+                    StoreDate[7] := COPYSTR(CheckDateFormat, 7, 1);
+                    StoreDate[8] := COPYSTR(CheckDateFormat, 8, 1);
+                END;
+
+                Counter += 1;
+                IF Counter > 1 THEN
+                    TotalNetAmount := "Credit Amount";
+
+                IF Counter = 1 THEN
+                    TotalNetAmount := "Debit Amount";
+
+                RecGenJounLine.RESET;
+                RecGenJounLine.SETRANGE(RecGenJounLine."Journal Template Name", "Gen. Journal Line"."Journal Template Name");
+                RecGenJounLine.SETRANGE(RecGenJounLine."Journal Batch Name", "Gen. Journal Line"."Journal Batch Name");
+                RecGenJounLine.SETRANGE(RecGenJounLine."Document No.", "Gen. Journal Line"."Document No.");
+                IF RecGenJounLine.FINDLAST THEN
+                    VarNarration := RecGenJounLine.Narration;
+
+                ReportCheck.InitTextVariable;
+                ReportCheck.FormatNoText(TotalAmountInwords, TotalNetAmount, '');
+            end;
+
+            trigger OnPreDataItem()
+            begin
+                Counter := 0;
+            end;
+        }
+    }
+
+    requestpage
+    {
+
+        layout
+        {
+        }
+
+        actions
+        {
+        }
+    }
+
+    labels
+    {
+    }
+
+    trigger OnPreReport()
+    begin
+        CompanyInformation.GET;
+    end;
+
+    var
+        CompanyInformation: Record "Company Information";
+        PayName: Text;
+        BankAccount: Record "Bank Account";
+        BankAccountNo: Code[20];
+        BankAccountName: Text;
+        CheckNo: Code[10];
+        CheckDate: Date;
+        BankAmount: Decimal;
+        ReportCheck: Report Check;
+        TempDocumentNo: Code[20];
+        TotalNetAmount: Decimal;
+        TotalAmountInwords: array[2] of Text[80];
+        StoreDate: array[20] of Text;
+        CheckDateFormat: Text;
+        Counter: Integer;
+        VendInfo: array[10] of Text;
+        GetVendor: Record Vendor;
+        State: Record State;
+        CountryRegion: Record "Country/Region";
+        RecGenJounLine: Record "Gen. Journal Line";
+        VarNarration: Text[200];
+}
+
