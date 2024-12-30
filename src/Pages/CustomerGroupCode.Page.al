@@ -9,10 +9,10 @@ page 50001 "Customer Group Code"
         {
             repeater(Group)
             {
-                field("Group Code"; "Group Code")
+                field("Group Code"; Rec."Group Code")
                 {
                 }
-                field("Group Description"; "Group Description")
+                field("Group Description"; Rec."Group Description")
                 {
                 }
             }

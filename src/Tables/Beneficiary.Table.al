@@ -1,3 +1,6 @@
+/// <summary>
+/// Table Beneficiary (ID 50007).
+/// </summary>
 table 50007 Beneficiary
 {
 

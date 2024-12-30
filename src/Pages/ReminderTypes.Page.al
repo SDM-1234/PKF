@@ -10,16 +10,16 @@ page 50012 "Reminder Types"
         {
             repeater(Group)
             {
-                field("Code"; Code)
+                field("Code"; Rec.Code)
                 {
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                 }
-                field("Send To"; "Send To")
+                field("Send To"; Rec."Send To")
                 {
                 }
-                field("Send CC"; "Send CC")
+                field("Send CC"; Rec."Send CC")
                 {
                 }
             }

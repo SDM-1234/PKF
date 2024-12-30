@@ -9,10 +9,10 @@ page 50005 "Segment Master"
         {
             repeater(Group)
             {
-                field(LOB; LOB)
+                field(LOB; Rec.LOB)
                 {
                 }
-                field(Segment; Segment)
+                field(Segment; Rec.Segment)
                 {
                 }
             }

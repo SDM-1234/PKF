@@ -10,22 +10,22 @@ page 50002 "Portal Users"
         {
             repeater(Group)
             {
-                field("User Name"; "User Name")
+                field("User Name"; Rec."User Name")
                 {
                 }
-                field("Full Name"; "Full Name")
+                field("Full Name"; Rec."Full Name")
                 {
                 }
-                field("Super User"; "Super User")
+                field("Super User"; Rec."Super User")
                 {
                 }
-                field(State; State)
+                field(State; Rec.State)
                 {
                 }
-                field("Partner Code"; "Partner Code")
+                field("Partner Code"; Rec."Partner Code")
                 {
                 }
-                field("Contact Email"; "Contact Email")
+                field("Contact Email"; Rec."Contact Email")
                 {
                 }
             }

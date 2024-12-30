@@ -9,22 +9,22 @@ page 50008 "Beneficiary List"
         {
             repeater(Group)
             {
-                field("Beneficiary Code"; "Beneficiary Code")
+                field("Beneficiary Code"; Rec."Beneficiary Code")
                 {
                 }
-                field("Beneficiary Name"; "Beneficiary Name")
+                field("Beneficiary Name"; Rec."Beneficiary Name")
                 {
                 }
-                field("Beneficiary A/C No."; "Beneficiary A/C No.")
+                field("Beneficiary A/C No."; Rec."Beneficiary A/C No.")
                 {
                 }
-                field("Beneficiary Bank Name"; "Beneficiary Bank Name")
+                field("Beneficiary Bank Name"; Rec."Beneficiary Bank Name")
                 {
                 }
-                field("Beneficiary IFS Code"; "Beneficiary IFS Code")
+                field("Beneficiary IFS Code"; Rec."Beneficiary IFS Code")
                 {
                 }
-                field("Beneficiary Branch Address"; "Beneficiary Branch Address")
+                field("Beneficiary Branch Address"; Rec."Beneficiary Branch Address")
                 {
                 }
             }

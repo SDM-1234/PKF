@@ -10,7 +10,7 @@ page 50016 "Matrix Reminder List By Period"
             repeater(Group)
             {
                 Editable = false;
-                field("Code"; Code)
+                field("Code"; Rec.Code)
                 {
                 }
                 field(Field1; Matrix_CellData[1])

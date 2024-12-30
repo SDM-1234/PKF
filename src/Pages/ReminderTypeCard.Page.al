@@ -9,19 +9,19 @@ page 50013 "Reminder Type Card"
         {
             group(General)
             {
-                field("Code"; Code)
+                field("Code"; Rec.Code)
                 {
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                 }
             }
             group("Email Parameters")
             {
-                field("Send To"; "Send To")
+                field("Send To"; Rec."Send To")
                 {
                 }
-                field("Send CC"; "Send CC")
+                field("Send CC"; Rec."Send CC")
                 {
                 }
             }

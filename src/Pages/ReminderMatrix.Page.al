@@ -102,7 +102,7 @@ page 50017 "Reminder Matrix"
     var
         MatrixRecord: array[32] of Record Date;
         MatrixMgt: Codeunit "Matrix Management";
-        ApplicationManagement: Codeunit ApplicationManagement;
+        //ApplicationManagement: Codeunit ApplicationManagement;
         ColumnSet: Text[1024];
         ViewBy: Option Day,Week,Month,Quarter,Year;
         SetWanted: Option Initial,Previous,Same,Next,PreviousColumn,NextColumn;

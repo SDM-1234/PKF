@@ -1,3 +1,7 @@
+/*
+/// <summary>
+/// Codeunit Update GLE (ID 50004) - Not using develop for Historical data update
+/// </summary>
 codeunit 50004 "Update GLE"
 {
 
@@ -20,3 +24,4 @@ codeunit 50004 "Update GLE"
         GLRegister: Record "G/L Register";
 }
 
+*/

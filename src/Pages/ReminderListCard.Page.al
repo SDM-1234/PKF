@@ -9,79 +9,79 @@ page 50015 "Reminder List Card"
         {
             group(General)
             {
-                field("No."; "No.")
+                field("No."; Rec."No.")
                 {
                     AssistEdit = true;
                     Editable = Field1Visible;
 
                     trigger OnAssistEdit()
                     begin
-                        IF AssistEdit THEN
+                        IF Rec.AssistEdit() THEN
                             CurrPage.UPDATE;
                     end;
                 }
-                field(Type; Type)
+                field(Type; Rec.Type)
                 {
                     Editable = Field2Visible;
                 }
-                field(Decription; Decription)
+                field(Decription; Rec.Decription)
                 {
                     Editable = Field3Visible;
                 }
-                field("Start Period"; "Start Period")
+                field("Start Period"; Rec."Start Period")
                 {
                     Editable = Field4Visible;
                 }
-                field("End Period"; "End Period")
+                field("End Period"; Rec."End Period")
                 {
                     Editable = Field5Visible;
                 }
-                field(Company; Company)
+                field(Company; Rec.Company)
                 {
                     Editable = Field6Visible;
                 }
-                field(Status; Status)
+                field(Status; Rec.Status)
                 {
                     Editable = Field7Visible;
                 }
-                field(Location; Location)
+                field(Location; Rec.Location)
                 {
                     Editable = Field8Visible;
                 }
-                field("Generated From Previous Entry"; "Generated From Previous Entry")
+                field("Generated From Previous Entry"; Rec."Generated From Previous Entry")
                 {
                 }
             }
             group(Purchase)
             {
-                field("Purchase Date"; "Purchase Date")
+                field("Purchase Date"; Rec."Purchase Date")
                 {
                     Editable = Field9Visible;
                 }
-                field("Purchase Amount"; "Purchase Amount")
+                field("Purchase Amount"; Rec."Purchase Amount")
                 {
                     Editable = Field10Visible;
                 }
-                field(Amount; Amount)
+                field(Amount; Rec.Amount)
                 {
                     Editable = Field11Visible;
                 }
-                field("Count"; Count)
+                field("Count"; Rec.Count)
                 {
                     Editable = Field12Visible;
                 }
-                field("Payment Date"; "Payment Date")
+                field("Payment Date"; Rec."Payment Date")
                 {
                     Editable = Field13Visible;
                 }
             }
             group("Email Parameters")
             {
-                field("Send To"; "Send To")
+                field("Send To"; Rec."Send To")
                 {
                     Editable = Field14Visible;
                 }
-                field("Send CC"; "Send CC")
+                field("Send CC"; Rec."Send CC")
                 {
                     Editable = Field15Visible;
                 }
@@ -110,7 +110,7 @@ page 50015 "Reminder List Card"
 
     trigger OnAfterGetCurrRecord()
     begin
-        IF (Status = Status::Open) AND ("Generated From Previous Entry") THEN BEGIN
+        IF (Rec.Status = Rec.Status::Open) AND (Rec."Generated From Previous Entry") THEN BEGIN
             Field15Visible := FALSE;
             Field14Visible := FALSE;
             Field13Visible := TRUE;
@@ -127,7 +127,7 @@ page 50015 "Reminder List Card"
             Field2Visible := FALSE;
             Field1Visible := FALSE;
         END ELSE
-            IF (Status = Status::Closed) AND ("Generated From Previous Entry") THEN BEGIN
+            IF (Rec.Status = Rec.Status::Closed) AND (Rec."Generated From Previous Entry") THEN BEGIN
                 Field15Visible := FALSE;
                 Field14Visible := FALSE;
                 Field13Visible := FALSE;
@@ -145,7 +145,7 @@ page 50015 "Reminder List Card"
                 Field1Visible := FALSE;
 
             END ELSE
-                IF (Status = Status::Open) AND (NOT "Generated From Previous Entry") THEN BEGIN
+                IF (Rec.Status = Rec.Status::Open) AND (NOT Rec."Generated From Previous Entry") THEN BEGIN
                     Field15Visible := TRUE;
                     Field14Visible := TRUE;
                     Field13Visible := TRUE;
@@ -162,7 +162,7 @@ page 50015 "Reminder List Card"
                     Field2Visible := TRUE;
                     Field1Visible := TRUE;
                 END ELSE
-                    IF (Status = Status::Closed) AND (NOT "Generated From Previous Entry") THEN BEGIN
+                    IF (Rec.Status = Rec.Status::Closed) AND (NOT Rec."Generated From Previous Entry") THEN BEGIN
                         Field15Visible := FALSE;
                         Field14Visible := FALSE;
                         Field13Visible := FALSE;
@@ -184,7 +184,7 @@ page 50015 "Reminder List Card"
 
     trigger OnOpenPage()
     begin
-        IF (Status = Status::Open) AND ("Generated From Previous Entry") THEN BEGIN
+        IF (Rec.Status = Rec.Status::Open) AND (Rec."Generated From Previous Entry") THEN BEGIN
             Field15Visible := FALSE;
             Field14Visible := FALSE;
             Field13Visible := TRUE;
@@ -201,7 +201,7 @@ page 50015 "Reminder List Card"
             Field2Visible := FALSE;
             Field1Visible := FALSE;
         END ELSE
-            IF (Status = Status::Closed) AND ("Generated From Previous Entry") THEN BEGIN
+            IF (Rec.Status = Rec.Status::Closed) AND (Rec."Generated From Previous Entry") THEN BEGIN
                 Field15Visible := FALSE;
                 Field14Visible := FALSE;
                 Field13Visible := FALSE;
@@ -219,7 +219,7 @@ page 50015 "Reminder List Card"
                 Field1Visible := FALSE;
 
             END ELSE
-                IF (Status = Status::Open) AND (NOT "Generated From Previous Entry") THEN BEGIN
+                IF (Rec.Status = Rec.Status::Open) AND (NOT Rec."Generated From Previous Entry") THEN BEGIN
                     Field15Visible := TRUE;
                     Field14Visible := TRUE;
                     Field13Visible := TRUE;
@@ -236,7 +236,7 @@ page 50015 "Reminder List Card"
                     Field2Visible := TRUE;
                     Field1Visible := TRUE;
                 END ELSE
-                    IF (Status = Status::Closed) AND (NOT "Generated From Previous Entry") THEN BEGIN
+                    IF (Rec.Status = Rec.Status::Closed) AND (NOT Rec."Generated From Previous Entry") THEN BEGIN
                         Field15Visible := FALSE;
                         Field14Visible := FALSE;
                         Field13Visible := FALSE;

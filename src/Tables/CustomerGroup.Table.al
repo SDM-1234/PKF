@@ -1,3 +1,6 @@
+/// <summary>
+/// Table Customer Group (ID 50000).
+/// </summary>
 table 50000 "Customer Group"
 {
 

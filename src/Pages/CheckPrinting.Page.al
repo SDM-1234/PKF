@@ -1,3 +1,6 @@
+/// <summary>
+/// Page Check Printing (ID 50007).
+/// </summary>
 page 50007 "Check Printing"
 {
     DataCaptionFields = "Bank Account No.";
@@ -16,118 +19,118 @@ page 50007 "Check Printing"
             repeater(Control1)
             {
                 ShowCaption = false;
-                field("Posting Date"; "Posting Date")
+                field("Posting Date"; Rec."Posting Date")
                 {
                     Editable = false;
                 }
-                field("Document Type"; "Document Type")
+                field("Document Type"; Rec."Document Type")
                 {
                     Editable = false;
                 }
-                field("Document No."; "Document No.")
+                field("Document No."; Rec."Document No.")
                 {
                     Editable = false;
                 }
-                field("Bank Account No."; "Bank Account No.")
+                field("Bank Account No."; Rec."Bank Account No.")
                 {
                     Editable = false;
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     Editable = false;
                 }
-                field(Control1500004; "Stale Cheque")
+                field(Control1500004; Rec."Stale Cheque")
                 {
                     Visible = false;
                 }
-                field("Stale Cheque Expiry Date"; "Stale Cheque Expiry Date")
+                field("Stale Cheque Expiry Date"; Rec."Stale Cheque Expiry Date")
                 {
                     Visible = false;
                 }
-                field("Cheque Stale Date"; "Cheque Stale Date")
+                field("Cheque Stale Date"; Rec."Cheque Stale Date")
                 {
                     Visible = false;
                 }
-                field("Global Dimension 1 Code"; "Global Dimension 1 Code")
-                {
-                    Editable = false;
-                    Visible = false;
-                }
-                field("Global Dimension 2 Code"; "Global Dimension 2 Code")
+                field("Global Dimension 1 Code"; Rec."Global Dimension 1 Code")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field("Our Contact Code"; "Our Contact Code")
+                field("Global Dimension 2 Code"; Rec."Global Dimension 2 Code")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field("Currency Code"; "Currency Code")
+                field("Our Contact Code"; Rec."Our Contact Code")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field(Amount; Amount)
-                {
-                    Editable = false;
-                }
-                field("Amount (LCY)"; "Amount (LCY)")
+                field("Currency Code"; Rec."Currency Code")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field("Remaining Amount"; "Remaining Amount")
+                field(Amount; Rec.Amount)
+                {
+                    Editable = false;
+                }
+                field("Amount (LCY)"; Rec."Amount (LCY)")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field("Bal. Account Type"; "Bal. Account Type")
+                field("Remaining Amount"; Rec."Remaining Amount")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field("Bal. Account No."; "Bal. Account No.")
+                field("Bal. Account Type"; Rec."Bal. Account Type")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field(Open; Open)
-                {
-                    Editable = false;
-                }
-                field("User ID"; "User ID")
+                field("Bal. Account No."; Rec."Bal. Account No.")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field("Source Code"; "Source Code")
+                field(Open; Rec.Open)
+                {
+                    Editable = false;
+                }
+                field("User ID"; Rec."User ID")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field("Reason Code"; "Reason Code")
+                field("Source Code"; Rec."Source Code")
                 {
                     Editable = false;
                     Visible = false;
                 }
-                field(Reversed; Reversed)
+                field("Reason Code"; Rec."Reason Code")
+                {
+                    Editable = false;
+                    Visible = false;
+                }
+                field(Reversed; Rec.Reversed)
                 {
                     Visible = false;
                 }
-                field("Reversed by Entry No."; "Reversed by Entry No.")
+                field("Reversed by Entry No."; Rec."Reversed by Entry No.")
                 {
                     Visible = false;
                 }
-                field("Reversed Entry No."; "Reversed Entry No.")
+                field("Reversed Entry No."; Rec."Reversed Entry No.")
                 {
                     Visible = false;
                 }
-                field("Location Code"; "Location Code")
+                field("Location Code"; Rec."Location Code")
                 {
                     Visible = false;
                 }
-                field("Entry No."; "Entry No.")
+                field("Entry No."; Rec."Entry No.")
                 {
                     Editable = false;
                 }
@@ -159,20 +162,20 @@ page 50007 "Check Printing"
                     Caption = 'Check Ledger E&ntries';
                     Image = CheckLedger;
                     RunObject = Page "Check Ledger Entries";
-                    RunPageLink = Bank Account Ledger Entry No.=FIELD(Entry No.);
-                    RunPageView = SORTING(Bank Account Ledger Entry No.);
+                    RunPageLink = "Bank Account Ledger Entry No." = FIELD("Entry No.");
+                    RunPageView = SORTING("Bank Account Ledger Entry No.");
                     ShortCutKey = 'Shift+F7';
                 }
                 action(Dimensions)
                 {
-                    AccessByPermission = TableData Dimension=R;
+                    AccessByPermission = TableData Dimension = R;
                     Caption = 'Dimensions';
                     Image = Dimensions;
                     ShortCutKey = 'Shift+Ctrl+D';
 
                     trigger OnAction()
                     begin
-                        ShowDimensions;
+                        Rec.ShowDimensions;
                     end;
                 }
                 action(Narration)
@@ -180,14 +183,14 @@ page 50007 "Check Printing"
                     Caption = 'Narration';
                     Image = Description;
                     RunObject = Page "Posted Narrations";
-                                    RunPageLink = Entry No.=FILTER(0),Transaction No.=FIELD(Transaction No.);
+                    RunPageLink = "Entry No." = FILTER(0), "Transaction No." = FIELD("Transaction No.");
                 }
                 action("Line Narration")
                 {
                     Caption = 'Line Narration';
                     Image = LineDescription;
                     RunObject = Page "Posted Narrations";
-                                    RunPageLink = Entry No.=FIELD(Entry No.),Transaction No.=FIELD(Transaction No.);
+                    RunPageLink = "Entry No." = FIELD("Entry No."), "Transaction No." = FIELD("Transaction No.");
                 }
                 action("Print Voucher")
                 {
@@ -199,11 +202,11 @@ page 50007 "Check Printing"
                     var
                         GLEntry: Record "G/L Entry";
                     begin
-                        GLEntry.SETCURRENTKEY("Document No.","Posting Date");
-                        GLEntry.SETRANGE("Document No.","Document No.");
-                        GLEntry.SETRANGE("Posting Date","Posting Date");
+                        GLEntry.SETCURRENTKEY("Document No.", "Posting Date");
+                        GLEntry.SETRANGE("Document No.", "Document No.");
+                        GLEntry.SETRANGE("Posting Date", "Posting Date");
                         IF GLEntry.FIND('-') THEN
-                          REPORT.RUNMODAL(REPORT::"Posted Voucher",TRUE,TRUE,GLEntry);
+                            REPORT.RUNMODAL(REPORT::"Posted Voucher", TRUE, TRUE, GLEntry);
                     end;
                 }
                 action("Print Check")
@@ -215,9 +218,9 @@ page 50007 "Check Printing"
                     trigger OnAction()
                     begin
                         VendorLedgerEntry.RESET;
-                        VendorLedgerEntry.SETRANGE("Document No.","Document No.");
+                        VendorLedgerEntry.SETRANGE("Document No.", "Document No.");
                         IF VendorLedgerEntry.FINDFIRST THEN
-                          REPORT.RUNMODAL(50077,TRUE,FALSE,VendorLedgerEntry);
+                            REPORT.RUNMODAL(50077, TRUE, FALSE, VendorLedgerEntry);
                     end;
                 }
             }
@@ -239,12 +242,12 @@ page 50007 "Check Printing"
                         ReversalEntry: Record "Reversal Entry";
                     begin
                         CLEAR(ReversalEntry);
-                        IF Reversed THEN
-                          ReversalEntry.AlreadyReversedEntry(TABLECAPTION,"Entry No.");
-                        IF "Journal Batch Name" = '' THEN
-                          ReversalEntry.TestFieldError;
-                        TESTFIELD("Transaction No.");
-                        ReversalEntry.ReverseTransaction("Transaction No.");
+                        IF Rec.Reversed THEN
+                            ReversalEntry.AlreadyReversedEntry(Rec.TABLECAPTION, Rec."Entry No.");
+                        IF Rec."Journal Batch Name" = '' THEN
+                            ReversalEntry.TestFieldError;
+                        Rec.TESTFIELD("Transaction No.");
+                        ReversalEntry.ReverseTransaction(Rec."Transaction No.");
                     end;
                 }
                 action("Stale Cheque")
@@ -254,19 +257,19 @@ page 50007 "Check Printing"
 
                     trigger OnAction()
                     begin
-                        IF "Stale Cheque" = FALSE THEN BEGIN
-                          IF CONFIRM(
-                               Text16502,FALSE,"Cheque No.","Bal. Account Type",
-                               "Bal. Account No.") THEN BEGIN
-                            IF "Stale Cheque Expiry Date" >= WORKDATE THEN
-                              ERROR(Text16500,"Stale Cheque Expiry Date");
-                            "Stale Cheque" := TRUE;
-                            "Cheque Stale Date" := WORKDATE;
-                            MODIFY;
-                          END;
+                        IF Rec."Stale Cheque" = FALSE THEN BEGIN
+                            IF CONFIRM(
+                                 Text16502, FALSE, Rec."Cheque No.", Rec."Bal. Account Type",
+                                 Rec."Bal. Account No.") THEN BEGIN
+                                IF Rec."Stale Cheque Expiry Date" >= WORKDATE THEN
+                                    ERROR(Text16500, Rec."Stale Cheque Expiry Date");
+                                Rec."Stale Cheque" := TRUE;
+                                Rec."Cheque Stale Date" := WORKDATE;
+                                Rec.MODIFY;
+                            END;
                         END
                         ELSE
-                          MESSAGE(Text16501);
+                            MESSAGE(Text16501);
                     end;
                 }
             }
@@ -279,7 +282,7 @@ page 50007 "Check Printing"
 
                 trigger OnAction()
                 begin
-                    Navigate.SetDoc("Posting Date","Document No.");
+                    Navigate.SetDoc(Rec."Posting Date", Rec."Document No.");
                     Navigate.RUN;
                 end;
             }
@@ -288,7 +291,7 @@ page 50007 "Check Printing"
 
     var
         Navigate: Page Navigate;
-                      Text16500: Label 'Bank Ledger Entry can be marked as stale only after %1. ';
+        Text16500: Label 'Bank Ledger Entry can be marked as stale only after %1. ';
         Text16501: Label 'The cheque has already been marked stale.';
         Text16502: Label 'Financially stale check %1 to %2 %3';
         VendorLedgerEntry: Record "Vendor Ledger Entry";

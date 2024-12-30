@@ -15,17 +15,17 @@ table 50025 "GL User Setup"
         field(2; "G/L Account No."; Code[20])
         {
             DataClassification = ToBeClassified;
-            TableRelation = "G/L Account" WHERE (Account Type=FILTER(Posting));
+            TableRelation = "G/L Account" WHERE("Account Type" = FILTER(Posting));
 
             trigger OnValidate()
             begin
                 IF GLAccount.GET("G/L Account No.") THEN
-                  "G/L Account Name" := GLAccount.Name
+                    "G/L Account Name" := GLAccount.Name
                 ELSE
-                  "G/L Account Name" := '';
+                    "G/L Account Name" := '';
             end;
         }
-        field(3;"G/L Account Name";Text[100])
+        field(3; "G/L Account Name"; Text[100])
         {
             DataClassification = ToBeClassified;
             Editable = false;
@@ -34,7 +34,7 @@ table 50025 "GL User Setup"
 
     keys
     {
-        key(Key1;"User ID","G/L Account No.")
+        key(Key1; "User ID", "G/L Account No.")
         {
             Clustered = true;
         }
@@ -54,18 +54,19 @@ table 50025 "GL User Setup"
         GLFilter: Text;
         I: Integer;
     begin
-        I:=1;
-        GLUserSetup.SETRANGE("User ID",USERID);
+        I := 1;
+        GLUserSetup.SETRANGE("User ID", USERID);
         IF GLUserSetup.COUNT > 1000 THEN
-          EXIT('');
-        IF GLUserSetup.FINDSET THEN REPEAT
-            IF I = 1 THEN
-               GLFilter += '<>' + GLUserSetup."G/L Account No."
-            ELSE
-              GLFilter += '&<>' + GLUserSetup."G/L Account No.";
+            EXIT('');
+        IF GLUserSetup.FINDSET THEN
+            REPEAT
+                IF I = 1 THEN
+                    GLFilter += '<>' + GLUserSetup."G/L Account No."
+                ELSE
+                    GLFilter += '&<>' + GLUserSetup."G/L Account No.";
 
-          I := I + 1;
-          UNTIL GLUserSetup.NEXT = 0;
+                I := I + 1;
+            UNTIL GLUserSetup.NEXT = 0;
         EXIT(GLFilter);
     end;
 }

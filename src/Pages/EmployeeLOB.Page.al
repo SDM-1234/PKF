@@ -9,19 +9,19 @@ page 50010 "Employee LOB"
         {
             repeater(Group)
             {
-                field(LOB; LOB)
+                field(LOB; Rec.LOB)
                 {
                 }
-                field(Segment; Segment)
+                field(Segment; Rec.Segment)
                 {
                 }
-                field("Emp No."; "Emp No.")
+                field("Emp No."; Rec."Emp No.")
                 {
                 }
-                field("Emp Name"; "Emp Name")
+                field("Emp Name"; Rec."Emp Name")
                 {
                 }
-                field("Contact No."; "Contact No.")
+                field("Contact No."; Rec."Contact No.")
                 {
                 }
             }

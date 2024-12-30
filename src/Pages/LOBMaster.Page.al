@@ -9,7 +9,7 @@ page 50004 "LOB Master"
         {
             repeater(Group)
             {
-                field(LOB; LOB)
+                field(LOB; Rec.LOB)
                 {
                 }
             }

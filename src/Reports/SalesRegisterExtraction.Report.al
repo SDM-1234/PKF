@@ -8,7 +8,7 @@ report 50090 "Sales Register Extraction"
     {
         dataitem("Sales Invoice Header"; "Sales Invoice Header")
         {
-            DataItemTableView = SORTING (No.);
+            DataItemTableView = SORTING("No.");
             RequestFilterFields = "Posting Date", "Location Code", "Shortcut Dimension 1 Code", "Invoice Types", LOB, Segment;
             column(Posting_Date; "Sales Invoice Header"."Posting Date")
             {

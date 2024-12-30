@@ -8,7 +8,7 @@ report 50077 "Check Printing"
     {
         dataitem("Gen. Journal Line"; "Gen. Journal Line")
         {
-            DataItemTableView = SORTING (Document No.);
+            DataItemTableView = SORTING("Document No.");
             RequestFilterFields = "Journal Template Name", "Document No.";
             column(Company_Name; CompanyInformation.Name)
             {

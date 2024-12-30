@@ -11,7 +11,7 @@ page 50014 "Reminders List"
         {
             repeater(Group)
             {
-                field("No."; "No.")
+                field("No."; Rec."No.")
                 {
                     Editable = Field2Visible;
                     Importance = Promoted;
@@ -22,55 +22,55 @@ page 50014 "Reminders List"
                             CurrPage.UPDATE;
                     end;
                 }
-                field(Type; Type)
+                field(Type; Rec.Type)
                 {
                     Editable = Field2Visible;
                 }
-                field(Decription; Decription)
+                field(Decription; Rec.Decription)
                 {
                     Editable = Field3Visible;
                 }
-                field("Purchase Date"; "Purchase Date")
+                field("Purchase Date"; Rec."Purchase Date")
                 {
                     Editable = Field4Visible;
                 }
-                field("Purchase Amount"; "Purchase Amount")
+                field("Purchase Amount"; Rec."Purchase Amount")
                 {
                     Editable = Field5Visible;
                 }
-                field("Start Period"; "Start Period")
+                field("Start Period"; Rec."Start Period")
                 {
                     Editable = Field2Visible;
                 }
-                field("End Period"; "End Period")
+                field("End Period"; Rec."End Period")
                 {
                     Editable = Field7Visible;
                 }
-                field(Amount; Amount)
+                field(Amount; Rec.Amount)
                 {
                 }
-                field(Location; Location)
+                field(Location; Rec.Location)
                 {
                 }
-                field(Company; Company)
+                field(Company; Rec.Company)
                 {
                 }
-                field("Count"; Count)
+                field("Count"; Rec.Count)
                 {
                 }
-                field("Send To"; "Send To")
+                field("Send To"; Rec."Send To")
                 {
                 }
-                field("Send CC"; "Send CC")
+                field("Send CC"; Rec."Send CC")
                 {
                 }
-                field(Status; Status)
+                field(Status; Rec.Status)
                 {
                 }
-                field("Payment Date"; "Payment Date")
+                field("Payment Date"; Rec."Payment Date")
                 {
                 }
-                field("Generated From Previous Entry"; "Generated From Previous Entry")
+                field("Generated From Previous Entry"; Rec."Generated From Previous Entry")
                 {
                 }
             }

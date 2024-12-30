@@ -7,152 +7,152 @@ report 50078 "Check Printing Report w/o PA"
     {
         dataitem("Vendor Ledger Entry"; "Vendor Ledger Entry")
         {
-            DataItemTableView = WHERE (Source Code=FILTER(BANKPYMTV));
-            column(DearSir_Cap;DearSirCap)
+            DataItemTableView = WHERE("Source Code" = FILTER(BANKPYMTV));
+            column(DearSir_Cap; DearSirCap)
             {
             }
-            column(Enclosed_Cap;EnclosedCap)
+            column(Enclosed_Cap; EnclosedCap)
             {
             }
-            column(For_Cap;ForCap)
+            column(For_Cap; ForCap)
             {
             }
-            column(Dated_Cap;DatedCap)
+            column(Dated_Cap; DatedCap)
             {
             }
-            column(Of_Cap;OfCap)
+            column(Of_Cap; OfCap)
             {
             }
-            column(AsPerDetail_Cap;AsPerDetailCap)
+            column(AsPerDetail_Cap; AsPerDetailCap)
             {
             }
-            column(VoucherNo_Cap;VoucherNoCap)
+            column(VoucherNo_Cap; VoucherNoCap)
             {
             }
-            column(Date_Cap;DateCap)
+            column(Date_Cap; DateCap)
             {
             }
-            column(VendorInvNo_Cap;VendorInvNoCap)
+            column(VendorInvNo_Cap; VendorInvNoCap)
             {
             }
-            column(InvDate_Cap;InvDateCap)
+            column(InvDate_Cap; InvDateCap)
             {
             }
-            column(InvAmt_Cap;InvAmtCap)
+            column(InvAmt_Cap; InvAmtCap)
             {
             }
-            column(TDSDeductions_Cap;TDSDeductionsCap)
+            column(TDSDeductions_Cap; TDSDeductionsCap)
             {
             }
-            column(NetAmt_Cap;NetAmtCap)
+            column(NetAmt_Cap; NetAmtCap)
             {
             }
-            column(PIN_Cap;PINCap)
+            column(PIN_Cap; PINCap)
             {
             }
-            column(Tel_Cap;TelCap)
+            column(Tel_Cap; TelCap)
             {
             }
-            column(Fax_Cap;FaxCap)
+            column(Fax_Cap; FaxCap)
             {
             }
-            column(SumTotal_Cap;SumTotalCap)
+            column(SumTotal_Cap; SumTotalCap)
             {
             }
-            column(DeedReason_Cap;DeedReasonCap)
+            column(DeedReason_Cap; DeedReasonCap)
             {
             }
-            column(InvoiceAmountIs_Cap;InvoiceAmountIsCap)
+            column(InvoiceAmountIs_Cap; InvoiceAmountIsCap)
             {
             }
-            column(PANNo_Cap;PANNoCap)
+            column(PANNo_Cap; PANNoCap)
             {
             }
-            column(ServiceTax_Cap;ServiceTaxCap)
+            column(ServiceTax_Cap; ServiceTaxCap)
             {
             }
-            column(PartyName_Cap;PartyNameCap)
+            column(PartyName_Cap; PartyNameCap)
             {
             }
-            column(Address_Cap;AddressCap)
+            column(Address_Cap; AddressCap)
             {
             }
-            column(ApprovedBy_Cap;ApprovedByCap)
+            column(ApprovedBy_Cap; ApprovedByCap)
             {
             }
-            column(PleaseVerify_Cap;PleaseVerifyCap)
+            column(PleaseVerify_Cap; PleaseVerifyCap)
             {
             }
-            column(PreParedBy_Cap;PreParedByCap)
+            column(PreParedBy_Cap; PreParedByCap)
             {
             }
-            column(AuthBy_Cap;AuthByCap)
+            column(AuthBy_Cap; AuthByCap)
             {
             }
-            column(CompInfo_Picture;CompInfo.Picture)
+            column(CompInfo_Picture; CompInfo.Picture)
             {
             }
-            column(CompInfo_Name;CompInfo.Name)
+            column(CompInfo_Name; CompInfo.Name)
             {
             }
-            column(CompInfo_Address;CompInfo.Address)
+            column(CompInfo_Address; CompInfo.Address)
             {
             }
-            column(CompInfo_Address2;CompInfo."Address 2")
+            column(CompInfo_Address2; CompInfo."Address 2")
             {
             }
-            column(CompInfo_PhoneNo;CompInfo."Phone No.")
+            column(CompInfo_PhoneNo; CompInfo."Phone No.")
             {
             }
-            column(CompInfo_FaxNo;CompInfo."Fax No.")
+            column(CompInfo_FaxNo; CompInfo."Fax No.")
             {
             }
-            column(GetBankAccount_Name;GetBankAccount.Name)
+            column(GetBankAccount_Name; GetBankAccount.Name)
             {
             }
-            column(Payment_Amount;BankAccLedgEntry."Amount (LCY)")
+            column(Payment_Amount; BankAccLedgEntry."Amount (LCY)")
             {
             }
-            column(Cheque_No;BankAccLedgEntry."Cheque No.")
+            column(Cheque_No; BankAccLedgEntry."Cheque No.")
             {
             }
-            column(Cheque_Date;FORMAT(BankAccLedgEntry."Cheque Date"))
+            column(Cheque_Date; FORMAT(BankAccLedgEntry."Cheque Date"))
             {
             }
-            column(CheckDate_Format;CheckDateFormat)
+            column(CheckDate_Format; CheckDateFormat)
             {
             }
-            column(StoreDate_1;StoreDate[1])
+            column(StoreDate_1; StoreDate[1])
             {
             }
-            column(StoreDate_2;StoreDate[2])
+            column(StoreDate_2; StoreDate[2])
             {
             }
-            column(StoreDate_3;StoreDate[3])
+            column(StoreDate_3; StoreDate[3])
             {
             }
-            column(StoreDate_4;StoreDate[4])
+            column(StoreDate_4; StoreDate[4])
             {
             }
-            column(StoreDate_5;StoreDate[5])
+            column(StoreDate_5; StoreDate[5])
             {
             }
-            column(StoreDate_6;StoreDate[6])
+            column(StoreDate_6; StoreDate[6])
             {
             }
-            column(StoreDate_7;StoreDate[7])
+            column(StoreDate_7; StoreDate[7])
             {
             }
-            column(StoreDate_8;StoreDate[8])
+            column(StoreDate_8; StoreDate[8])
             {
             }
-            column(TotalNet_Amount;TotalNetAmount)
+            column(TotalNet_Amount; TotalNetAmount)
             {
             }
-            column(TotalAmount_Inwords;TotalAmountInwords[1])
+            column(TotalAmount_Inwords; TotalAmountInwords[1])
             {
             }
-            dataitem(DetailedVendorLedgEntry_1;"Detailed Vendor Ledg. Entry")
+            dataitem(DetailedVendorLedgEntry_1; "Detailed Vendor Ledg. Entry")
             {
                 DataItemLink = Document No.=FIELD(Document No.);
                 DataItemTableView = SORTING(Entry No.) WHERE(Entry Type=FILTER(Application),Initial Document Type=FILTER(Invoice));
@@ -252,28 +252,28 @@ report 50078 "Check Printing Report w/o PA"
             dataitem(CashFlowBuffer;"Integer")
             {
                 DataItemTableView = SORTING(Number);
-                column(Voucher_No;TempCashFlowBuffer."Code 1")
+                column(Voucher_No; TempCashFlowBuffer."Code 1")
                 {
                 }
-                column(Voucher_Date;FORMAT(TempCashFlowBuffer."Date 1"))
+                column(Voucher_Date; FORMAT(TempCashFlowBuffer."Date 1"))
                 {
                 }
-                column(Vendor_Inv_No;TempCashFlowBuffer."Code 2")
+                column(Vendor_Inv_No; TempCashFlowBuffer."Code 2")
                 {
                 }
-                column(Inv_Date;FORMAT(TempCashFlowBuffer."Date 1"))
+                column(Inv_Date; FORMAT(TempCashFlowBuffer."Date 1"))
                 {
                 }
-                column(Invoice_Amount;TempCashFlowBuffer."Decimal 1")
+                column(Invoice_Amount; TempCashFlowBuffer."Decimal 1")
                 {
                 }
-                column(TDS_Amount;TempCashFlowBuffer."Decimal 2")
+                column(TDS_Amount; TempCashFlowBuffer."Decimal 2")
                 {
                 }
-                column(Net_Amount;TempCashFlowBuffer."Decimal 3")
+                column(Net_Amount; TempCashFlowBuffer."Decimal 3")
                 {
                 }
-                column(Is_Applied;IsApplied)
+                column(Is_Applied; IsApplied)
                 {
                 }
 
@@ -293,31 +293,31 @@ report 50078 "Check Printing Report w/o PA"
             dataitem("Integer";"Integer")
             {
                 DataItemTableView = SORTING(Number) WHERE(Number=CONST(1));
-                column(GetVendor_Name;VendInfo[1])
+                column(GetVendor_Name; VendInfo[1])
                 {
                 }
-                column(GetVendor_Address;VendInfo[2])
+                column(GetVendor_Address; VendInfo[2])
                 {
                 }
-                column(GetVendor_Address2;VendInfo[3])
+                column(GetVendor_Address2; VendInfo[3])
                 {
                 }
-                column(GetVendor_City;VendInfo[4])
+                column(GetVendor_City; VendInfo[4])
                 {
                 }
-                column(GetVendor_StateCode;VendInfo[5])
+                column(GetVendor_StateCode; VendInfo[5])
                 {
                 }
-                column(GetVendor_PostCode;VendInfo[6])
+                column(GetVendor_PostCode; VendInfo[6])
                 {
                 }
-                column(GetVendor_PhoneNo;VendInfo[7])
+                column(GetVendor_PhoneNo; VendInfo[7])
                 {
                 }
-                column(GetVendor_ServiceTaxRegistration_No;VendInfo[8])
+                column(GetVendor_ServiceTaxRegistration_No; VendInfo[8])
                 {
                 }
-                column(GetVendor_PANNo;VendInfo[9])
+                column(GetVendor_PANNo; VendInfo[9])
                 {
                 }
             }

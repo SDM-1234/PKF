@@ -9,10 +9,10 @@ page 50003 "Primary Incharge"
         {
             repeater(Group)
             {
-                field("Incharge Code"; "Incharge Code")
+                field("Incharge Code"; Rec."Incharge Code")
                 {
                 }
-                field("Incharge Description"; "Incharge Description")
+                field("Incharge Description"; Rec."Incharge Description")
                 {
                 }
             }

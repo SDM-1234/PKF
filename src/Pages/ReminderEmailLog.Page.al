@@ -9,25 +9,25 @@ page 50011 "Reminder Email Log"
         {
             repeater(Group)
             {
-                field("Entry No."; "Entry No.")
+                field("Entry No."; Rec."Entry No.")
                 {
                 }
-                field("Reminder No."; "Reminder No.")
+                field("Reminder No."; Rec."Reminder No.")
                 {
                 }
-                field("Period Start"; "Period Start")
+                field("Period Start"; Rec."Period Start")
                 {
                 }
-                field("Period End"; "Period End")
+                field("Period End"; Rec."Period End")
                 {
                 }
-                field("Email Sending Status"; "Email Sending Status")
+                field("Email Sending Status"; Rec."Email Sending Status")
                 {
                 }
-                field(Error; Error)
+                field("Error"; Rec.Error)
                 {
                 }
-                field("Error Text"; "Error Text")
+                field("Error Text"; Rec."Error Text")
                 {
                 }
             }
