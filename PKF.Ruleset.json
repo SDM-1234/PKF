@@ -1,0 +1,6 @@
+{
+    "name": "PKF OnSaas Rules",
+    "description":"Optional rules for using AppsourceCop for OnSaas development",
+    "rules":
+    []
+}
