@@ -1,3 +1,6 @@
+/// <summary>
+/// Table Employee LOB (ID 50006).
+/// </summary>
 table 50006 "Employee LOB"
 {
     DrillDownPageID = "Employee LOB";

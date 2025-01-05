@@ -1,0 +1,77 @@
+page 50013 "Reminder Type Card"
+{
+    PageType = Card;
+    SourceTable = "Reminder Type";
+    ApplicationArea = All;
+
+    layout
+    {
+        area(content)
+        {
+            group(General)
+            {
+                field("Code"; Rec.Code)
+                {
+                }
+                field(Description; Rec.Description)
+                {
+                }
+            }
+            group("Email Parameters")
+            {
+                field("Send To"; Rec."Send To")
+                {
+                }
+                field("Send CC"; Rec."Send CC")
+                {
+                }
+            }
+        }
+        area(factboxes)
+        {
+            systempart(Control1000000006; Outlook)
+            {
+            }
+            systempart(Control1000000007; Notes)
+            {
+            }
+            systempart(Control1000000008; MyNotes)
+            {
+            }
+            systempart(Control1000000009; Links)
+            {
+            }
+        }
+    }
+
+    actions
+    {
+        area(creation)
+        {
+            action("Send Reminder For Month")
+            {
+                Caption = 'Send Reminder For Month';
+                Image = Reminder;
+
+                trigger OnAction()
+                begin
+                    EmailReminderMonthly.RUN
+                end;
+            }
+            action("Send Reminder For Week")
+            {
+                Caption = 'Send Reminder For Week';
+
+                trigger OnAction()
+                begin
+                    EmailReminderWeekly.RUN;
+                end;
+            }
+        }
+    }
+
+    var
+        EmailReminderWeekly: Codeunit "Email Reminder-Weekely";
+        EmailReminderMonthly: Codeunit "Email Reminder-Monthly";
+}
+
