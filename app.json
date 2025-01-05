@@ -22,6 +22,18 @@
       "name": "India GST",
       "publisher": "Microsoft",
       "version": "25.2.27733.27900"
+    },
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "name": "India Tax Base",
+      "publisher": "Microsoft",
+      "version": "25.2.27733.27900"
+    },
+    {
+      "id": "eddcf82e-482c-49d1-836b-ad0284f2c5b0",
+      "name": "India TCS",
+      "publisher": "Microsoft",
+      "version": "25.2.27733.27900"
     }
   ],
   "screenshots": [],
