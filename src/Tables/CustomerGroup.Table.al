@@ -3,7 +3,8 @@
 /// </summary>
 table 50000 "Customer Group"
 {
-
+    DrillDownPageId = "Customer Group";
+    LookupPageId = "Customer Group";
     fields
     {
         field(1; "Group Code"; Code[20])
