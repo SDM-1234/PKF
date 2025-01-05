@@ -1,4 +1,4 @@
-tableextension 50003 SalesInvoiceHeader extends "Sales Invoice Header"
+tableextension 50038 SalesHeaderArchive extends "Sales Header Archive"
 {
     fields
     {
@@ -9,11 +9,11 @@ tableextension 50003 SalesInvoiceHeader extends "Sales Invoice Header"
         }
         field(50000; LOB; Text[40])
         {
-            TableRelation = "Segment Master".LOB;
+            TableRelation = "Segment Master";
         }
         field(50001; Segment; Text[100])
         {
-            TableRelation = "Segment Master".Segment WHERE(LOB = FIELD(LOB));
+            TableRelation = "Segment Master" WHERE(LOB = FIELD(LOB));
         }
         field(50014; "Work Order No."; Code[20])
         {
@@ -36,10 +36,7 @@ tableextension 50003 SalesInvoiceHeader extends "Sales Invoice Header"
         }
         field(50051; "Resp. Name"; Text[80])
         {
-            Description = 'AD_SD';
-        }
-        field(50052; "Bank Selection For Report"; enum "Bank Selection For Report")
-        {
         }
     }
 }
+
