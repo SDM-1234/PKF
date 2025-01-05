@@ -1,2 +1,3 @@
 PKF_PKFBaseapp_*.app
 .vscode/.alcache/cache_*.json
+.vscode\rad.json
