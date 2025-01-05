@@ -1,6 +1,7 @@
 table 50001 "Customer Group Code"
 {
-
+    DrillDownPageId = "Customer Group Code";
+    LookupPageId = "Customer Group Code";
     fields
     {
         field(1; "Group Code"; Code[20])

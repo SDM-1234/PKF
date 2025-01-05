@@ -1,6 +1,7 @@
 table 50003 "Primary Incharge"
 {
-
+    DrillDownPageId = "Primary Incharge";
+    LookupPageId = "Primary Incharge";
     fields
     {
         field(1; "Incharge Code"; Code[50])

@@ -2,7 +2,7 @@ pageextension 50065 CustomerCard extends "Customer Card"
 {
     layout
     {
-        addafter("Last Date Modified")
+        addlast(General)
         {
             field("Primary Incharge"; Rec."Primary Incharge")
             {
