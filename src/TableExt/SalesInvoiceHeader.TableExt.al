@@ -43,4 +43,3 @@ tableextension 50003 SalesInvoiceHeader extends "Sales Invoice Header"
         }
     }
 }
-

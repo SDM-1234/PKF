@@ -39,4 +39,3 @@ tableextension 50005 SalesCrMemoHeader extends "Sales Cr.Memo Header"
         }
     }
 }
-
