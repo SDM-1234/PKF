@@ -7,8 +7,10 @@ codeunit 50003 "Email Reminder-Monthly"
         RemEmailIDListBuffer: Record "Reminder Type" temporary;
         ReminderListBuffer: Record "Reminder List Buffer";
         ReminderType: Record "Reminder Type";
-        SMTPMailSetup: Record "SMTP Mail Setup";
-        SMTPMail: Codeunit "SMTP Mail";
+        //SMTPMailSetup: Record "SMTP Mail Setup";
+        SMTPMailSetup: Record "Email Account";
+        SMTPMail: Codeunit Email;
+        EmailMessage: Codeunit "Email Message";
         Enddate: Date;
         FirstDate: Date;
         StartDate: Date;
@@ -27,36 +29,41 @@ codeunit 50003 "Email Reminder-Monthly"
         CLEAR(RemEmailIDListBuffer);
         CLEAR(ReminderListBuffer);
         CLEAR(ReminderType);
-        ReminderListBuffer.DELETEALL;
-        SMTPMailSetup.GET;
+        ReminderListBuffer.DELETEALL();
+        SMTPMailSetup.GET();
 
         MonthName := GetMonthName(TODAY);
         WeekNumber := GetWeekNumber(TODAY);
         Year := DATE2DMY(TODAY, 3);
 
         GetRemindersUserWise(ReminderListBuffer, RemEmailIDListBuffer);
-        IF RemEmailIDListBuffer.FINDSET THEN
+        IF RemEmailIDListBuffer.FINDSET() THEN
             REPEAT
                 GetEmailandRecepientName(ToEmailID, UserName, RemEmailIDListBuffer, CCEmailID);
 
-                SMTPMail.CreateMessage(COMPANYNAME, SMTPMailSetup."User ID", ToEmailID, 'Monthly Reminders', '', TRUE);
+                //SMTPMail.CreateMessage(COMPANYNAME, SMTPMailSetup."User ID", ToEmailID, 'Monthly Reminders', '', TRUE);
 
-                SMTPMail.AppendBody('Dear' + ' ' + FORMAT(UserName));
-                SMTPMail.AppendBody('<br><br>');
+                EmailMessage.Create(ToEmailID, 'Monthly Reminders', '');
+                //EmailMessage.AppendToBody();
+                EmailMessage.AppendToBody('Dear' + ' ' + FORMAT(UserName));
+                EmailMessage.AppendToBody('<br><br>');
 
                 IF TODAY = CALCDATE('-CM', TODAY) THEN
-                    SMTPMail.AppendBody('Follwing are the funds to be arranged and payments to be done for month of ' + FORMAT(MonthName) + ' of year ' + FORMAT(Year));
+                    EmailMessage.AppendToBody('Follwing are the funds to be arranged and payments to be done for month of ' + FORMAT(MonthName) + ' of year ' + FORMAT(Year));
 
-                SMTPMail.AppendBody('<br><br>');
-                SMTPMail.AppendBody(CreateMailBody(ReminderListBuffer, RemEmailIDListBuffer));
-                SMTPMail.AppendBody('<br><br>');
-                SMTPMail.AppendBody('Thanks');
-                SMTPMail.AppendBody('<br><br>');
-                SMTPMail.AppendBody('<HR>');
-                SMTPMail.AppendBody('This is a system generated email. Please do not reply to this mail');
+                EmailMessage.AppendToBody('<br><br>');
+                EmailMessage.AppendToBody(CreateMailBody(ReminderListBuffer, RemEmailIDListBuffer));
+                EmailMessage.AppendToBody('<br><br>');
+                EmailMessage.AppendToBody('Thanks');
+                EmailMessage.AppendToBody('<br><br>');
+                EmailMessage.AppendToBody('<HR>');
+                EmailMessage.AppendToBody('This is a system generated email. Please do not reply to this mail');
                 IF DataExist THEN BEGIN
-                    SMTPMail.AddCC(CCEmailID);
-                    SMTPMail.Send;
+                    //EmailMessage.
+
+                    //SMTPMail.AddCC(CCEmailID);
+                    //SMTPMail.Send();
+                    SMTPMail.Send(EmailMessage);
                     IF GUIALLOWED THEN
                         MESSAGE('Mail Sent');
                 END;

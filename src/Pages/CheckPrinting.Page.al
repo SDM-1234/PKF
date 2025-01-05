@@ -1,4 +1,4 @@
-/// <summary>
+/* /// <summary>
 /// Page Check Printing (ID 50007).
 /// </summary>
 page 50007 "Check Printing"
@@ -299,3 +299,4 @@ page 50007 "Check Printing"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
 }
 
+ */
