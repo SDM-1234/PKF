@@ -2,7 +2,7 @@ enum 50002 "Sales Currency"
 {
     Extensible = true;
 
-    value(0; "")
+    value(0; " ")
     {
     }
     value(1; "USD")
@@ -21,6 +21,12 @@ enum 50002 "Sales Currency"
     {
     }
     value(6; "AUD")
+    {
+    }
+    value(7; INR)
+    {
+    }
+    value(8; SGD)
     {
     }
 }

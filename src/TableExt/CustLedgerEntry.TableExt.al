@@ -8,7 +8,7 @@ tableextension 50021 CustLedgerEntry extends "Cust. Ledger Entry"
             CalcFormula = Lookup("Sales Invoice Header".Remarks WHERE("No." = FIELD("Document No.")));
             Editable = false;
         }
-        field(50003; Narration; Text[150])
+        field(50003; Narration; Text[200])
         {
         }
         field(50006; "Team Leader"; Code[30])
