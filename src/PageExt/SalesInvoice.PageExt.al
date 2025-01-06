@@ -16,7 +16,7 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
                 END;
             end;
         }
-        addafter(General)
+        addlast(General)
         {
             field(LOB; Rec.LOB)
             {
