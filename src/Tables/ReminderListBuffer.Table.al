@@ -9,7 +9,7 @@ table 50013 "Reminder List Buffer"
 
     fields
     {
-        field(1; "No."; Code[10])
+        field(1; "No."; Code[20])
         {
             DataClassification = ToBeClassified;
         }
@@ -86,7 +86,7 @@ table 50013 "Reminder List Buffer"
         {
             DataClassification = ToBeClassified;
         }
-        field(14; "No. Series"; Code[10])
+        field(14; "No. Series"; Code[20])
         {
             DataClassification = ToBeClassified;
             Editable = false;
@@ -124,30 +124,36 @@ table 50013 "Reminder List Buffer"
     trigger OnInsert()
     begin
         IF "No." = '' THEN BEGIN
-            GeneralLedgerSetup.GET;
-
+            GeneralLedgerSetup.GET();
             GeneralLedgerSetup.TESTFIELD("Reminder Nos.");
-            NoSeriesMgt.InitSeries(GeneralLedgerSetup."Reminder Nos.", xRec."No. Series", 0D, "No.", "No. Series");
+            "No. Series" := GeneralLedgerSetup."Reminder Nos.";
+            //NoSeriesMgt.InitSeries(GeneralLedgerSetup."Reminder Nos.", xRec."No. Series", 0D, "No.", "No. Series");
+            NoSeries.AreRelated("No. Series", xRec."No. Series");
         END;
     end;
 
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
-        CofirmMsg: Label 'Do you want to create new Reminder ?';
         ReminderList: Record "Reminder List";
 
-    [Scope('Internal')]
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        //NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
+        CofirmMsg: Label 'Do you want to create new Reminder ?';
+
+    /// <summary>
+    /// AssistEdit.
+    /// </summary>
+    /// <returns>Return value of type Boolean.</returns>
     procedure AssistEdit(): Boolean
     begin
-        GeneralLedgerSetup.GET;
+        GeneralLedgerSetup.GET();
         GeneralLedgerSetup.TESTFIELD("Reminder Nos.");
-
-
-        IF NoSeriesMgt.SelectSeries(GeneralLedgerSetup."Reminder Nos.", xRec."No. Series", "No. Series") THEN BEGIN
-            NoSeriesMgt.SetSeries("No.");
-            EXIT(TRUE);
-        END;
+        if NoSeries.LookupRelatedNoSeries(GeneralLedgerSetup."Reminder Nos.", xRec."No. Series", "No. Series") then begin
+            //IF NoSeriesMgt.SelectSeries(GeneralLedgerSetup."Reminder Nos.", xRec."No. Series", "No. Series") THEN BEGIN
+            "No." := NoSeries.GetNextNo("No. Series");
+            //NoSeriesMgt.SetSeries("No.");
+            exit(true)
+        end;
     end;
 }
 
