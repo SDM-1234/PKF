@@ -1,6 +1,9 @@
+/// <summary>
+/// Unknown PKFPermisionsSet.
+/// </summary>
 namespace PKFPermisionsSet;
 
-permissionset 50000 GeneratedPermission
+permissionset 50000 "pkf_Permission"
 {
     Assignable = true;
     Permissions = tabledata Beneficiary = RIMD,

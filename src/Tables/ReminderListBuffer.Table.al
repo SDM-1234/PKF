@@ -1,7 +1,11 @@
+/// <summary>
+/// Table Reminder List Buffer (ID 50013).
+/// </summary>
 table 50013 "Reminder List Buffer"
 {
     DrillDownPageID = "Reminders List";
     LookupPageID = "Reminders List";
+
 
     fields
     {
@@ -59,12 +63,13 @@ table 50013 "Reminder List Buffer"
 
             trigger OnValidate()
             begin
-                IF Status = Status::Closed THEN BEGIN
-                    IF "Payment Date" = 0D THEN
+                if Status = Status::Closed then begin
+                    if "Payment Date" = 0D then
                         ERROR('Payment date should not be have blank');
 
-                    IF CONFIRM(CofirmMsg, TRUE) THEN BEGIN
-                        ReminderList.INIT;
+                    if CONFIRM(CofirmMsg, true) then begin
+
+                        ReminderList.INIT();
 
                         ReminderList.TRANSFERFIELDS(xRec);
                         ReminderList."No." := '';

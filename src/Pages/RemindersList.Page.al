@@ -1,3 +1,6 @@
+/// <summary>
+/// Page Reminders List (ID 50014).
+/// </summary>
 page 50014 "Reminders List"
 {
     CardPageID = "Reminder List Card";
@@ -5,6 +8,7 @@ page 50014 "Reminders List"
     PageType = List;
     SourceTable = "Reminder List";
     ApplicationArea = All;
+    UsageCategory = Lists;
 
     layout
     {
