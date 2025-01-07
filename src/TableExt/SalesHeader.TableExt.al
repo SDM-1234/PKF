@@ -47,7 +47,7 @@ tableextension 50031 SalesHeader extends "Sales Header"
                     ERROR('Only Numeric is Allowed');
             end;
         }
-        field(50000; LOB; Text[40])
+        field(50000; LOB; Text[60])
         {
             TableRelation = "Segment Master".LOB;
         }
