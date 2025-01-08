@@ -36,7 +36,6 @@ permissionset 50000 "pkf_Permission"
         table "Reminder List Buffer" = X,
         table "Reminder Type" = X,
         table "Segment Master" = X,
-        codeunit "Common Subscriber" = X,
         codeunit "Email Reminder-Monthly" = X,
         codeunit "Email Reminder-Weekely" = X,
         codeunit "GL Filter Single Instance" = X,
