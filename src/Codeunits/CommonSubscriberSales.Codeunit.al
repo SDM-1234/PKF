@@ -1,4 +1,7 @@
-codeunit 50100 "Common Subscriber"
+/// <summary>
+/// Codeunit Common Subscriber-Sales (ID 50100).
+/// </summary>
+codeunit 50100 "Common Subscriber-Sales"
 {
     [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", OnAfterCopyCustLedgerEntryFromGenJnlLine, '', false, false)]
     local procedure "Cust. Ledger Entry_OnAfterCopyCustLedgerEntryFromGenJnlLine"(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
@@ -12,11 +15,9 @@ codeunit 50100 "Common Subscriber"
         SalesHeader.TESTFIELD("Salesperson Code");
         SalesHeader.TESTFIELD("Sell-to Post Code");
         SalesHeader.TESTFIELD("Sell-to City");
-        IF SalesHeader."Customer Posting Group" = 'FOREIGN' THEN BEGIN
+        if SalesHeader."Customer Posting Group" = 'FOREIGN' then begin
             SalesHeader.TESTFIELD("Invoice Type", SalesHeader."Invoice Type"::Export);
             SalesHeader.TESTFIELD("GST Without Payment of Duty", TRUE);
-        END;
+        end;
     end;
-
-
 }

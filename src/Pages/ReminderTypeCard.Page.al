@@ -52,21 +52,34 @@ page 50013 "Reminder Type Card"
             {
                 Caption = 'Send Reminder For Month';
                 Image = Reminder;
+                ToolTip = 'Executes the Send Reminder For Month action.';
 
                 trigger OnAction()
                 begin
-                    EmailReminderMonthly.RUN
+                    EmailReminderMonthly.RUN();
                 end;
             }
             action("Send Reminder For Week")
             {
                 Caption = 'Send Reminder For Week';
+                Image = Reminder;
+                ToolTip = 'Executes the Send Reminder For Week action.';
 
                 trigger OnAction()
                 begin
-                    EmailReminderWeekly.RUN;
+                    EmailReminderWeekly.RUN();
                 end;
             }
+        }
+        area(Promoted)
+        {
+            actionref(SendReminderForMonth_Promoted; "Send Reminder For Month")
+            {
+            }
+            actionref(SendReminderForWeek_Promoted; "Send Reminder For Week")
+            {
+            }
+
         }
     }
 

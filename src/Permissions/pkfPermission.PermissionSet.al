@@ -58,5 +58,6 @@ permissionset 50000 "pkf_Permission"
         page "Reminder Types" = X,
         page "Reminders List" = X,
         page "Segment Master" = X,
-        page "User GL Setup" = X;
+        page "User GL Setup" = X,
+        codeunit "Common Subscriber-Sales" = X;
 }
