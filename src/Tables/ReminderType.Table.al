@@ -1,3 +1,6 @@
+/// <summary>
+/// Table Reminder Type (ID 50008).
+/// </summary>
 table 50008 "Reminder Type"
 {
     DrillDownPageID = "Reminder Types";

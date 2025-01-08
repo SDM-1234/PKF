@@ -20,11 +20,11 @@ tableextension 50018 GLEntry extends "G/L Entry"
             //CalcFormula = Lookup("TDS Entry"."TDS Nature of Deduction" WHERE("Document No." = FIELD("Document No.")));
             Description = 'Santsoh';
             Editable = false;
-            FieldClass = FlowField;
+            //FieldClass = FlowField;
         }
         field(50001; "TDS Amount"; Decimal)
         {
-            CalcFormula = Sum("TDS Entry"."TDS Amount" WHERE("Document No." = FIELD("Document No.")));
+            CalcFormula = sum("TDS Entry"."TDS Amount" WHERE("Document No." = FIELD("Document No.")));
             Description = 'Santsoh';
             Editable = false;
             FieldClass = FlowField;
@@ -106,7 +106,7 @@ tableextension 50018 GLEntry extends "G/L Entry"
             FieldClass = FlowField;
             TableRelation = "Dimension Value".Name WHERE("Dimension Code" = CONST('SALES'), Code = FIELD("Sales Code"));
         }
-        field(50013; "Source Vendor Name"; Text[50])
+        field(50013; "Source Vendor Name"; Text[100])
         {
             CalcFormula = Lookup(Vendor.Name WHERE("No." = FIELD("Source No.")));
             Description = 'santosh';
@@ -140,7 +140,7 @@ tableextension 50018 GLEntry extends "G/L Entry"
             //CalcFormula = Lookup(Vendor."P.A.N. No." WHERE("No." = FIELD("Source No.")));
             Description = 'santosh';
             Editable = false;
-            FieldClass = FlowField;
+            //FieldClass = FlowField;
             //TableRelation = IF ("Source Type" = FILTER(Vendor)) Vendor."P.A.N. No." WHERE("No." = FIELD("Source No."));
         }
         field(50018; "Beneficiary Code"; Code[10])

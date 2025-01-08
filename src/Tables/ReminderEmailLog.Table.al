@@ -1,3 +1,6 @@
+/// <summary>
+/// Table Reminder Email Log (ID 50012).
+/// </summary>
 table 50012 "Reminder Email Log"
 {
 
