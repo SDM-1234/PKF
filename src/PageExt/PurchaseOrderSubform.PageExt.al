@@ -1,7 +1,10 @@
 /// <summary>
 /// PageExtension PurchaseOrderSubform (ID 50119) extends Record Purchase Order Subform.
 /// </summary>
-pageextension 50119 PurchaseOrderSubform extends "Purchase Order Subform"
+/// 
+//crs-al disable
+pageextension 50119 pkf_PurchaseOrderSubform extends "Purchase Order Subform"
+//crs-al enable
 {
     layout
     {

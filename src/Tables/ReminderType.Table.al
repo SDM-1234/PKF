@@ -8,7 +8,7 @@ table 50008 "Reminder Type"
 
     fields
     {
-        field(1; "Code"; Code[10])
+        field(1; "Code"; Code[20])
         {
             DataClassification = ToBeClassified;
         }
