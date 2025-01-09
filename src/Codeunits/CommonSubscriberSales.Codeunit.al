@@ -20,4 +20,13 @@ codeunit 50100 "Common Subscriber-Sales"
             SalesHeader.TESTFIELD("GST Without Payment of Duty", TRUE);
         end;
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"G/L Entry", OnAfterCopyGLEntryFromGenJnlLine, '', false, false)]
+    local procedure "G/L Entry_OnAfterCopyGLEntryFromGenJnlLine"(var GLEntry: Record "G/L Entry"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        GLEntry.Narration := GenJournalLine.Narration;
+        GLEntry."Payee Name" := GenJournalLine."Payee Name";
+        GLEntry."Beneficiary Code" := GenJournalLine."Beneficiary Code";
+    end;
+
 }
