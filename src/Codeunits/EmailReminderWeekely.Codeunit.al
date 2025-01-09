@@ -291,7 +291,7 @@ codeunit 50002 "Email Reminder-Weekely"
 
     local procedure InsertEmailInfo(var RemEmailIDListBuffer: Record "Reminder Type" temporary; ReminderType: Record "Reminder Type"; ReminderList: Record "Reminder List"; EmailExist: Boolean)
     begin
-        RemEmailIDListBuffer.INIT;
+        RemEmailIDListBuffer.INIT();
         IF NOT EmailExist THEN BEGIN
             RemEmailIDListBuffer.Code := ReminderType.Code;
             RemEmailIDListBuffer."Send To" := ReminderType."Send To";
@@ -301,7 +301,7 @@ codeunit 50002 "Email Reminder-Weekely"
             RemEmailIDListBuffer."Send To" := ReminderList."Send To";
             RemEmailIDListBuffer."Send CC" := ReminderList."Send CC";
         END;
-        RemEmailIDListBuffer.INSERT;
+        RemEmailIDListBuffer.INSERT();
     end;
 }
 

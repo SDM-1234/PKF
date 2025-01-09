@@ -1,8 +1,12 @@
+/// <summary>
+/// Page Reminder Email Log (ID 50011).
+/// </summary>
 page 50011 "Reminder Email Log"
 {
     PageType = List;
     SourceTable = "Reminder Email Log";
     ApplicationArea = All;
+    UsageCategory = Lists;
 
     layout
     {

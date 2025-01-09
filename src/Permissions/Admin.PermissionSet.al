@@ -1,6 +1,9 @@
+/// <summary>
+/// Unknown PKFPermisionsSet.
+/// </summary>
 namespace PKFPermisionsSet;
 
-permissionset 50000 GeneratedPermission
+permissionset 50000 "pkf_Permission"
 {
     Assignable = true;
     Permissions = tabledata Beneficiary = RIMD,
@@ -33,7 +36,6 @@ permissionset 50000 GeneratedPermission
         table "Reminder List Buffer" = X,
         table "Reminder Type" = X,
         table "Segment Master" = X,
-        codeunit "Common Subscriber" = X,
         codeunit "Email Reminder-Monthly" = X,
         codeunit "Email Reminder-Weekely" = X,
         codeunit "GL Filter Single Instance" = X,
@@ -55,5 +57,6 @@ permissionset 50000 GeneratedPermission
         page "Reminder Types" = X,
         page "Reminders List" = X,
         page "Segment Master" = X,
-        page "User GL Setup" = X;
+        page "User GL Setup" = X,
+        codeunit "Common Subscriber-Sales" = X;
 }

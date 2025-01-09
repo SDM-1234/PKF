@@ -325,7 +325,7 @@ tableextension 50048 GeneralLedgerSetup extends "General Ledger Setup"
 
         //Unsupported feature: Property Deletion (CaptionML) on ""GST Settlement Nos."(Field 16619)".
 
-        field(50000; "Reminder Nos."; Code[10])
+        field(50000; "Reminder Nos."; Code[20])
         {
             DataClassification = ToBeClassified;
             Description = 'SDM.REM.00.01';

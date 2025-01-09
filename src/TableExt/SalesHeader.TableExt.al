@@ -1,3 +1,6 @@
+/// <summary>
+/// TableExtension SalesHeader (ID 50031) extends Record Sales Header.
+/// </summary>
 tableextension 50031 SalesHeader extends "Sales Header"
 {
     fields

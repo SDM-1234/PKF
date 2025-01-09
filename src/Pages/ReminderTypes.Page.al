@@ -1,9 +1,14 @@
+/// <summary>
+/// Page Reminder Types (ID 50012).
+/// </summary>
 page 50012 "Reminder Types"
 {
     CardPageID = "Reminder Type Card";
     PageType = List;
     SourceTable = "Reminder Type";
     ApplicationArea = All;
+    UsageCategory = Lists;
+    Caption = 'Reminder Types';
 
     layout
     {

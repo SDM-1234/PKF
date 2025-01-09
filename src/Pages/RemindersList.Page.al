@@ -1,3 +1,6 @@
+/// <summary>
+/// Page Reminders List (ID 50014).
+/// </summary>
 page 50014 "Reminders List"
 {
     CardPageID = "Reminder List Card";
@@ -5,6 +8,8 @@ page 50014 "Reminders List"
     PageType = List;
     SourceTable = "Reminder List";
     ApplicationArea = All;
+    UsageCategory = Lists;
+    Caption = 'Reminder Lists';
 
     layout
     {
@@ -19,8 +24,9 @@ page 50014 "Reminders List"
 
                     trigger OnAssistEdit()
                     begin
-                        //IF AssistEdit THEN
-                        //  CurrPage.UPDATE;
+
+                        IF Rec.AssistEditProc() THEN
+                            CurrPage.UPDATE();
                     end;
                 }
                 field(Type; Rec.Type)
@@ -104,7 +110,7 @@ page 50014 "Reminders List"
 
                 trigger OnAction()
                 begin
-                    EmailReminderMonthly.RUN
+                    EmailReminderMonthly.RUN();
                 end;
             }
             action("Send Reminder For Week")
@@ -114,7 +120,7 @@ page 50014 "Reminders List"
 
                 trigger OnAction()
                 begin
-                    EmailReminderWeekly.RUN;
+                    EmailReminderWeekly.RUN();
                 end;
             }
         }
@@ -122,70 +128,27 @@ page 50014 "Reminders List"
 
     trigger OnOpenPage()
     begin
-        Field20Visible := TRUE;
-        Field19Visible := TRUE;
-        Field18Visible := TRUE;
-        Field17Visible := TRUE;
-        Field16Visible := TRUE;
-        Field15Visible := TRUE;
-        Field14Visible := TRUE;
-        Field13Visible := TRUE;
-        Field12Visible := TRUE;
-        Field11Visible := TRUE;
-        Field10Visible := TRUE;
-        Field9Visible := TRUE;
-        Field8Visible := TRUE;
-        Field7Visible := TRUE;
-        Field6Visible := TRUE;
         Field5Visible := TRUE;
         Field4Visible := TRUE;
         Field3Visible := TRUE;
         Field2Visible := TRUE;
-        Field1Visible := TRUE;
     end;
 
     var
-        [InDataSet]
-        Field1Visible: Boolean;
-        [InDataSet]
-        Field2Visible: Boolean;
-        [InDataSet]
-        Field3Visible: Boolean;
-        [InDataSet]
-        Field4Visible: Boolean;
-        [InDataSet]
-        Field5Visible: Boolean;
-        [InDataSet]
-        Field6Visible: Boolean;
-        [InDataSet]
-        Field7Visible: Boolean;
-        [InDataSet]
-        Field8Visible: Boolean;
-        [InDataSet]
-        Field9Visible: Boolean;
-        [InDataSet]
-        Field10Visible: Boolean;
-        [InDataSet]
-        Field11Visible: Boolean;
-        [InDataSet]
-        Field12Visible: Boolean;
-        [InDataSet]
-        Field13Visible: Boolean;
-        [InDataSet]
-        Field14Visible: Boolean;
-        [InDataSet]
-        Field15Visible: Boolean;
-        [InDataSet]
-        Field16Visible: Boolean;
-        [InDataSet]
-        Field17Visible: Boolean;
-        [InDataSet]
-        Field18Visible: Boolean;
-        [InDataSet]
-        Field19Visible: Boolean;
-        [InDataSet]
-        Field20Visible: Boolean;
         EmailReminderWeekly: Codeunit "Email Reminder-Weekely";
         EmailReminderMonthly: Codeunit "Email Reminder-Monthly";
+
+
+        Field2Visible: Boolean;
+
+        Field3Visible: Boolean;
+
+        Field4Visible: Boolean;
+
+        Field5Visible: Boolean;
+
+
+        Field7Visible: Boolean;
+
 }
 

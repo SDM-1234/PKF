@@ -1,3 +1,6 @@
+/// <summary>
+/// Table Reminder Type (ID 50008).
+/// </summary>
 table 50008 "Reminder Type"
 {
     DrillDownPageID = "Reminder Types";
@@ -5,7 +8,7 @@ table 50008 "Reminder Type"
 
     fields
     {
-        field(1; "Code"; Code[10])
+        field(1; "Code"; Code[20])
         {
             DataClassification = ToBeClassified;
         }

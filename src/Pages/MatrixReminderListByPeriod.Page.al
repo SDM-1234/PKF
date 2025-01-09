@@ -1,8 +1,12 @@
+/// <summary>
+/// Page Matrix Reminder List By Period (ID 50016).
+/// </summary>
 page 50016 "Matrix Reminder List By Period"
 {
     PageType = ListPart;
     SourceTable = "Reminder Type";
     ApplicationArea = All;
+    UsageCategory = Lists;
 
     layout
     {
@@ -593,74 +597,80 @@ page 50016 "Matrix Reminder List By Period"
         Matrix_Record: array[32] of Record Date;
         Matrix_CellData: array[32] of Decimal;
         MATRIX_CaptionSet: array[32] of Text[1024];
-        [InDataSet]
+
         Field1Visible: Boolean;
-        [InDataSet]
+
         Field2Visible: Boolean;
-        [InDataSet]
+
         Field3Visible: Boolean;
-        [InDataSet]
+
         Field4Visible: Boolean;
-        [InDataSet]
+
         Field5Visible: Boolean;
-        [InDataSet]
+
         Field6Visible: Boolean;
-        [InDataSet]
+
         Field7Visible: Boolean;
-        [InDataSet]
+
         Field8Visible: Boolean;
-        [InDataSet]
+
         Field9Visible: Boolean;
-        [InDataSet]
+
         Field10Visible: Boolean;
-        [InDataSet]
+
         Field11Visible: Boolean;
-        [InDataSet]
+
         Field12Visible: Boolean;
-        [InDataSet]
+
         Field13Visible: Boolean;
-        [InDataSet]
+
         Field14Visible: Boolean;
-        [InDataSet]
+
         Field15Visible: Boolean;
-        [InDataSet]
+
         Field16Visible: Boolean;
-        [InDataSet]
+
         Field17Visible: Boolean;
-        [InDataSet]
+
         Field18Visible: Boolean;
-        [InDataSet]
+
         Field19Visible: Boolean;
-        [InDataSet]
+
         Field20Visible: Boolean;
-        [InDataSet]
+
         Field21Visible: Boolean;
-        [InDataSet]
+
         Field22Visible: Boolean;
-        [InDataSet]
+
         Field23Visible: Boolean;
-        [InDataSet]
+
         Field24Visible: Boolean;
-        [InDataSet]
+
         Field25Visible: Boolean;
-        [InDataSet]
+
         Field26Visible: Boolean;
-        [InDataSet]
+
         Field27Visible: Boolean;
-        [InDataSet]
+
         Field28Visible: Boolean;
-        [InDataSet]
+
         Field29Visible: Boolean;
-        [InDataSet]
+
         Field30Visible: Boolean;
-        [InDataSet]
+
         Field31Visible: Boolean;
-        [InDataSet]
+
         Field32Visible: Boolean;
         PageDateFilter: Text;
         ColumnCount: Integer;
 
-    [Scope('Internal')]
+    /// <summary>
+    /// SetMatrixData.
+    /// </summary>
+    /// <param name="ColumnCaptions">array[32] of Text[1024].</param>
+    /// <param name="MatrixRec">VAR array[32] of Record Date.</param>
+    /// <param name="DateFilter">Text.</param>
+    /// <param name="ColumnSetLength">Integer.</param>
     procedure SetMatrixData(ColumnCaptions: array[32] of Text[1024]; var MatrixRec: array[32] of Record Date; DateFilter: Text; ColumnSetLength: Integer)
     var
         i: Integer;
