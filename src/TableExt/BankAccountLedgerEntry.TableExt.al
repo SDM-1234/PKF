@@ -2,16 +2,6 @@ tableextension 50026 BankAccountLedgerEntry extends "Bank Account Ledger Entry"
 {
     fields
     {
-        modify(Description)
-        {
-
-            //Unsupported feature: Property Modification (Data type) on "Description(Field 7)".
-
-            Description = 'SANTOSH';
-        }
-
-        //Unsupported feature: Property Modification (Data type) on ""Cheque No."(Field 16501)".
-
         field(50003; Narration; Text[200])
         {
             CalcFormula = Lookup("G/L Entry".Narration WHERE("Entry No." = FIELD("Entry No.")));
