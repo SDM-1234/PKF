@@ -42,14 +42,12 @@ table 50002 "Portal User"
     fieldgroups
     {
     }
-
-    [Scope('Internal')]
     procedure VerifyLogin(UName: Code[10]; PPassword: Text[15]; var PName: Text[100]; var PEmail: Text[250]; var PPartnerCode: Code[20]; var PSuperUser: Boolean) RFound: Boolean
     begin
         SETRANGE("User Name", UName);
         SETRANGE(Password, PPassword);
         SETRANGE(State, State::Enabled);
-        RFound := FINDFIRST;
+        RFound := Rec.FINDFIRST();
         PEmail := "Contact Email";
         PName := "Full Name";
         PPartnerCode := "Partner Code";
