@@ -43,7 +43,7 @@ tableextension 50022 Vendor extends Vendor
         {
             Description = 'AD_SD';
         }
-        field(50002; "Contact No."; Code[20])
+        field(50002; "Contact No."; Text[30])
         {
             Description = 'AD_SD';
             Numeric = true;
