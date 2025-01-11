@@ -1,4 +1,4 @@
-tableextension 50035 EmailParameter extends "Email Parameter"
+table 50026 EmailParameter
 {
     fields
     {

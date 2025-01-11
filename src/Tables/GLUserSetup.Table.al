@@ -47,7 +47,6 @@ table 50025 "GL User Setup"
     var
         GLAccount: Record "G/L Account";
 
-    [Scope('Internal')]
     procedure FilterGLAccount(): Text
     var
         GLUserSetup: Record "GL User Setup";
@@ -58,7 +57,7 @@ table 50025 "GL User Setup"
         GLUserSetup.SETRANGE("User ID", USERID);
         IF GLUserSetup.COUNT > 1000 THEN
             EXIT('');
-        IF GLUserSetup.FINDSET THEN
+        IF GLUserSetup.FINDSET() THEN
             REPEAT
                 IF I = 1 THEN
                     GLFilter += '<>' + GLUserSetup."G/L Account No."
@@ -66,7 +65,7 @@ table 50025 "GL User Setup"
                     GLFilter += '&<>' + GLUserSetup."G/L Account No.";
 
                 I := I + 1;
-            UNTIL GLUserSetup.NEXT = 0;
+            UNTIL GLUserSetup.NEXT() = 0;
         EXIT(GLFilter);
     end;
 }

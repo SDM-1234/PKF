@@ -3,45 +3,27 @@ codeunit 50002 "Email Reminder-Weekely"
 
     trigger OnRun()
     var
-        Date: Record Date;
         RemEmailIDListBuffer: Record "Reminder Type" temporary;
         ReminderListBuffer: Record "Reminder List Buffer";
-        ReminderType: Record "Reminder Type";
-        //SMTPMailSetup: Record "SMTP Mail Setup";
-        SMTPMailSetup: Record "Email Account";
-        SMTPMail: Codeunit Email;
+        EMail: Codeunit Email;
         EmailMessage: Codeunit "Email Message";
-        Enddate: Date;
-        FirstDate: Date;
-        StartDate: Date;
-        WeekNumber: Integer;
         Year: Integer;
         CCEmailID: Text;
         MonthName: Text;
         ToEmailID: Text;
         UserName: Text;
     begin
-        CLEAR(SMTPMailSetup);
-        CLEAR(SMTPMail);
-        CLEAR(MonthName);
-        CLEAR(WeekNumber);
         CLEAR(DataExist);
-        CLEAR(RemEmailIDListBuffer);
-        CLEAR(ReminderListBuffer);
-        CLEAR(ReminderType);
-        ReminderListBuffer.DELETEALL;
-        SMTPMailSetup.GET;
 
+        ReminderListBuffer.DELETEALL();
         MonthName := GetMonthName(TODAY);
-        WeekNumber := GetWeekNumber(TODAY);
+
         Year := DATE2DMY(TODAY, 3);
 
         GetRemindersUserWise(ReminderListBuffer, RemEmailIDListBuffer);
-        IF RemEmailIDListBuffer.FINDSET THEN
-            REPEAT
+        if RemEmailIDListBuffer.FINDSET() then
+            repeat
                 GetEmailandRecepientName(ToEmailID, UserName, RemEmailIDListBuffer, CCEmailID);
-
-                //SMTPMail.CreateMessage(COMPANYNAME, SMTPMailSetup."User ID", ToEmailID, 'Weekely Reminders', '', TRUE);
                 EmailMessage.Create(ToEmailID, 'Weekely Reminders', '');
 
                 EmailMessage.AppendToBody('Dear' + ' ' + FORMAT(UserName));
@@ -57,14 +39,15 @@ codeunit 50002 "Email Reminder-Weekely"
                 EmailMessage.AppendToBody('<br><br>');
                 EmailMessage.AppendToBody('<HR>');
                 EmailMessage.AppendToBody('This is a system generated email. Please do not reply to this mail');
+
                 IF DataExist THEN BEGIN
-                    //SMTPMail.AddCC(CCEmailID);
-                    //SMTPMail.Send;
-                    SMTPMail.Send(EmailMessage);
+
+                    EmailMessage.AddRecipient(Enum::"Email Recipient Type"::Cc, CCEmailID);
+                    EMail.Send(EmailMessage);
                     IF GUIALLOWED THEN
                         MESSAGE('Mail Sent');
                 END;
-            UNTIL RemEmailIDListBuffer.NEXT = 0;
+            UNTIL RemEmailIDListBuffer.NEXT() = 0;
     end;
 
     var
@@ -72,9 +55,6 @@ codeunit 50002 "Email Reminder-Weekely"
 
     local procedure CreateMailBody(ReminderList: Record "Reminder List Buffer"; RemEmailIDListBuffer: Record "Reminder Type"): Text
     var
-        ReminderType: Record "Reminder Type";
-        FirstDateOfMonth: Date;
-        LastDateOfMonth: Date;
         LastDayofWeek: Date;
         StartDayofWeek: Date;
         EmailText: Text;
@@ -106,7 +86,7 @@ codeunit 50002 "Email Reminder-Weekely"
         MESSAGE('%1 %2', StartDayofWeek, LastDayofWeek);
         ReminderList.SETRANGE("Send To", RemEmailIDListBuffer."Send To");
         ReminderList.SETRANGE("Send CC", RemEmailIDListBuffer."Send CC");
-        IF ReminderList.FINDFIRST THEN
+        IF ReminderList.FindSet() THEN
             REPEAT
                 IF (ReminderList."End Period" >= StartDayofWeek) AND (ReminderList."End Period" <= LastDayofWeek) THEN BEGIN
                     DataExist := TRUE;
@@ -125,7 +105,7 @@ codeunit 50002 "Email Reminder-Weekely"
                     EmailText += '<td>' + FORMAT(ReminderList.Status) + '</td>';
                     EmailText += '</tr>'
                 END;
-            UNTIL ReminderList.NEXT = 0;
+            UNTIL ReminderList.NEXT() = 0;
         EmailText += '</table>';
         EXIT(EmailText);
     end;
@@ -143,7 +123,7 @@ codeunit 50002 "Email Reminder-Weekely"
                     UserSetup.TESTFIELD("E-Mail");
 
             Users.SETRANGE("User Name", UserSetup."User ID");
-            IF Users.FINDFIRST THEN
+            IF Users.FINDFIRST() THEN
                 UserName := Users."Full Name";
 
             IF UserSetup.GET(ReminderType."Send CC") THEN
@@ -158,14 +138,11 @@ codeunit 50002 "Email Reminder-Weekely"
     local procedure GetMonthName(InputDate: Date): Text
     var
         recDate: Record Date;
-        RecMonth: Record Date;
-        RecWeek: Record Date;
     begin
-        recDate.RESET;
         recDate.SETCURRENTKEY("Period Type", "Period Start");
         recDate.SETRANGE("Period Type", recDate."Period Type"::Month);
         recDate.SETRANGE("Period Start", InputDate - 50, InputDate);
-        recDate.FIND('+');
+        recDate.FindFirst();
         EXIT(recDate."Period Name");
     end;
 
@@ -187,10 +164,10 @@ codeunit 50002 "Email Reminder-Weekely"
             PDEndDate := CALCDATE('CM', InputDate);
             Ctr := 0;
             WeekNo := 0;
-            DateRec.RESET;
+            DateRec.RESET();
             DateRec.SETFILTER("Period Type", '%1', DateRec."Period Type"::Week);
             DateRec.SETFILTER("Period Start", '%1..%2', PDStartDate, PDEndDate);
-            IF DateRec.FINDFIRST THEN
+            IF DateRec.FindSet() THEN
                 REPEAT
                     DStartDate := CALCDATE('-1D', (DateRec."Period Start"));
                     DEndDate := CALCDATE('-1D', (DateRec."Period End"));
@@ -202,12 +179,11 @@ codeunit 50002 "Email Reminder-Weekely"
                                 Ctr := 0;
                         END ELSE
                             Ctr += 1;
-                        IF NOT PDStartBLN THEN BEGIN
+                        IF NOT PDStartBLN THEN
                             IF PDStartDate < DStartDate THEN BEGIN
                                 Ctr := 1;
                                 PDStartBLN := TRUE
                             END;
-                        END;
                     END;
                     IF InputDate < DStartDate THEN BEGIN
                         WeekNo := Ctr;
@@ -217,7 +193,7 @@ codeunit 50002 "Email Reminder-Weekely"
                             WeekNo := Ctr + 1;
                             EXIT(WeekNo);
                         END;
-                UNTIL DateRec.NEXT = 0;
+                UNTIL DateRec.NEXT() = 0;
         END;
     end;
 
@@ -227,13 +203,13 @@ codeunit 50002 "Email Reminder-Weekely"
         EntryNo: Integer;
     begin
 
-        IF NOT ReminderEmailLog.FINDLAST THEN
+        IF NOT ReminderEmailLog.FINDLAST() THEN
             EntryNo := 1
         ELSE
             EntryNo := ReminderEmailLog."Entry No." + 1;
-        ReminderEmailLog.INIT;
+        ReminderEmailLog.INIT();
         ReminderEmailLog."Entry No." := EntryNo;
-        ReminderEmailLog.INSERT;
+        ReminderEmailLog.INSERT();
         ReminderEmailLog."Reminder No." := ReminderList."No.";
         ReminderEmailLog."Period Start" := ReminderList."Start Period";
         ReminderEmailLog."Period End" := ReminderList."End Period";
@@ -241,43 +217,41 @@ codeunit 50002 "Email Reminder-Weekely"
             ReminderEmailLog."Email Sending Status" := 'Email Sent Successfully'
         ELSE
             ReminderEmailLog."Email Sending Status" := 'Reminders does not exist for this period';
-        ReminderEmailLog.MODIFY;
+        ReminderEmailLog.MODIFY();
     end;
 
     local procedure GetRemindersUserWise(var ReminderListBuffer: Record "Reminder List Buffer"; var RemEmailIDListBuffer: Record "Reminder Type" temporary)
     var
         ReminderList: Record "Reminder List";
         ReminderType: Record "Reminder Type";
-        EntryNo: Integer;
     begin
-        ReminderList.RESET;
         ReminderList.SETRANGE(Status, ReminderList.Status::Open);
-        IF ReminderList.FINDSET THEN
+        IF ReminderList.FINDSET() THEN
             REPEAT
                 IF (ReminderList."Send To" = '') AND (ReminderList."Send CC" = '') THEN BEGIN
                     IF ReminderType.GET(ReminderList.Type) THEN
                         IF (ReminderType."Send To" <> '') AND (ReminderType."Send CC" <> '') THEN BEGIN
                             ReminderListBuffer.SETRANGE("Send To", ReminderType."Send To");
                             ReminderListBuffer.SETRANGE("Send CC", ReminderType."Send CC");
-                            IF NOT ReminderListBuffer.FINDFIRST THEN
+                            IF NOT ReminderListBuffer.FINDFIRST() THEN
                                 InsertEmailInfo(RemEmailIDListBuffer, ReminderType, ReminderList, FALSE);
                             InsertReminderListBuffer(ReminderList, ReminderType, FALSE);
                         END;
                 END ELSE BEGIN
                     ReminderListBuffer.SETRANGE("Send To", ReminderList."Send To");
                     ReminderListBuffer.SETRANGE("Send CC", ReminderList."Send CC");
-                    IF NOT ReminderListBuffer.FINDFIRST THEN
+                    IF NOT ReminderListBuffer.FINDFIRST() THEN
                         InsertEmailInfo(RemEmailIDListBuffer, ReminderType, ReminderList, TRUE);
                     InsertReminderListBuffer(ReminderList, ReminderType, TRUE);
                 END;
-            UNTIL ReminderList.NEXT = 0;
+            UNTIL ReminderList.NEXT() = 0;
     end;
 
     local procedure InsertReminderListBuffer(ReminderList: Record "Reminder List"; ReminderType: Record "Reminder Type"; EmailExist: Boolean)
     var
         ReminderListBuffer: Record "Reminder List Buffer";
     begin
-        ReminderListBuffer.INIT;
+        ReminderListBuffer.INIT();
         ReminderListBuffer.TRANSFERFIELDS(ReminderList);
         IF NOT EmailExist THEN BEGIN
             ReminderListBuffer."Send To" := ReminderType."Send To";
@@ -286,7 +260,7 @@ codeunit 50002 "Email Reminder-Weekely"
             ReminderListBuffer."Send To" := ReminderList."Send To";
             ReminderListBuffer."Send CC" := ReminderList."Send CC";
         END;
-        ReminderListBuffer.INSERT;
+        ReminderListBuffer.INSERT();
     end;
 
     local procedure InsertEmailInfo(var RemEmailIDListBuffer: Record "Reminder Type" temporary; ReminderType: Record "Reminder Type"; ReminderList: Record "Reminder List"; EmailExist: Boolean)
