@@ -3,6 +3,7 @@ page 50025 "User GL Setup"
     PageType = List;
     SourceTable = "GL User Setup";
     ApplicationArea = All;
+    UsageCategory = Lists;
 
     layout
     {
