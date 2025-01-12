@@ -3,6 +3,7 @@ page 50005 "Segment Master"
     PageType = List;
     SourceTable = "Segment Master";
     ApplicationArea = All;
+    UsageCategory = Lists;
 
     layout
     {
