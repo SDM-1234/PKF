@@ -7,6 +7,7 @@ page 50011 "Reminder Email Log"
     SourceTable = "Reminder Email Log";
     ApplicationArea = All;
     UsageCategory = Lists;
+    Caption = 'PKF- Reminder Email Log';
 
     layout
     {
