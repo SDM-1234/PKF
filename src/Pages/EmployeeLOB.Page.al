@@ -3,6 +3,8 @@ page 50010 "Employee LOB"
     PageType = List;
     SourceTable = "Employee LOB";
     ApplicationArea = All;
+    UsageCategory = Lists;
+    Caption = 'Employee LOB';
 
     layout
     {

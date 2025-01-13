@@ -5,6 +5,8 @@ page 50017 "Reminder Matrix"
 {
     ApplicationArea = All;
     UsageCategory = Administration;
+    Caption = 'PKF- Reminder Matrix';
+
     layout
     {
         area(content)

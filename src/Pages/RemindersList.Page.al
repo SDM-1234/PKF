@@ -9,7 +9,7 @@ page 50014 "Reminders List"
     SourceTable = "Reminder List";
     ApplicationArea = All;
     UsageCategory = Lists;
-    Caption = 'Reminder Lists';
+    Caption = 'PKF - Reminder Lists';
 
     layout
     {

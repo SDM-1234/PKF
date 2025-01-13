@@ -8,7 +8,7 @@ page 50012 "Reminder Types"
     SourceTable = "Reminder Type";
     ApplicationArea = All;
     UsageCategory = Lists;
-    Caption = 'Reminder Types';
+    Caption = 'PKF - Reminder Types';
 
     layout
     {
