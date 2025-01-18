@@ -38,7 +38,6 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
         addafter(SuggestVendorPayments)
         {
             action(PrintRTGSReport)
-
             {
                 Image = BankAccountStatement;
                 Caption = 'Print RTGS Report';

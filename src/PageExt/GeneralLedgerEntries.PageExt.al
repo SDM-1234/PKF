@@ -28,4 +28,27 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
             }
         }
     }
+
+    actions
+    {
+        addafter("Print Voucher")
+        {
+            action(PrintRTGSReport)
+            {
+                Image = Report;
+                Caption = 'Print Posted RTGS Report';
+                ApplicationArea = All;
+                ToolTip = 'Click to Print Posted RTGS form';
+
+                trigger OnAction()
+                var
+                    GLEntry: Record "G/L Entry";
+                begin
+                    GLEntry.SETRANGE("Document No.", Rec."Document No.");
+                    REPORT.RUNMODAL(50021, TRUE, FALSE, GLEntry);
+                end;
+            }
+        }
+    }
 }
+

@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString />
+      </ConnectionProperties>
+      <rd:SecurityType>None</rd:SecurityType>
+    </DataSource>
+  </DataSources>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <Height>2in</Height>
+        <Style />
+      </Body>
+      <Width>6.5in</Width>
+      <Page>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <Language>=User!Language</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="Employee_No">
+          <DataField>Employee_No</DataField>
+        </Field>
+        <Field Name="Employee_FirstName">
+          <DataField>Employee_FirstName</DataField>
+        </Field>
+        <Field Name="VarTlRes_Name">
+          <DataField>VarTlRes_Name</DataField>
+        </Field>
+        <Field Name="GetCustomer_Name">
+          <DataField>GetCustomer_Name</DataField>
+        </Field>
+        <Field Name="LOB_Cust">
+          <DataField>LOB_Cust</DataField>
+        </Field>
+        <Field Name="Document_No">
+          <DataField>Document_No</DataField>
+        </Field>
+        <Field Name="Document_Date">
+          <DataField>Document_Date</DataField>
+        </Field>
+        <Field Name="txt_Year">
+          <DataField>txt_Year</DataField>
+        </Field>
+        <Field Name="Invoice_Type">
+          <DataField>Invoice_Type</DataField>
+        </Field>
+        <Field Name="MONTHNAMEWITH_YEAR">
+          <DataField>MONTHNAMEWITH_YEAR</DataField>
+        </Field>
+        <Field Name="Branch_Code">
+          <DataField>Branch_Code</DataField>
+        </Field>
+        <Field Name="Sales_Amt">
+          <DataField>Sales_Amt</DataField>
+        </Field>
+        <Field Name="Sales_AmtFormat">
+          <DataField>Sales_AmtFormat</DataField>
+        </Field>
+        <Field Name="Service_Tax">
+          <DataField>Service_Tax</DataField>
+        </Field>
+        <Field Name="Service_TaxFormat">
+          <DataField>Service_TaxFormat</DataField>
+        </Field>
+        <Field Name="SGST">
+          <DataField>SGST</DataField>
+        </Field>
+        <Field Name="SGSTFormat">
+          <DataField>SGSTFormat</DataField>
+        </Field>
+        <Field Name="CGST">
+          <DataField>CGST</DataField>
+        </Field>
+        <Field Name="CGSTFormat">
+          <DataField>CGSTFormat</DataField>
+        </Field>
+        <Field Name="IGST">
+          <DataField>IGST</DataField>
+        </Field>
+        <Field Name="IGSTFormat">
+          <DataField>IGSTFormat</DataField>
+        </Field>
+        <Field Name="Amount_Cust">
+          <DataField>Amount_Cust</DataField>
+        </Field>
+        <Field Name="Amount_CustFormat">
+          <DataField>Amount_CustFormat</DataField>
+        </Field>
+        <Field Name="Remaining_Amt">
+          <DataField>Remaining_Amt</DataField>
+        </Field>
+        <Field Name="Remaining_AmtFormat">
+          <DataField>Remaining_AmtFormat</DataField>
+        </Field>
+        <Field Name="Remarks_Cust">
+          <DataField>Remarks_Cust</DataField>
+        </Field>
+        <Field Name="GetCustomer_PrimaryIncharge">
+          <DataField>GetCustomer_PrimaryIncharge</DataField>
+        </Field>
+        <Field Name="GetCustomer_Group">
+          <DataField>GetCustomer_Group</DataField>
+        </Field>
+        <Field Name="Scope_Text">
+          <DataField>Scope_Text</DataField>
+        </Field>
+        <Field Name="Seg_Cust">
+          <DataField>Seg_Cust</DataField>
+        </Field>
+        <Field Name="CLE_Doc_Type">
+          <DataField>CLE_Doc_Type</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
+</Report>
