@@ -33,4 +33,26 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
             }
         }
     }
+    actions
+    {
+        addafter(SuggestVendorPayments)
+        {
+            action(PrintRTGSReport)
+
+            {
+                Image = BankAccountStatement;
+                Caption = 'Print RTGS Report';
+                ApplicationArea = All;
+                ToolTip = 'Click to Print RTGS form';
+
+                trigger OnAction()
+                var
+                    GenJournalLine: Record "Gen. Journal Line";
+                begin
+                    GenJournalLine.SETRANGE("Document No.", Rec."Document No.");
+                    REPORT.RUNMODAL(50020, TRUE, FALSE, GenJournalLine);
+                end;
+            }
+        }
+    }
 }
