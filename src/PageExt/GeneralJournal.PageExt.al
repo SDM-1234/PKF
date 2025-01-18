@@ -3,8 +3,6 @@ pageextension 50086 GeneralJournal extends "General Journal"
     layout
     {
 
-        //Unsupported feature: Property Modification (ImplicitType) on "Description(Control 12)".
-
         modify("Shortcut Dimension 1 Code")
         {
             Visible = true;
@@ -46,23 +44,18 @@ pageextension 50086 GeneralJournal extends "General Journal"
             }
         }
 
-        addafter("Shortcut Dimension 1 Code")
+        addafter(Comment)
         {
             field("Employee Name"; Rec."Employee Name")
             {
                 ApplicationArea = All;
             }
-        }
-        addafter(ShortcutDimCode3)
-        {
             field("Sales Name"; Rec."Sales Name")
             {
                 Visible = true;
                 ApplicationArea = All;
             }
-        }
-        addafter(Control1)
-        {
+
             field(Narration; Rec.Narration)
             {
                 ApplicationArea = All;

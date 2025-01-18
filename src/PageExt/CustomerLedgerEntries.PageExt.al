@@ -1,3 +1,6 @@
+/// <summary>
+/// PageExtension CustomerLedgerEntries (ID 50068) extends Record Customer Ledger Entries.
+/// </summary>
 pageextension 50068 CustomerLedgerEntries extends "Customer Ledger Entries"
 {
     layout
@@ -11,6 +14,10 @@ pageextension 50068 CustomerLedgerEntries extends "Customer Ledger Entries"
             Visible = true;
         }
         modify("Original Amt. (LCY)")
+        {
+            Visible = true;
+        }
+        modify("Salesperson Code")
         {
             Visible = true;
         }
