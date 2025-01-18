@@ -1,30 +1,25 @@
 
-pageextension 50007 PaymentJournal extends "Payment Journal"
-
+pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
 {
-
     layout
     {
-        modify(BalAccName)
+        addafter("Dimension Set ID")
         {
-            Visible = true;
-        }
-        addafter("Account No.")
-        {
+
             field(Narration; Rec.Narration)
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies the value of the Narration field.', Comment = '%';
             }
+            field("Beneficiary Name"; Rec."Beneficiary Name")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Beneficiary Name field.', Comment = '%';
+            }
             field("Employee Name"; Rec."Employee Name")
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies the value of the Employee Name field.', Comment = '%';
-            }
-            field("Beneficiary Code"; Rec."Beneficiary Code")
-            {
-                ApplicationArea = All;
-                ToolTip = 'Specifies the value of the Beneficiary Code field.', Comment = '%';
             }
             field("Payee Name"; Rec."Payee Name")
             {

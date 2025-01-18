@@ -4,12 +4,15 @@ tableextension 50045 GenJournalLine extends "Gen. Journal Line"
     {
         field(50003; Narration; Text[200])
         {
+            DataClassification = CustomerContent;
         }
         field(50004; "Payee Name"; Text[90])
         {
+            DataClassification = CustomerContent;
         }
         field(50005; "Voucher Selection"; Boolean)
         {
+            DataClassification = CustomerContent;
         }
         field(50006; "Employee Name"; Text[50])
         {
@@ -34,6 +37,7 @@ tableextension 50045 GenJournalLine extends "Gen. Journal Line"
         }
         field(50009; "Beneficiary Code"; Code[10])
         {
+            DataClassification = CustomerContent;
             TableRelation = Beneficiary."Beneficiary Code" WHERE("Beneficiary Code" = FIELD("Beneficiary Code"));
         }
     }
