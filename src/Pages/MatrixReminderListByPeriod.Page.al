@@ -7,6 +7,7 @@ page 50016 "Matrix Reminder List By Period"
     SourceTable = "Reminder Type";
     ApplicationArea = All;
     UsageCategory = Lists;
+    Caption = 'PKF - Matrix Reminder List By Period';
 
     layout
     {

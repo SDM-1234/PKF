@@ -40,6 +40,10 @@ tableextension 50024 VendorLedgerEntry extends "Vendor Ledger Entry"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(50005; Narration; Text[200])
+        {
+        }
+
     }
 }
 
