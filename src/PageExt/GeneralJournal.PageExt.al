@@ -39,8 +39,8 @@ pageextension 50086 GeneralJournal extends "General Journal"
         {
             field("Line No."; Rec."Line No.")
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
         }
 
@@ -52,8 +52,8 @@ pageextension 50086 GeneralJournal extends "General Journal"
             }
             field("Sales Name"; Rec."Sales Name")
             {
-                Visible = true;
                 ApplicationArea = All;
+                Visible = true;
             }
 
             field(Narration; Rec.Narration)

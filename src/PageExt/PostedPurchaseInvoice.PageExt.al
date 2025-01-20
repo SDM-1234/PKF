@@ -10,8 +10,8 @@ pageextension 50034 PostedPurchaseInvoice extends "Posted Purchase Invoice"
         {
             field(Remarks; Rec.Remarks)
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
         }
     }

@@ -3,10 +3,10 @@
 /// </summary>
 page 50088 EmailParamers
 {
-    UsageCategory = Administration;
     ApplicationArea = all;
     Caption = 'PKF SMTP Mail Setup Parameters';
     SourceTable = EmailParameter;
+    UsageCategory = Administration;
     layout
     {
         area(Content)

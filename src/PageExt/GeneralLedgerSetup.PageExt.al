@@ -39,11 +39,11 @@ pageextension 50004 GeneralLedgerSetup extends "General Ledger Setup"
         {
             action("Send Email")
             {
+                ApplicationArea = All;
                 Caption = 'Send Email';
                 Image = SendAsPDF;
-                ToolTip = 'Click to send email';
                 Promoted = true;
-                ApplicationArea = All;
+                ToolTip = 'Click to send email';
 
                 trigger OnAction()
                 begin

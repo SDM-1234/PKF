@@ -4,8 +4,8 @@ tableextension 50038 SalesHeaderArchive extends "Sales Header Archive"
     {
         modify("Salesperson Code")
         {
-            TableRelation = "Employee LOB"."Emp No." WHERE(LOB = FIELD(LOB), Segment = FIELD(Segment));
             Description = 'Changed Lookup from Salesperson/Purchaser to "Employee LOB"';
+            TableRelation = "Employee LOB"."Emp No." WHERE(LOB = FIELD(LOB), Segment = FIELD(Segment));
         }
         field(50000; LOB; Text[40])
         {

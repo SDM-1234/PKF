@@ -8,8 +8,8 @@ pageextension 50161 PurchCrMemoSubform extends "Purch. Cr. Memo Subform"
         {
             field("Line No."; Rec."Line No.")
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
         }
         modify("Gen. Prod. Posting Group")

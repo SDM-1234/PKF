@@ -3,11 +3,11 @@
 /// </summary>
 report 50005 "Responsible Person-wise"
 {
+    ApplicationArea = All;
+    Caption = 'Responsible Person-wise';
     DefaultLayout = RDLC;
     RDLCLayout = '.src/ReportsLayout/ResponsiblePersonwise.rdl';
     UsageCategory = ReportsAndAnalysis;
-    ApplicationArea = All;
-    Caption = 'Responsible Person-wise';
     dataset
     {
         dataitem(Employee; Employee)

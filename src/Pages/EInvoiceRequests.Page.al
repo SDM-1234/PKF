@@ -1,9 +1,9 @@
 page 50021 "E-Invoice Requests"
 {
+    ApplicationArea = All;
     DeleteAllowed = false;
     PageType = List;
     SourceTable = "E-Invoicing Requests";
-    ApplicationArea = All;
 
     layout
     {

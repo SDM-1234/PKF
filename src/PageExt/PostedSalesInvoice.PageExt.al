@@ -38,9 +38,9 @@ pageextension 50020 PostedSalesInvoice extends "Posted Sales Invoice"
             }
             field("Bank Selection For Report"; Rec."Bank Selection For Report")
             {
+                ApplicationArea = All;
                 Editable = false;
                 Visible = BankTypeSelectionVisible;
-                ApplicationArea = All;
             }
         }
     }

@@ -1,8 +1,8 @@
 page 50013 "Reminder Type Card"
 {
+    ApplicationArea = All;
     PageType = Card;
     SourceTable = "Reminder Type";
-    ApplicationArea = All;
 
     layout
     {

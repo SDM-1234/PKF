@@ -41,8 +41,8 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
         {
             field("Line No."; Rec."Line No.")
             {
-                Editable = false;
                 ApplicationArea = all;
+                Editable = false;
             }
         }
         addafter(Description)
@@ -106,12 +106,12 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
         {
             action("<Action1000000006>")
             {
+                ApplicationArea = All;
                 Caption = 'Indian Bank Cheque';
                 Image = Print;
                 Promoted = true;
                 PromotedCategory = New;
                 PromotedIsBig = true;
-                ApplicationArea = All;
 
                 trigger OnAction()
                 var
@@ -123,12 +123,12 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             }
             action("<Action1000000005>")
             {
+                ApplicationArea = All;
                 Caption = 'Bank Payment Voucher';
                 Image = Print;
                 Promoted = true;
                 PromotedCategory = New;
                 PromotedIsBig = true;
-                ApplicationArea = All;
 
                 trigger OnAction()
                 var
@@ -141,12 +141,12 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             }
             action("<Action1000000001>")
             {
+                ApplicationArea = All;
                 Caption = 'Indian Bank - Multiple Line Printing';
                 Image = Print;
                 Promoted = true;
                 PromotedCategory = New;
                 PromotedIsBig = true;
-                ApplicationArea = All;
 
                 trigger OnAction()
                 var
@@ -161,10 +161,10 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             }
             action("Print RTGS Report")
             {
+                ApplicationArea = All;
                 Promoted = true;
                 PromotedCategory = "Report";
                 PromotedIsBig = true;
-                ApplicationArea = All;
 
                 trigger OnAction()
                 var
@@ -186,6 +186,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             }
             action(ApplyEntries)
             {
+                ApplicationArea = All;
                 Caption = 'ApplyEntries';
                 Ellipsis = true;
                 Image = ApplyEntries;
@@ -193,7 +194,6 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 PromotedCategory = Process;
                 RunObject = Codeunit "Gen. Jnl.-Apply";
                 ShortCutKey = 'Shift+F11';
-                ApplicationArea = All;
             }
         }
     }

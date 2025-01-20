@@ -1,11 +1,11 @@
 report 50020 "RTGS Report"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './src/ReportsLayout/RTGSReport.rdl';
-    PreviewMode = PrintLayout;
-    UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
     Caption = 'RTGS Report';
+    DefaultLayout = RDLC;
+    PreviewMode = PrintLayout;
+    RDLCLayout = './src/ReportsLayout/RTGSReport.rdl';
+    UsageCategory = ReportsAndAnalysis;
 
     dataset
     {

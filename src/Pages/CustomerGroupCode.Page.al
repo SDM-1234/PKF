@@ -1,8 +1,8 @@
 page 50001 "Customer Group Code"
 {
+    ApplicationArea = All;
     PageType = List;
     SourceTable = "Customer Group Code";
-    ApplicationArea = All;
     UsageCategory = Lists;
 
     layout

@@ -6,8 +6,8 @@ pageextension 50045 DetailedGSTLedgerEntry extends "Detailed GST Ledger Entry"
         {
             field("Source Name"; SourceName)
             {
-                Caption = 'Source Name';
                 ApplicationArea = All;
+                Caption = 'Source Name';
 
             }
         }
@@ -15,20 +15,20 @@ pageextension 50045 DetailedGSTLedgerEntry extends "Detailed GST Ledger Entry"
         {
             field("Document Date"; DocDate)
             {
-                Caption = 'Document Date';
                 ApplicationArea = All;
+                Caption = 'Document Date';
 
             }
             field("Bank Payment No."; BankPaymentNo)
             {
-                Caption = 'Bank Payment No.';
                 ApplicationArea = All;
+                Caption = 'Bank Payment No.';
 
             }
             field("Bank Payment Date"; BankPaymentDate)
             {
-                Caption = 'Bank Payment Date';
                 ApplicationArea = All;
+                Caption = 'Bank Payment Date';
 
             }
         }

@@ -4,8 +4,8 @@ pageextension 50033 TDSAdjustmentJournal extends "TDS Adjustment Journal"
     {
         modify("External Document No.")
         {
-            Visible = true;
             Editable = true;
+            Visible = true;
         }
     }
 }

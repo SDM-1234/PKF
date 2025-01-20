@@ -1,8 +1,8 @@
 page 50000 "Customer Group"
 {
+    ApplicationArea = All;
     PageType = List;
     SourceTable = "Customer Group";
-    ApplicationArea = All;
     UsageCategory = Lists;
 
     layout

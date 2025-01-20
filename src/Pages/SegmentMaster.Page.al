@@ -1,8 +1,8 @@
 page 50005 "Segment Master"
 {
+    ApplicationArea = All;
     PageType = List;
     SourceTable = "Segment Master";
-    ApplicationArea = All;
     UsageCategory = Lists;
 
     layout

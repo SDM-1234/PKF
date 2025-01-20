@@ -3,11 +3,11 @@
 /// </summary>
 page 50016 "Matrix Reminder List By Period"
 {
+    ApplicationArea = All;
+    Caption = 'PKF - Matrix Reminder List By Period';
     PageType = ListPart;
     SourceTable = "Reminder Type";
-    ApplicationArea = All;
     UsageCategory = Lists;
-    Caption = 'PKF - Matrix Reminder List By Period';
 
     layout
     {
