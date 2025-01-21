@@ -4,7 +4,7 @@
 report 50005 "Responsible Person-wise"
 {
     DefaultLayout = RDLC;
-    RDLCLayout = '.src/ReportsLayout/ResponsiblePersonwise.rdl';
+    RDLCLayout = 'src/ReportsLayout/ResponsiblePersonwise.rdl';
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
     Caption = 'Responsible Person-wise';

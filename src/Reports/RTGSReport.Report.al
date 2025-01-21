@@ -1,7 +1,7 @@
 report 50020 "RTGS Report"
 {
     DefaultLayout = RDLC;
-    RDLCLayout = './src/ReportsLayout/RTGSReport.rdl';
+    RDLCLayout = 'src/ReportsLayout/RTGSReport.rdl';
     PreviewMode = PrintLayout;
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
