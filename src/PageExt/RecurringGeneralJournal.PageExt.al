@@ -2,9 +2,6 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
 {
     layout
     {
-
-        //Unsupported feature: Property Modification (ImplicitType) on "Description(Control 16)".
-
         modify("Shortcut Dimension 1 Code")
         {
             Visible = true;

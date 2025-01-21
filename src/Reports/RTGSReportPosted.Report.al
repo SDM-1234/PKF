@@ -1,7 +1,7 @@
 report 50021 "RTGS Report Posted"
 {
     DefaultLayout = RDLC;
-    RDLCLayout = './src/ReportsLayout/RTGSReportPosted.rdl';
+    RDLCLayout = 'src/ReportsLayout/RTGSReportPosted.rdl';
     PreviewMode = PrintLayout;
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
