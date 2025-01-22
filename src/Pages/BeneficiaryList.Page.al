@@ -1,8 +1,8 @@
 page 50008 "Beneficiary List"
 {
+    ApplicationArea = All;
     PageType = List;
     SourceTable = Beneficiary;
-    ApplicationArea = All;
     UsageCategory = Lists;
 
     layout

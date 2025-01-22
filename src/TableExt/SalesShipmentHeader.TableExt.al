@@ -4,8 +4,8 @@ tableextension 50001 "SalesShipmentHeader" extends "Sales Shipment Header"
     {
         modify("Salesperson Code")
         {
-            TableRelation = "Employee LOB"."Emp No." WHERE(LOB = FIELD(LOB), Segment = FIELD(Segment));
             Description = 'Changed Lookup from Salesperson/Purchaser to "Employee LOB"';
+            TableRelation = "Employee LOB"."Emp No." WHERE(LOB = FIELD(LOB), Segment = FIELD(Segment));
         }
         //crs-al disable
         field(50000; "LOB"; Text[40])

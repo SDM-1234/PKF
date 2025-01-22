@@ -35,9 +35,9 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
         {
             action(PrintRTGSReport)
             {
-                Image = Report;
-                Caption = 'Print Posted RTGS Report';
                 ApplicationArea = All;
+                Caption = 'Print Posted RTGS Report';
+                Image = Report;
                 ToolTip = 'Click to Print Posted RTGS form';
 
                 trigger OnAction()

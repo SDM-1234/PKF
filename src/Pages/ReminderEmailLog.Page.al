@@ -3,11 +3,11 @@
 /// </summary>
 page 50011 "Reminder Email Log"
 {
+    ApplicationArea = All;
+    Caption = 'PKF- Reminder Email Log';
     PageType = List;
     SourceTable = "Reminder Email Log";
-    ApplicationArea = All;
     UsageCategory = Lists;
-    Caption = 'PKF- Reminder Email Log';
 
     layout
     {

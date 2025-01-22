@@ -7,8 +7,8 @@ tableextension 50031 SalesHeader extends "Sales Header"
     {
         modify("Salesperson Code")
         {
-            TableRelation = "Employee LOB"."Emp No.";
             Description = 'Changed Lookup from Salesperson/Purchaser to "Employee LOB"';
+            TableRelation = "Employee LOB"."Emp No.";
         }
         modify("Bill-to City")
         {

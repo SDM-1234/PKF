@@ -10,8 +10,8 @@ pageextension 50035 PostedPurchaseCreditMemo extends "Posted Purchase Credit Mem
         {
             field(Remarks; Rec.Remarks)
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
         }
     }

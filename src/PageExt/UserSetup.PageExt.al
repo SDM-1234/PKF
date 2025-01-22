@@ -6,13 +6,13 @@ pageextension 50005 UserSetup extends "User Setup"
         {
             field("Super User"; Rec."Super User")
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
             field("Super Super User"; Rec."Super Super User")
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
             field("E-Mail"; Rec."E-Mail")
             {

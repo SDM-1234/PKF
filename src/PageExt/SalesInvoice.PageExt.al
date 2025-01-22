@@ -20,18 +20,18 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
         {
             field(LOB; Rec.LOB)
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
             field(Segment; Rec.Segment)
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
             field("Resp. Name"; Rec."Resp. Name")
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
             field(Remarks; Rec.Remarks)
             {
@@ -39,8 +39,8 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
             }
             field("Type of Invoice"; Rec."Type of Invoice")
             {
-                Visible = false;
                 ApplicationArea = All;
+                Visible = false;
             }
             field("Invoice Types"; Rec."Invoice Types")
             {
@@ -64,8 +64,8 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
             }
             field("Bank Selection For Report"; Rec."Bank Selection For Report")
             {
-                Visible = BankTypeSelectionVisible;
                 ApplicationArea = All;
+                Visible = BankTypeSelectionVisible;
             }
         }
     }

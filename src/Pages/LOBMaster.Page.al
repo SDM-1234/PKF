@@ -1,10 +1,10 @@
 page 50004 "LOB Master"
 {
+    ApplicationArea = All;
+    Caption = 'Line of Business Master';
     PageType = List;
     SourceTable = "LOB Master";
-    ApplicationArea = All;
     UsageCategory = Lists;
-    Caption = 'Line of Business Master';
 
     layout
     {

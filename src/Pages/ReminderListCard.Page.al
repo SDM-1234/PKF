@@ -3,9 +3,9 @@
 /// </summary>
 page 50015 "Reminder List Card"
 {
+    ApplicationArea = All;
     PageType = Card;
     SourceTable = "Reminder List";
-    ApplicationArea = All;
 
     layout
     {

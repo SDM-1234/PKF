@@ -31,8 +31,8 @@ pageextension 50090 GLBalance extends "G/L Balance"
         {
             field("Account Type"; Rec."Account Type")
             {
-                Editable = false;
                 ApplicationArea = all;
+                Editable = false;
             }
         }
     }

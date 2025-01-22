@@ -1,9 +1,9 @@
 page 50002 "Portal Users"
 {
+    ApplicationArea = All;
     CardPageID = "Portal User Card";
     PageType = List;
     SourceTable = "Portal User";
-    ApplicationArea = All;
 
     layout
     {

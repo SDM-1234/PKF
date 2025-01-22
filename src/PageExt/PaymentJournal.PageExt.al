@@ -39,9 +39,9 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
         {
             action(PrintRTGSReport)
             {
-                Image = BankAccountStatement;
-                Caption = 'Print RTGS Report';
                 ApplicationArea = All;
+                Caption = 'Print RTGS Report';
+                Image = BankAccountStatement;
                 ToolTip = 'Click to Print RTGS form';
 
                 trigger OnAction()

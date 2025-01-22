@@ -20,13 +20,13 @@ pageextension 50038 PostedSalesCreditMemos extends "Posted Sales Credit Memos"
         {
             field(TaxAmount; Rec."Amount Including VAT" - Rec.Amount)
             {
-                Caption = 'Tax Amount';
                 ApplicationArea = All;
+                Caption = 'Tax Amount';
             }
             field("Amt in LCY"; AmtinLCY)
             {
-                Caption = 'Amount to Customer Local Currency';
                 ApplicationArea = All;
+                Caption = 'Amount to Customer Local Currency';
             }
         }
     }

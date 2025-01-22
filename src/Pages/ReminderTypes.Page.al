@@ -3,12 +3,12 @@
 /// </summary>
 page 50012 "Reminder Types"
 {
+    ApplicationArea = All;
+    Caption = 'PKF - Reminder Types';
     CardPageID = "Reminder Type Card";
     PageType = List;
     SourceTable = "Reminder Type";
-    ApplicationArea = All;
     UsageCategory = Lists;
-    Caption = 'PKF - Reminder Types';
 
     layout
     {

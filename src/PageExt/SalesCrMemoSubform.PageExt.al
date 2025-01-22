@@ -6,8 +6,8 @@ pageextension 50160 SalesCrMemoSubform extends "Sales Cr. Memo Subform"
         {
             field("Line No."; Rec."Line No.")
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
         }
     }

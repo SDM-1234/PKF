@@ -4,8 +4,8 @@ tableextension 50005 SalesCrMemoHeader extends "Sales Cr.Memo Header"
     {
         modify("Salesperson Code")
         {
-            TableRelation = "Employee LOB"."Emp No." WHERE(LOB = FIELD(LOB), Segment = FIELD(Segment));
             Description = 'Changed Lookup from Salesperson/Purchaser to "Employee LOB"';
+            TableRelation = "Employee LOB"."Emp No." WHERE(LOB = FIELD(LOB), Segment = FIELD(Segment));
         }
         field(50000; LOB; Text[40])
         {

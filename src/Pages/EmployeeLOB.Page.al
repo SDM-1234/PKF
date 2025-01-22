@@ -1,10 +1,10 @@
 page 50010 "Employee LOB"
 {
+    ApplicationArea = All;
+    Caption = 'Employee LOB';
     PageType = List;
     SourceTable = "Employee LOB";
-    ApplicationArea = All;
     UsageCategory = Lists;
-    Caption = 'Employee LOB';
 
     layout
     {

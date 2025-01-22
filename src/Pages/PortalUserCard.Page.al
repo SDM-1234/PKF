@@ -1,8 +1,8 @@
 page 50009 "Portal User Card"
 {
+    ApplicationArea = All;
     PageType = Card;
     SourceTable = "Portal User";
-    ApplicationArea = All;
 
     layout
     {

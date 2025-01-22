@@ -1,8 +1,8 @@
 page 50003 "Primary Incharge"
 {
+    ApplicationArea = All;
     PageType = List;
     SourceTable = "Primary Incharge";
-    ApplicationArea = All;
     UsageCategory = Lists;
 
     layout

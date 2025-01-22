@@ -37,8 +37,8 @@ pageextension 50068 CustomerLedgerEntries extends "Customer Ledger Entries"
             }
             field("Remarks Cr. Memo"; Rec."Remarks Cr. Memo")
             {
-                Editable = false;
                 ApplicationArea = All;
+                Editable = false;
             }
             field("Team Leader"; Rec."Team Leader")
             {

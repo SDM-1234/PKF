@@ -4,9 +4,9 @@ tableextension 50012 GLAccount extends "G/L Account"
     {
         field(50000; NetChange; Decimal)
         {
-            FieldClass = FlowField;
             CalcFormula = Sum("G/L Entry".Amount WHERE("G/L Account No." = FIELD("No."), "G/L Account No." = FIELD(FILTER(Totaling)), "Business Unit Code" = FIELD("Business Unit Filter"), "Global Dimension 1 Code" = FIELD("Global Dimension 1 Filter"), "Posting Date" = FIELD("Date Filter"), "Global Dimension 2 Code" = FIELD("Global Dimension 2 Code")));
             Description = 'SDM';
+            FieldClass = FlowField;
 
         }
         field(50002; "Normal User Hide"; Boolean)
