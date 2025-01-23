@@ -4,7 +4,7 @@ report 50021 "RTGS Report Posted"
     Caption = 'Posted RTGS Report';
     DefaultLayout = RDLC;
     PreviewMode = PrintLayout;
-    RDLCLayout = './src/ReportsLayout/RTGSReportPosted.rdl';
+    RDLCLayout = 'src/ReportsLayout/RTGSReportPosted.rdl';
     UsageCategory = ReportsAndAnalysis;
 
     dataset

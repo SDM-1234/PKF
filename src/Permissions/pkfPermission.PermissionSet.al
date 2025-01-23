@@ -60,5 +60,15 @@ permissionset 50000 "pkf_Permission"
         page "User GL Setup" = X,
         codeunit "Common Subscriber-Sales" = X,
         tabledata EmailParameter = RIMD,
-        table EmailParameter = X;
+        table EmailParameter = X,
+        tabledata "Temp Buffer" = RIMD,
+        table "Temp Buffer" = X,
+        report "Bank Payment Voucher" = X,
+        report "Check Printing" = X,
+        report "Check Printing Report w/o PA" = X,
+        report "Proforma Invoice" = X,
+        report "Responsible Person-wise" = X,
+        report "RTGS Report" = X,
+        report "RTGS Report Posted" = X,
+        page EmailParamers = X;
 }
