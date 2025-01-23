@@ -1,14 +1,14 @@
 /// <summary>
-/// Report Bank Payment Voucher (ID 50080).
+/// Report Check Printing (ID 50077).
 /// </summary>
-report 50080 "Bank Payment Voucher"
+report 50077 "Check Printing"
 {
-    ApplicationArea = All;
-    Caption = 'Bank Payment Voucher';
     DefaultLayout = RDLC;
+    RDLCLayout = 'src/ReportsLayout/CheckPrinting.rdl';
     PreviewMode = PrintLayout;
-    RDLCLayout = 'src/ReportsLayout/BankPaymentVoucher.rdl';
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    Caption = 'Check Printing';
 
     dataset
     {
@@ -106,9 +106,11 @@ report 50080 "Bank Payment Voucher"
             column(VendInfo_5; VendInfo[5])
             {
             }
-            column(LineNo_GenJournalLine; "Gen. Journal Line"."Line No.")
-            {
-            }
+
+            trigger OnPreDataItem()
+            begin
+                Counter := 0;
+            end;
 
             trigger OnAfterGetRecord()
             begin
@@ -183,12 +185,23 @@ report 50080 "Bank Payment Voucher"
                 ReportCheck.InitTextVariable();
                 ReportCheck.FormatNoText(TotalAmountInwords, TotalNetAmount, '');
             end;
-
-            trigger OnPreDataItem()
-            begin
-                Counter := 0;
-            end;
         }
+    }
+
+    requestpage
+    {
+
+        layout
+        {
+        }
+
+        actions
+        {
+        }
+    }
+
+    labels
+    {
     }
 
     trigger OnPreReport()
@@ -213,7 +226,7 @@ report 50080 "Bank Payment Voucher"
         Counter: Integer;
         BankAccountName: Text;
         CheckDateFormat: Text;
-        PayName: Text[100];
+        PayName: Text;
         StoreDate: array[20] of Text;
         TotalAmountInwords: array[2] of Text[80];
         VarNarration: Text[200];
