@@ -7,7 +7,7 @@ report 50090 "Sales Register Extraction"
     RDLCLayout = 'src/ReportsLayout/SalesRegisterExtraction.rdl';
     UseRequestPage = true;
     ApplicationArea = All;
-    Caption = 'RTGS Report';
+    Caption = 'Sales Register Extraction';
     PreviewMode = PrintLayout;
     UsageCategory = ReportsAndAnalysis;
 
