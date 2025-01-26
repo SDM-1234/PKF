@@ -148,7 +148,7 @@ report 50004 "Sales Invoice GST SEZ"
             column(Cus_GST_No; Customer."GST Registration No.")
             {
             }
-            column(BilltoCustomerState_SalesInvoiceHeader; "Sales Invoice Header"."Bill to Customer State")
+            column(BilltoCustomerState_SalesInvoiceHeader; "Sales Invoice Header"."GST Bill-to State Code")
             {
             }
             column(StateName; StateName)
@@ -162,8 +162,8 @@ report 50004 "Sales Invoice GST SEZ"
             }
             dataitem("Sales Invoice Line"; "Sales Invoice Line")
             {
-                DataItemLink = Document No.=FIELD(No.);
-                DataItemTableView = SORTING(Document No., Line No.);
+                DataItemLink = "Document No." = FIELD("No.");
+                DataItemTableView = SORTING("Document No.", "Line No.");
                 column(LOB_Line; "Sales Invoice Header".LOB)
                 {
                 }
@@ -262,7 +262,7 @@ report 50004 "Sales Invoice GST SEZ"
                     //SBTax += "Service Tax SBC Amount";
                     //KKCTax += "KK Cess Amount";
                     SubTotal += "Line Amount";
-                    GrandTotal += "Sales Invoice Line"."Amount To Customer";
+                    GrandTotal += "Sales Invoice Line"."Amount Including VAT";
                     ReportCheck.InitTextVariable();
                     ReportCheck.FormatNoText(AmountInWords, GrandTotal, "Sales Invoice Header"."Currency Code");
 
@@ -375,7 +375,7 @@ report 50004 "Sales Invoice GST SEZ"
 
 
 
-                IF StateL.GET("Sales Invoice Header"."Bill to Customer State") THEN
+                IF StateL.GET("Sales Invoice Header"."GST Bill-to State Code") THEN
                     StateName := StateL.Description
                 ELSE
                     CLEAR(StateName);
@@ -559,9 +559,8 @@ report 50004 "Sales Invoice GST SEZ"
                     VarText[8] := '';
                     VarText[9] := '';
                 END;
-
-            "Sales Invoice Header"."Bank Selection For Report"::INDIAN
-                         BEGIN
+            "Sales Invoice Header"."Bank Selection For Report"::INDIAN:
+                begin
                     VarText[10] := 'Bank Details:';
                     VarText[1] := 'Bank Account No. 408084558';
                     VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
@@ -572,7 +571,7 @@ report 50004 "Sales Invoice GST SEZ"
                     VarText[7] := '';
                     VarText[8] := '';
                     VarText[9] := '';
-                END;
+                end;
             "Sales Invoice Header"."Bank Selection For Report"::HDFC:
                 BEGIN
                     VarText[10] := 'Bank Details:';

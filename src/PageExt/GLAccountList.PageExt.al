@@ -14,11 +14,7 @@ pageextension 50063 GLAccountList extends "G/L Account List"
     var
         GLUserSetup: Record "GL User Setup";
 
-
-    //Unsupported feature: Code Modification on "OnAfterGetRecord".
-
     trigger OnAfterGetRecord()
-    //>>>> ORIGINAL CODE:
     begin
 
         AccountsPermission(); //AD_SD
@@ -30,9 +26,6 @@ pageextension 50063 GLAccountList extends "G/L Account List"
         //SDm.RSF.281024
 
     end;
-
-
-    //Unsupported feature: Code Insertion on "OnOpenPage".
 
     trigger OnOpenPage()
     begin

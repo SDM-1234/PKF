@@ -229,15 +229,10 @@ report 50003 "Purchase Order"
                 var
                     DetailedGSTLedgerEntry: Record "Detailed GST Entry Buffer";
                 begin
-                    //IF ServTaxRegRec.GET(CompanyInformation."Service Tax Registration No.") THEN;
-
-                    //ServiceTax += "Service Tax Amount";
-                    //SBTax += "Service Tax SBC Amount";
-                    //KKCTax += "KK Cess Amount";
                     SubTotal += "Line Amount";
                     DiscountAmt += "Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
-                    GrandTotal += "Amount To Vendor";
+                    GrandTotal += "Amount Including VAT";
                     ReportCheck.InitTextVariable();
                     ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Purchase Header"."Currency Code");
 

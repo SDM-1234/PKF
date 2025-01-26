@@ -155,7 +155,7 @@ report 50010 "Sales Invoice GST"
             column(Cus_GST_No; Customer."GST Registration No.")
             {
             }
-            column(BilltoCustomerState_SalesInvoiceHeader; "Sales Invoice Header"."Bill to Customer State")
+            column(BilltoCustomerState_SalesInvoiceHeader; "Sales Invoice Header"."GST Bill-to State Code")
             {
             }
             column(MSMENo; MSMENo)
@@ -283,7 +283,7 @@ report 50010 "Sales Invoice GST"
                     SubTotal += "Line Amount";
                     DiscountAmt += "Sales Invoice Line"."Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
-                    GrandTotal += "Sales Invoice Line"."Amount To Customer";
+                    GrandTotal += "Sales Invoice Line"."Amount Including VAT";
                     ReportCheck.InitTextVariable();
                     ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
 
@@ -403,7 +403,7 @@ report 50010 "Sales Invoice GST"
                 ELSE
                     CLEAR(PayTermsDesc);
 
-                IF StateL.GET("Sales Invoice Header"."Bill to Customer State") THEN
+                IF StateL.GET("Sales Invoice Header"."GST Bill-to State Code") THEN
                     StateName := StateL.Description
                 ELSE
                     CLEAR(StateName);
@@ -496,12 +496,11 @@ report 50010 "Sales Invoice GST"
         CountryName: Text[50];
         RecLocation: Record Location;
         PayTerms: Record "Payment Terms";
-        PayTermsDesc: Text[30];
+        PayTermsDesc: Text[100];
         PayCode: Text[20];
-        SalesPersonName: Text[30];
+        SalesPersonName: Text[50];
         SalesPerson: Record "Salesperson/Purchaser";
         SalesCode: Code[20];
-        LocFax: Text[30];
         DiscountAmt: Decimal;
         GrossTotal: Decimal;
         MSMENo: Code[20];

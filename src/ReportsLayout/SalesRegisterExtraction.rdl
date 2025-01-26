@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
   <AutoRefresh>0</AutoRefresh>
@@ -11,145 +11,6 @@
       <rd:SecurityType>None</rd:SecurityType>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="Posting_Date">
-          <DataField>Posting_Date</DataField>
-        </Field>
-        <Field Name="Customer_No">
-          <DataField>Customer_No</DataField>
-        </Field>
-        <Field Name="Bill_to_Name">
-          <DataField>Bill_to_Name</DataField>
-        </Field>
-        <Field Name="Document_No">
-          <DataField>Document_No</DataField>
-        </Field>
-        <Field Name="Branch_Code">
-          <DataField>Branch_Code</DataField>
-        </Field>
-        <Field Name="MONTHNAME_WITHYEAR">
-          <DataField>MONTHNAME_WITHYEAR</DataField>
-        </Field>
-        <Field Name="Invoice_Types">
-          <DataField>Invoice_Types</DataField>
-        </Field>
-        <Field Name="SalesInvoiceHeader_LOB">
-          <DataField>SalesInvoiceHeader_LOB</DataField>
-        </Field>
-        <Field Name="VarPatner_Name">
-          <DataField>VarPatner_Name</DataField>
-        </Field>
-        <Field Name="SalesInvoiceHeader_Segment">
-          <DataField>SalesInvoiceHeader_Segment</DataField>
-        </Field>
-        <Field Name="SalesInvoiceHeader_Remarks">
-          <DataField>SalesInvoiceHeader_Remarks</DataField>
-        </Field>
-        <Field Name="SalesInvoiceHeader_Amount">
-          <DataField>SalesInvoiceHeader_Amount</DataField>
-        </Field>
-        <Field Name="SalesInvoiceHeader_AmountFormat">
-          <DataField>SalesInvoiceHeader_AmountFormat</DataField>
-        </Field>
-        <Field Name="VarAmt_6">
-          <DataField>VarAmt_6</DataField>
-        </Field>
-        <Field Name="VarAmt_6Format">
-          <DataField>VarAmt_6Format</DataField>
-        </Field>
-        <Field Name="Amountto_Customer">
-          <DataField>Amountto_Customer</DataField>
-        </Field>
-        <Field Name="Amountto_CustomerFormat">
-          <DataField>Amountto_CustomerFormat</DataField>
-        </Field>
-        <Field Name="NATUREOF_SERVICE">
-          <DataField>NATUREOF_SERVICE</DataField>
-        </Field>
-        <Field Name="SalesInvoiceHeader_RespName">
-          <DataField>SalesInvoiceHeader_RespName</DataField>
-        </Field>
-        <Field Name="VarR_CTSTS">
-          <DataField>VarR_CTSTS</DataField>
-        </Field>
-        <Field Name="Var_Amt2">
-          <DataField>Var_Amt2</DataField>
-        </Field>
-        <Field Name="Var_Amt2Format">
-          <DataField>Var_Amt2Format</DataField>
-        </Field>
-        <Field Name="VarBALE_Text">
-          <DataField>VarBALE_Text</DataField>
-        </Field>
-        <Field Name="VarCRENOT_Text">
-          <DataField>VarCRENOT_Text</DataField>
-        </Field>
-        <Field Name="Var_CreNo">
-          <DataField>Var_CreNo</DataField>
-        </Field>
-        <Field Name="Cre_Basamt">
-          <DataField>Cre_Basamt</DataField>
-        </Field>
-        <Field Name="Cre_BasamtFormat">
-          <DataField>Cre_BasamtFormat</DataField>
-        </Field>
-        <Field Name="Var_Amt7">
-          <DataField>Var_Amt7</DataField>
-        </Field>
-        <Field Name="Var_Amt7Format">
-          <DataField>Var_Amt7Format</DataField>
-        </Field>
-        <Field Name="Var_Amt4">
-          <DataField>Var_Amt4</DataField>
-        </Field>
-        <Field Name="Var_Amt4Format">
-          <DataField>Var_Amt4Format</DataField>
-        </Field>
-        <Field Name="Var_Amt8">
-          <DataField>Var_Amt8</DataField>
-        </Field>
-        <Field Name="Var_Amt8Format">
-          <DataField>Var_Amt8Format</DataField>
-        </Field>
-        <Field Name="Var_Amt9">
-          <DataField>Var_Amt9</DataField>
-        </Field>
-        <Field Name="Var_Amt9Format">
-          <DataField>Var_Amt9Format</DataField>
-        </Field>
-        <Field Name="Var_Amt10">
-          <DataField>Var_Amt10</DataField>
-        </Field>
-        <Field Name="Var_Amt10Format">
-          <DataField>Var_Amt10Format</DataField>
-        </Field>
-        <Field Name="CGST">
-          <DataField>CGST</DataField>
-        </Field>
-        <Field Name="CGSTFormat">
-          <DataField>CGSTFormat</DataField>
-        </Field>
-        <Field Name="SGST">
-          <DataField>SGST</DataField>
-        </Field>
-        <Field Name="SGSTFormat">
-          <DataField>SGSTFormat</DataField>
-        </Field>
-        <Field Name="IGST">
-          <DataField>IGST</DataField>
-        </Field>
-        <Field Name="IGSTFormat">
-          <DataField>IGSTFormat</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -2401,4 +2262,143 @@ End Function
 </Code>
   <Language>=User!Language</Language>
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="Posting_Date">
+          <DataField>Posting_Date</DataField>
+        </Field>
+        <Field Name="Customer_No">
+          <DataField>Customer_No</DataField>
+        </Field>
+        <Field Name="Bill_to_Name">
+          <DataField>Bill_to_Name</DataField>
+        </Field>
+        <Field Name="Document_No">
+          <DataField>Document_No</DataField>
+        </Field>
+        <Field Name="Branch_Code">
+          <DataField>Branch_Code</DataField>
+        </Field>
+        <Field Name="MONTHNAME_WITHYEAR">
+          <DataField>MONTHNAME_WITHYEAR</DataField>
+        </Field>
+        <Field Name="Invoice_Types">
+          <DataField>Invoice_Types</DataField>
+        </Field>
+        <Field Name="SalesInvoiceHeader_LOB">
+          <DataField>SalesInvoiceHeader_LOB</DataField>
+        </Field>
+        <Field Name="VarPatner_Name">
+          <DataField>VarPatner_Name</DataField>
+        </Field>
+        <Field Name="SalesInvoiceHeader_Segment">
+          <DataField>SalesInvoiceHeader_Segment</DataField>
+        </Field>
+        <Field Name="SalesInvoiceHeader_Remarks">
+          <DataField>SalesInvoiceHeader_Remarks</DataField>
+        </Field>
+        <Field Name="SalesInvoiceHeader_Amount">
+          <DataField>SalesInvoiceHeader_Amount</DataField>
+        </Field>
+        <Field Name="SalesInvoiceHeader_AmountFormat">
+          <DataField>SalesInvoiceHeader_AmountFormat</DataField>
+        </Field>
+        <Field Name="VarAmt_6">
+          <DataField>VarAmt_6</DataField>
+        </Field>
+        <Field Name="VarAmt_6Format">
+          <DataField>VarAmt_6Format</DataField>
+        </Field>
+        <Field Name="Amountto_Customer">
+          <DataField>Amountto_Customer</DataField>
+        </Field>
+        <Field Name="Amountto_CustomerFormat">
+          <DataField>Amountto_CustomerFormat</DataField>
+        </Field>
+        <Field Name="NATUREOF_SERVICE">
+          <DataField>NATUREOF_SERVICE</DataField>
+        </Field>
+        <Field Name="SalesInvoiceHeader_RespName">
+          <DataField>SalesInvoiceHeader_RespName</DataField>
+        </Field>
+        <Field Name="VarR_CTSTS">
+          <DataField>VarR_CTSTS</DataField>
+        </Field>
+        <Field Name="Var_Amt2">
+          <DataField>Var_Amt2</DataField>
+        </Field>
+        <Field Name="Var_Amt2Format">
+          <DataField>Var_Amt2Format</DataField>
+        </Field>
+        <Field Name="VarBALE_Text">
+          <DataField>VarBALE_Text</DataField>
+        </Field>
+        <Field Name="VarCRENOT_Text">
+          <DataField>VarCRENOT_Text</DataField>
+        </Field>
+        <Field Name="Var_CreNo">
+          <DataField>Var_CreNo</DataField>
+        </Field>
+        <Field Name="Cre_Basamt">
+          <DataField>Cre_Basamt</DataField>
+        </Field>
+        <Field Name="Cre_BasamtFormat">
+          <DataField>Cre_BasamtFormat</DataField>
+        </Field>
+        <Field Name="Var_Amt7">
+          <DataField>Var_Amt7</DataField>
+        </Field>
+        <Field Name="Var_Amt7Format">
+          <DataField>Var_Amt7Format</DataField>
+        </Field>
+        <Field Name="Var_Amt4">
+          <DataField>Var_Amt4</DataField>
+        </Field>
+        <Field Name="Var_Amt4Format">
+          <DataField>Var_Amt4Format</DataField>
+        </Field>
+        <Field Name="Var_Amt8">
+          <DataField>Var_Amt8</DataField>
+        </Field>
+        <Field Name="Var_Amt8Format">
+          <DataField>Var_Amt8Format</DataField>
+        </Field>
+        <Field Name="Var_Amt9">
+          <DataField>Var_Amt9</DataField>
+        </Field>
+        <Field Name="Var_Amt9Format">
+          <DataField>Var_Amt9Format</DataField>
+        </Field>
+        <Field Name="Var_Amt10">
+          <DataField>Var_Amt10</DataField>
+        </Field>
+        <Field Name="Var_Amt10Format">
+          <DataField>Var_Amt10Format</DataField>
+        </Field>
+        <Field Name="CGST">
+          <DataField>CGST</DataField>
+        </Field>
+        <Field Name="CGSTFormat">
+          <DataField>CGSTFormat</DataField>
+        </Field>
+        <Field Name="SGST">
+          <DataField>SGST</DataField>
+        </Field>
+        <Field Name="SGSTFormat">
+          <DataField>SGSTFormat</DataField>
+        </Field>
+        <Field Name="IGST">
+          <DataField>IGST</DataField>
+        </Field>
+        <Field Name="IGSTFormat">
+          <DataField>IGSTFormat</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>

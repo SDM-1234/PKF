@@ -4,9 +4,9 @@ tableextension 50044 "PKFCompanyInformation" extends "Company Information"
 {
     fields
     {
-        field(50000; "Bank Logo"; BLOB)
+        field(50000; "Bank Logo"; Media)
         {
-            SubType = Bitmap;
+            Caption = 'Bank Logo';
         }
     }
 }

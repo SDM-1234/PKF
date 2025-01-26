@@ -58,7 +58,7 @@ permissionset 50000 "pkf_Permission"
         page "Reminders List" = X,
         page "Segment Master" = X,
         page "User GL Setup" = X,
-        codeunit "Common Subscriber-Sales" = X,
+        codeunit "Common Subscriber" = X,
         tabledata EmailParameter = RIMD,
         table EmailParameter = X,
         tabledata "Temp Buffer" = RIMD,

@@ -1,5 +1,5 @@
 #pragma warning disable AL0197
-pageextension 50001 PKFCompanyInformation extends "Company Information"
+pageextension 50001 "CompanyInformation_PKF" extends "Company Information"
 #pragma warning restore AL0197
 {
     layout
@@ -9,6 +9,7 @@ pageextension 50001 PKFCompanyInformation extends "Company Information"
             field("Bank Logo"; Rec."Bank Logo")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Bank Logo field.', Comment = '%';
             }
         }
     }

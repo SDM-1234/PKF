@@ -112,16 +112,16 @@ report 50090 "Sales Register Extraction"
             trigger OnAfterGetRecord()
             begin
                 CALCFIELDS(Amount);
-                CALCFIELDS("Amount to Customer");
+                CALCFIELDS("Amount Including VAT");
 
                 IF "Sales Invoice Header"."Currency Factor" = 0 THEN BEGIN
                     RecAMT := "Sales Invoice Header".Amount;
-                    RecCustAmt := "Sales Invoice Header"."Amount to Customer";
+                    RecCustAmt := "Sales Invoice Header"."Amount Including VAT";
                 END
                 ELSE BEGIN
                     RecExchRate := 1 / "Sales Invoice Header"."Currency Factor";
                     RecAMT := "Sales Invoice Header".Amount * ROUND(RecExchRate, 0.001);
-                    RecCustAmt := "Sales Invoice Header"."Amount to Customer" * ROUND(RecExchRate, 0.001);
+                    RecCustAmt := "Sales Invoice Header"."Amount Including VAT" * ROUND(RecExchRate, 0.001);
                 END;
 
                 RecCommentsheet.RESET();
@@ -277,7 +277,7 @@ report 50090 "Sales Register Extraction"
                 IF ABS(VarAmt3) = VarAmt THEN
                     CurrReport.SHOWOUTPUT(FALSE);
 
-                IF ("Sales Invoice Header"."Amount to Customer"
+                IF ("Sales Invoice Header"."Amount Including VAT"
                  - "Sales Invoice Header".Amount) <> 0 THEN
                     NATUREOFSERVICE := 'TAXABLE SERVICE'
                 ELSE IF "Sales Invoice Header"."Customer Posting Group" = 'DOMESTIC' THEN
@@ -287,7 +287,7 @@ report 50090 "Sales Register Extraction"
 
 
                 IF "Posting Date" < 20170107D THEN
-                    VarAmt6 := "Amount to Customer" - Amount;
+                    VarAmt6 := "Amount Including VAT" - Amount;
 
 
                 VarAmt8 := RecAMT - VarAmt5;
@@ -383,7 +383,7 @@ report 50090 "Sales Register Extraction"
         VarCRENOTText: Text[600];
         VarPatnerName: Text[30];
         VarRCTSTS: Text[30];
-        VarScope: Text[1024];
+        VarScope: Text;
         VarText1: Text[30];
         VarText2: Text[30];
         VarText3: Text[30];
