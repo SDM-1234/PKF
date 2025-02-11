@@ -408,17 +408,15 @@ report 50003 "Purchase Order"
         CompanyInformation: Record "Company Information";
         Vendor: Record Vendor;
         Customer: Record Customer;
+        ReportCheck: Report "Check Report";
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
-        ReportCheck: Report Check;
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         IsRent: Boolean;
-        //ServTaxRegRec: Record "Service Tax Registration Nos.";
-        //VarText: array[10] of Text;
         IsDuplicate: Boolean;
         DuplicateCap: Text;
         CurrencyCode: Code[10];

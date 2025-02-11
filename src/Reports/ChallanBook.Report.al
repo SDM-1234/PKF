@@ -195,7 +195,7 @@ report 50022 "Challan Book"
     var
         BankAccount: Record "Bank Account";
         CompanyInformation: Record "Company Information";
-        ReportCheck: Report Check;
+        ReportCheck: Report "Check Report";
         AccNo: Code[30];
         AccountNo: array[20] of Code[10];
         DecimalPart: Decimal;

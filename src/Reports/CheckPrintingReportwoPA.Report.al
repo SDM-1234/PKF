@@ -415,7 +415,7 @@ report 50078 "Check Printing Report w/o PA"
         SumTotalCap: Label 'Sum Total';
         DeedReasonCap: Label 'Deed Reason :';
         InvoiceAmountIsCap: Label 'Invoice amount is total of net amount and TDS/deductions shown above.';
-        ReportCheck: Report Check;
+        ReportCheck: Report "Check Report";
         TotalNetAmount: Decimal;
         TotalAmountInwords: array[2] of Text[80];
         CheckDateFormat: Text;
