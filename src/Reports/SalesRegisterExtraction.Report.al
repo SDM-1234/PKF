@@ -275,7 +275,7 @@ report 50090 "Sales Register Extraction"
                 END;
 
                 IF ABS(VarAmt3) = VarAmt THEN
-                    CurrReport.SHOWOUTPUT(FALSE);
+                    CurrReport.Skip();
 
                 IF ("Sales Invoice Header"."Amount Including VAT"
                  - "Sales Invoice Header".Amount) <> 0 THEN
