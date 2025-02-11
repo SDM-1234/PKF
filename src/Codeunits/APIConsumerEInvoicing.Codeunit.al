@@ -1,4 +1,4 @@
-/* codeunit 50001 "API Consumer E-Invoicing"
+codeunit 50001 "API Consumer E-Invoicing"
 {
 
     trigger OnRun()
@@ -8,306 +8,137 @@
     var
         EInvIntegrationSetup: Record "E-Inv Integration Setup";
         CompanyInformation: Record "Company Information";
-        HttpWebRequestMgt: Codeunit "Http Web Request Mgt.";
-        FileManagement: Codeunit "File Management";
-        StringBuilder: DotNet StringBuilder;
-        StringWriter: DotNet StringWriter;
-        StringReader: DotNet StringReader;
-        Json: DotNet String;
-        JsonTextWriter: DotNet JsonTextWriter;
-        JsonTextReader: DotNet JsonTextReader;
-        StreamWriter: DotNet StreamWriter;
-        StreamReader: DotNet StreamReader;
-        Encoding: DotNet Encoding;
-        RequestStr: DotNet Stream;
-        MessageText: Text;
-        SetupFound: Boolean;
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        StringBuilder: TextBuilder;
+        Json: Text;
+        JsonToken: JsonToken;
+        JsonTextWriter: JsonObject;
+        JsonTextReader: JsonObject;
+        JObject: JsonObject;
+        JsonArrayData: JsonArray;
+        MessageText, ResponseText, OwnerId, LocGstRegNo, DocumentNo : Text;
+        SetupFound, IsInvoice : Boolean;
+        RndOffAmt: Decimal;
         Text90000: Label 'Invoice Cancelled';
-        OwnerId: Text;
-        LocGstRegNo: Text;
-
-    local procedure SetINIT()
-    begin
-        StringBuilder := StringBuilder.StringBuilder;
-        StringWriter := StringWriter.StringWriter(StringBuilder);
-        JsonTextWriter := JsonTextWriter.JsonTextWriter(StringWriter);
-    end;
-
-    [Scope('Internal')]
-    procedure StartJson()
-    begin
-        SetINIT;
-        JsonTextWriter.WriteStartObject;
-    end;
+        IRNTxt: Label 'Irn', Locked = true;
+        AcknowledgementNoTxt: Label 'AckNo', Locked = true;
+        AcknowledgementDateTxt: Label 'AckDt', Locked = true;
+        IRNHashErr: Label 'No matched IRN Hash %1 found to update.', Comment = '%1 = IRN Hash';
+        SignedQRCodeTxt: Label 'SignedQRCode', Locked = true;
+        CGSTLbl: Label 'CGST', Locked = true;
+        SGSTLbl: label 'SGST', Locked = true;
+        IGSTLbl: Label 'IGST', Locked = true;
+        CESSLbl: Label 'CESS', Locked = true;
+        SalesLinesMaxCountLimitErr: Label 'E-Invoice allowes only 100 lines per Invoice. Current transaction is having %1 lines.', Comment = '%1 = Sales Lines count';
 
     local procedure AddToJson(Variablename: Text; Variable: Variant)
     begin
-        JsonTextWriter.WritePropertyName(Variablename);
-        JsonTextWriter.WriteValue(FORMAT(Variable, 0, 9));
-    end;
-
-    [Scope('Internal')]
-    procedure EndJson()
-    begin
-        JsonTextWriter.WriteEndObject;
+        JsonTextWriter.Add(Variablename, FORMAT(Variable, 0, 9));
     end;
 
     local procedure GetJson()
     begin
-        Json := StringBuilder.ToString;
+        JObject.WriteTo(Json);
     end;
 
-    local procedure GetClientFile(): Text
-    var
-        ClientAppFile: DotNet Path;
-    begin
-        EXIT(ClientAppFile.GetTempPath);
-    end;
-
-    [Scope('Internal')]
     procedure GetAccessToken(): Text
     var
-        DataExch: Record "Data Exch. Field";
-        EInvIntegrationSetup: Record "E-Inv Integration Setup";
-        TempBlob: Record TempBlob;
-        HttpStatusCode_L: DotNet HttpStatusCode;
-        ResponseHeaders_L: DotNet NameValueCollection;
-        OutStrm: OutStream;
-        ResponseInStream_L: InStream;
-        FL: File;
-        ResponseText: Text;
-        JString: Text;
-        Validity: Text;
+        HttpClient: HttpClient;
+        HttpResponse: HttpResponseMessage;
+        RequestHeader_L: HttpHeaders;
+        HttpContent: HttpContent;
+        HttpWebRequestMgt: HttpRequestMessage;
         ValidSec: Integer;
+        IsSuccessful: Boolean;
     begin
-        EInvIntegrationSetup.GET;
+        GetEInvSetup();
         IF CURRENTDATETIME > EInvIntegrationSetup."Access Token Validity" THEN BEGIN
-            StartJson;
             AddToJson('username', EInvIntegrationSetup."User Name");
             AddToJson('password', EInvIntegrationSetup.Password);
             AddToJson('client_id', EInvIntegrationSetup."Client ID");
             AddToJson('client_secret', EInvIntegrationSetup."Client Secret");
             AddToJson('grant_type', 'password');
-            EndJson;
-            GetJson;
-            IF FILE.EXISTS(GetClientFile + 'J.txt') THEN
-                ERASE(GetClientFile + 'J.txt');
-            FL.CREATE(GetClientFile + 'J.txt');
-            FL.CREATEOUTSTREAM(OutStrm);
-            OutStrm.WRITETEXT(FORMAT(Json));
-            FL.CLOSE;
-            HttpWebRequestMgt.Initialize(EInvIntegrationSetup."Access Token URL");
-            HttpWebRequestMgt.DisableUI;
-            HttpWebRequestMgt.SetMethod('POST');
-            HttpWebRequestMgt.SetReturnType('application/json');
-            HttpWebRequestMgt.SetContentType('application/json');
-            HttpWebRequestMgt.AddBody(GetClientFile + 'J.txt');
-            TempBlob.INIT;
-            TempBlob.Blob.CREATEINSTREAM(ResponseInStream_L);
-            IF HttpWebRequestMgt.GetResponse(ResponseInStream_L, HttpStatusCode_L, ResponseHeaders_L) THEN BEGIN
-                ResponseInStream_L.READ(ResponseText);
-                Json := ResponseText;
-                // ReadJSon(Json,DataExch);
-                DataExch.RESET;
-                DataExch.SETRANGE("Node ID", 'access_token');
-                IF DataExch.FINDFIRST THEN
-                    MessageText := DataExch.Value;
-                DataExch.RESET;
-                DataExch.SETRANGE("Node ID", 'expires_in');
-                IF DataExch.FINDFIRST THEN
-                    Validity := DataExch.Value;
-                EVALUATE(ValidSec, Validity);
+            GetJson();
+
+            HttpContent.GetHeaders(RequestHeader_L);
+
+            if RequestHeader_L.Contains('Content-Type') then RequestHeader_L.Remove('Content-Type');
+            RequestHeader_L.Add('Content-Type', 'application/json');
+
+            if RequestHeader_L.Contains('Content-Encoding') then RequestHeader_L.Remove('Content-Encoding');
+            RequestHeader_L.Add('Content-Encoding', 'UTF8');
+
+            HttpContent.WriteFrom(json);
+
+            IsSuccessful := HttpClient.Post(EInvIntegrationSetup."Access Token URL", HttpContent, HttpResponse);
+
+            HttpWebRequestMgt.SetRequestUri(EInvIntegrationSetup."Access Token URL");
+            HttpWebRequestMgt.Method('POST');
+            RequestHeader_L.Add('Content-Type', 'application/json');
+            RequestHeader_L.Add('Accept', 'application/json');
+            HttpContent.GetHeaders(RequestHeader_L);
+            HttpWebRequestMgt.Content(HttpContent);
+            IF IsSuccessful THEN BEGIN
+                HttpResponse.Content().ReadAs(ResponseText);
+                JsonTextReader.ReadFrom(ResponseText);
+                JsonTextReader.Get('access_token', JsonToken);
+                MessageText := JsonToken.AsValue().AsText();
+                JsonTextReader.Get('expires_in', JsonToken);
+                ValidSec := JsonToken.AsValue().AsInteger();
                 EInvIntegrationSetup."Access Token" := MessageText;
                 EInvIntegrationSetup."Access Token Validity" := CURRENTDATETIME + (ValidSec * 1000);
-                EInvIntegrationSetup.MODIFY;
+                EInvIntegrationSetup.MODIFY();
                 EXIT(MessageText);
             END;
         END ELSE
             EXIT(EInvIntegrationSetup."Access Token");
     end;
 
-    [Scope('Internal')]
-    procedure GenerateEInvoice(JsonString: Text; var ResponseText: Text; Cancel: Boolean)
+    procedure GenerateEInvoice(JsonString: Text; var ResponseText_p: Text; Cancel: Boolean)
     var
-        TempBlob: Record TempBlob;
-        ResponseInStream_L: InStream;
-        OutStrm: OutStream;
-        HttpStatusCode_L: DotNet HttpStatusCode;
-        ResponseHeaders_L: DotNet NameValueCollection;
-        JString: Text;
-        FL: File;
-        ServicePointManager: DotNet ServicePointManager;
-        SecurityProtocolType: DotNet SecurityProtocolType;
-        FilePath: Text;
+        HttpClient: HttpClient;
+        HttpResponse: HttpResponseMessage;
+        RequestHeader_L: HttpHeaders;
+        HttpContent: HttpContent;
+        Url: Text;
+        IsSuccessful: Boolean;
     begin
-        GetEInvSetup;
-        GetJson;
-        IF FILE.EXISTS(GetClientFile + 'J.txt') THEN
-            ERASE(GetClientFile + 'J.txt');
-        FilePath := GetClientFile + 'J.txt';
-        FL.CREATE(FilePath);
-        FL.CREATEOUTSTREAM(OutStrm);
-        OutStrm.WRITETEXT(FORMAT(Json));
-        FL.CLOSE;
+        GetEInvSetup();
+        GetJson();
         IF GUIALLOWED THEN // To avoid error while Background Posting
             IF CONFIRM('Do you want view the JSON') THEN
                 MESSAGE('%1', Json);
-        GetEInvSetup;
         IF NOT Cancel THEN
-            HttpWebRequestMgt.Initialize(EInvIntegrationSetup."Generate E-Invoice URL")
+            Url := EInvIntegrationSetup."Generate E-Invoice URL"
         ELSE
-            HttpWebRequestMgt.Initialize(EInvIntegrationSetup."Cancel E-Invoice URL");
-        //ServicePointManager.Expect100Continue := TRUE;
-        //ServicePointManager.SecurityProtocol := SecurityProtocolType.Tls12;
-        HttpWebRequestMgt.DisableUI;
-        HttpWebRequestMgt.SetMethod('POST');
-        HttpWebRequestMgt.AddHeader('X-Cleartax-Auth-Token', EInvIntegrationSetup."Access Token");
-        HttpWebRequestMgt.AddHeader('owner_id', OwnerId);
-        HttpWebRequestMgt.AddHeader('gstin', LocGstRegNo);
-        HttpWebRequestMgt.AddHeader('x-cleartax-product', 'EInvoice');
-        HttpWebRequestMgt.SetReturnType('application/json');
-        HttpWebRequestMgt.SetContentType('application/json');
-        //HttpWebRequestMgt.AddBody(FilePath);
-        TempBlob.INIT;
-        TempBlob.WriteAsText(Json, TEXTENCODING::UTF8);
-        HttpWebRequestMgt.AddBodyBlob(TempBlob);
-        TempBlob.INIT;
-        TempBlob.Blob.CREATEINSTREAM(ResponseInStream_L);
-        IF HttpWebRequestMgt.GetResponse(ResponseInStream_L, HttpStatusCode_L, ResponseHeaders_L) THEN
-            ResponseInStream_L.READ(ResponseText);
-    end;
+            Url := EInvIntegrationSetup."Cancel E-Invoice URL";
 
-    [Scope('Internal')]
-    procedure ReadJSon(var String: DotNet String; var TempDataExchField: Record "Data Exch. Field" temporary)
-    var
-        JsonToken: DotNet JsonToken;
-        PrefixArray: DotNet Array;
-        PrefixString: DotNet String;
-        PropertyName: Text;
-        ColumnNo: Integer;
-        InArray: array[1000] of Boolean;
-    begin
-        PrefixArray := PrefixArray.CreateInstance(GETDOTNETTYPE(String), 250);
-        StringReader := StringReader.StringReader(String);
-        JsonTextReader := JsonTextReader.JsonTextReader(StringReader);
+        HttpContent.GetHeaders(RequestHeader_L);
 
-        TempDataExchField.DELETEALL;
-        //new code for delete all data from temp table
+        RequestHeader_L.Add('X-Cleartax-Auth-Token', EInvIntegrationSetup."Access Token");
+        RequestHeader_L.Add('owner_id', OwnerId);
+        RequestHeader_L.Add('gstin', LocGstRegNo);
+        RequestHeader_L.Add('x-cleartax-product', 'EInvoice');
+        if RequestHeader_L.Contains('Content-Type') then RequestHeader_L.Remove('Content-Type');
+        RequestHeader_L.Add('Content-Type', 'application/json');
 
-        WHILE JsonTextReader.Read DO
-            CASE TRUE OF
-                JsonTextReader.TokenType.CompareTo(JsonToken.StartObject) = 0:
-                    ;
-                JsonTextReader.TokenType.CompareTo(JsonToken.StartArray) = 0:
-                    BEGIN
-                        InArray[JsonTextReader.Depth + 1] := TRUE;
-                    END;
-                JsonTextReader.TokenType.CompareTo(JsonToken.StartConstructor) = 0:
-                    ;
-                JsonTextReader.TokenType.CompareTo(JsonToken.PropertyName) = 0:
-                    BEGIN
-                        PrefixArray.SetValue(JsonTextReader.Value, JsonTextReader.Depth - 1);
-                        IF JsonTextReader.Depth > 1 THEN BEGIN
-                            PrefixString := PrefixString.Join('.', PrefixArray, 0, JsonTextReader.Depth - 1);
-                            IF PrefixString.Length > 0 THEN
-                                PropertyName := PrefixString.ToString + '.' + FORMAT(JsonTextReader.Value, 0, 9)
-                            ELSE
-                                PropertyName := FORMAT(JsonTextReader.Value, 0, 9);
-                        END ELSE
-                            PropertyName := FORMAT(JsonTextReader.Value, 0, 9);
-                    END;
-                JsonTextReader.TokenType.CompareTo(JsonToken.String) = 0,
-                JsonTextReader.TokenType.CompareTo(JsonToken.Integer) = 0,
-                JsonTextReader.TokenType.CompareTo(JsonToken.Float) = 0,
-                JsonTextReader.TokenType.CompareTo(JsonToken.Boolean) = 0,
-                JsonTextReader.TokenType.CompareTo(JsonToken.Date) = 0,
-                JsonTextReader.TokenType.CompareTo(JsonToken.Bytes) = 0:
-                    BEGIN
-                        TempDataExchField.INIT;
-                        TempDataExchField."Data Exch. No." := JsonTextReader.Depth;
-                        TempDataExchField."Line No." := JsonTextReader.LineNumber;
+        if RequestHeader_L.Contains('Content-Encoding') then RequestHeader_L.Remove('Content-Encoding');
+        RequestHeader_L.Add('Content-Encoding', 'UTF8');
 
-                        TempDataExchField."Column No." := ColumnNo;
-                        TempDataExchField."Node ID" := PropertyName;
-                        IF (STRLEN(FORMAT(JsonTextReader.Value, 0, 9)) > 250) AND (TempDataExchField."Node ID" <> 'results.message.SignedInvoice') THEN BEGIN
-                            TempDataExchField.Value := COPYSTR(FORMAT(JsonTextReader.Value, 0, 9), 1, 250);
-                            TempDataExchField.Value2 := COPYSTR(FORMAT(JsonTextReader.Value, 0, 9), 251, 250);
-                            TempDataExchField.Value3 := COPYSTR(FORMAT(JsonTextReader.Value, 0, 9), 501, 250);
-                            TempDataExchField.Value4 := COPYSTR(FORMAT(JsonTextReader.Value, 0, 9), 751, 250);
-                        END ELSE
-                            TempDataExchField.Value := COPYSTR(FORMAT(JsonTextReader.Value, 0, 9), 1, 250);
-                        TempDataExchField."Data Exch. Line Def Code" := JsonTextReader.TokenType.ToString;
-                        TempDataExchField.INSERT;
-                        COMMIT;
+        HttpContent.WriteFrom(json);
 
-                    END;
-                JsonTextReader.TokenType.CompareTo(JsonToken.EndConstructor) = 0:
-                    ;
-                JsonTextReader.TokenType.CompareTo(JsonToken.EndArray) = 0:
-                    InArray[JsonTextReader.Depth + 1] := FALSE;
-                JsonTextReader.TokenType.CompareTo(JsonToken.EndObject) = 0:
-                    IF JsonTextReader.Depth > 0 THEN
-                        IF InArray[JsonTextReader.Depth] THEN ColumnNo += 1;
-            END;
-    end;
-
-    local procedure GetJsonNodeValue(NodeId: Text[30]): Text[1024]
-    var
-        DataExch: Record "Data Exch. Field";
-    begin
-        CLEAR(MessageText);
-        DataExch.SETRANGE("Node ID", NodeId);
-        IF DataExch.FINDFIRST THEN
-            MessageText := DataExch.Value + DataExch.Value2 + DataExch.Value3 + DataExch.Value4;
-        EXIT(MessageText);
+        IsSuccessful := HttpClient.Post(Url, HttpContent, HttpResponse);
+        if (not IsSuccessful) and (HttpResponse.HttpStatusCode = 400) then begin
+            Message(HttpResponse.ReasonPhrase);
+            EXIT;
+        end;
+        HttpResponse.Content().WriteFrom(ResponseText_p);
     end;
 
     local procedure GetCompanyInfo()
     begin
-        CompanyInformation.GET;
-    end;
-
-    local procedure GetStateCode(StateCode: Code[20]): Text
-    var
-        StateL: Record State;
-    begin
-        IF StateL.GET(StateCode) THEN
-            EXIT(UPPERCASE(StateL."State Code (GST Reg. No.)"));
-        EXIT('');
-    end;
-
-    local procedure GetStateCode_POS(StateCode: Code[20]): Text
-    var
-        StateL: Record State;
-    begin
-        IF StateL.GET(StateCode) THEN
-            EXIT(UPPERCASE(StateL."State Code (GST Reg. No.)"));
-        EXIT('');
-    end;
-
-    local procedure GetGSTAmount(DocNo: Code[20]; CompCode: Code[10]): Decimal
-    var
-        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
-        GSTAmt: Decimal;
-    begin
-        DetailedGSTLedgerEntry.SETCURRENTKEY("Document No.", "Document Line No.", "GST Component Code");
-        DetailedGSTLedgerEntry.SETRANGE("Document No.", DocNo);
-        DetailedGSTLedgerEntry.SETRANGE("GST Component Code", CompCode);
-        DetailedGSTLedgerEntry.CALCSUMS("GST Amount");
-        EXIT(ABS(DetailedGSTLedgerEntry."GST Amount"));
-    end;
-
-    local procedure GetGSTAmountLineWise(DocNo: Code[20]; CompCode: Code[10]; LineNo: Integer): Decimal
-    var
-        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
-        GSTAmt: Decimal;
-    begin
-        DetailedGSTLedgerEntry.SETCURRENTKEY("Document No.", "Document Line No.", "GST Component Code");
-        DetailedGSTLedgerEntry.SETRANGE("Document No.", DocNo);
-        DetailedGSTLedgerEntry.SETRANGE("Document Line No.", LineNo);
-        DetailedGSTLedgerEntry.SETRANGE("GST Component Code", CompCode);
-        DetailedGSTLedgerEntry.CALCSUMS("GST Amount");
-        EXIT(ABS(DetailedGSTLedgerEntry."GST Amount"));
+        CompanyInformation.GET();
     end;
 
     local procedure CheckGST(DocNo: Code[20]): Boolean
@@ -316,108 +147,9 @@
     begin
         DetailedGSTLedgerEntry.SETCURRENTKEY("Document No.", "Document Line No.", "GST Component Code");
         DetailedGSTLedgerEntry.SETRANGE("Document No.", DocNo);
-        IF DetailedGSTLedgerEntry.FINDFIRST THEN
+        IF DetailedGSTLedgerEntry.FINDFIRST() THEN
             EXIT(TRUE);
         EXIT(FALSE);
-    end;
-
-    local procedure GetGSTRate(DocNo: Code[20]; CompCode: Code[10]; LineNo: Integer): Decimal
-    var
-        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
-    begin
-        DetailedGSTLedgerEntry.SETCURRENTKEY("Document No.", "Document Line No.", "GST Component Code");
-        DetailedGSTLedgerEntry.SETRANGE("Document No.", DocNo);
-        DetailedGSTLedgerEntry.SETRANGE("Document Line No.", LineNo);
-        DetailedGSTLedgerEntry.SETRANGE("GST Component Code", CompCode);
-        IF DetailedGSTLedgerEntry.FINDFIRST THEN
-            EXIT(ROUND(DetailedGSTLedgerEntry."GST %", 0.01));
-        EXIT(0);
-    end;
-
-    local procedure GetTaxableAmountSalesInvoice(DocNo: Code[20]): Decimal
-    var
-        SalesInvoiceLine: Record "Sales Invoice Line";
-    begin
-        SalesInvoiceLine.SETRANGE("Document No.", DocNo);
-        SalesInvoiceLine.CALCSUMS("GST Base Amount");
-        IF SalesInvoiceLine."GST Base Amount" <> 0 THEN
-            EXIT(SalesInvoiceLine."GST Base Amount");
-
-        SalesInvoiceLine.CALCSUMS(Amount);
-        EXIT(SalesInvoiceLine.Amount);
-    end;
-
-    local procedure GetTaxableAmountTransfer(DocNo: Code[20]): Decimal
-    var
-        TransferShipmentLine: Record "Transfer Shipment Line";
-    begin
-        TransferShipmentLine.SETRANGE("Document No.", DocNo);
-        TransferShipmentLine.CALCSUMS("GST Base Amount");
-        IF TransferShipmentLine."GST Base Amount" <> 0 THEN
-            EXIT(TransferShipmentLine."GST Base Amount");
-
-        TransferShipmentLine.CALCSUMS(Amount);
-        EXIT(TransferShipmentLine.Amount);
-    end;
-
-    local procedure GetTaxableAmountSCrMemo(DocNo: Code[20]): Decimal
-    var
-        SalesCrMemoLine: Record "Sales Cr.Memo Line";
-    begin
-        SalesCrMemoLine.SETRANGE("Document No.", DocNo);
-        SalesCrMemoLine.CALCSUMS("GST Base Amount");
-        IF SalesCrMemoLine."GST Base Amount" <> 0 THEN
-            EXIT(SalesCrMemoLine."GST Base Amount");
-
-        SalesCrMemoLine.CALCSUMS(Amount);
-        EXIT(SalesCrMemoLine.Amount);
-    end;
-
-    local procedure GetDateFormated(Originaldate: Date): Text
-    var
-        Day: Text[2];
-        mnth: Text[2];
-    begin
-        IF Originaldate <> 0D THEN BEGIN
-            IF DATE2DMY(Originaldate, 2) > 9 THEN
-                mnth := FORMAT(DATE2DMY(Originaldate, 2))
-            ELSE
-                mnth := '0' + FORMAT(DATE2DMY(Originaldate, 2));
-
-            IF DATE2DMY(Originaldate, 1) > 9 THEN
-                Day := FORMAT(DATE2DMY(Originaldate, 1))
-            ELSE
-                Day := '0' + FORMAT(DATE2DMY(Originaldate, 1));
-
-            EXIT(Day + '/' + mnth + '/' + FORMAT(DATE2DMY(Originaldate, 3)));
-        END;
-    end;
-
-    local procedure GetGSTIN(LocCode: Code[20]): Text
-    var
-        Location: Record Location;
-        CompanyInformation: Record "Company Information";
-    begin
-        IF Location.GET(LocCode) THEN BEGIN
-            Location.TESTFIELD("GST Registration No.");
-            EXIT(Location."GST Registration No.");
-        END;
-        CompanyInformation.GET;
-        EXIT(CompanyInformation."GST Registration No.");
-    end;
-
-    local procedure GetRoundingGL(CustPostingGrp: Code[10]; var GstRoundingGL: Code[20]; var InvRoundingGL: Code[20]; var PITRoundingGL: Code[20])
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        CustomerPostingGroup: Record "Customer Posting Group";
-    begin
-        GeneralLedgerSetup.GET;
-        GstRoundingGL := GeneralLedgerSetup."GST Inv. Rounding Account";
-
-        IF CustomerPostingGroup.GET(CustPostingGrp) THEN BEGIN
-            InvRoundingGL := CustomerPostingGroup."Invoice Rounding Account";
-            PITRoundingGL := CustomerPostingGroup."PIT Difference Acc.";
-        END;
     end;
 
     local procedure InsertResponse(RequestId: Text[250]; DocumentNo: Code[20]; DocType: Option " ","Sale Invoice","Sale Cr. Memo",Transfer; AckNo: Text; AckDt: Text; Irn: Text; SignedQRCode: Text; StatusP: Text; ErrorMessage: Text; DocDate: Date; QRCodeURL: Text; EInvoicePDFURL: Text; InfoDetails: Text)
@@ -428,92 +160,86 @@
         EInvoicingRequests2.SETCURRENTKEY("Document Type", "Document No.", "E-Invoice Generated");
         EInvoicingRequests2.SETRANGE("Document Type", DocType);
         EInvoicingRequests2.SETRANGE("Document No.", DocumentNo);
-        IF EInvoicingRequests2.FINDFIRST THEN BEGIN
-            WITH EInvoicingRequests2 DO BEGIN
-                "Acknowledgement No." := AckNo;
-                "Acknowledgement Date" := AckDt;
-                "IRN No." := Irn;
-                IF STRLEN(SignedQRCode) > 250 THEN BEGIN
-                    "Signed QR Code" := COPYSTR(SignedQRCode, 1, 250);
-                    "Signed QR Code2" := COPYSTR(SignedQRCode, 251, 250);
-                    "Signed QR Code3" := COPYSTR(SignedQRCode, 501, 250);
-                    "Signed QR Code4" := COPYSTR(SignedQRCode, 751, 250);
-                END ELSE
-                    "Signed QR Code" := (SignedQRCode);
+        IF EInvoicingRequests2.FINDFIRST() THEN BEGIN
+            EInvoicingRequests2."Acknowledgement No." := AckNo;
+            EInvoicingRequests2."Acknowledgement Date" := AckDt;
+            EInvoicingRequests2."IRN No." := Irn;
+            IF STRLEN(SignedQRCode) > 250 THEN BEGIN
+                EInvoicingRequests2."Signed QR Code" := COPYSTR(SignedQRCode, 1, 250);
+                EInvoicingRequests2."Signed QR Code2" := COPYSTR(SignedQRCode, 251, 250);
+                EInvoicingRequests2."Signed QR Code3" := COPYSTR(SignedQRCode, 501, 250);
+                EInvoicingRequests2."Signed QR Code4" := COPYSTR(SignedQRCode, 751, 250);
+            END ELSE
+                EInvoicingRequests2."Signed QR Code" := (SignedQRCode);
 
-                IF STRLEN(ErrorMessage) > 250 THEN BEGIN
-                    "Error Message" := COPYSTR(ErrorMessage, 1, 250);
-                    "Error Message2" := COPYSTR(ErrorMessage, 251, 250);
-                    "Error Message3" := COPYSTR(ErrorMessage, 501, 250);
-                END ELSE
-                    "Error Message" := ErrorMessage;
+            IF STRLEN(ErrorMessage) > 250 THEN BEGIN
+                EInvoicingRequests2."Error Message" := COPYSTR(ErrorMessage, 1, 250);
+                EInvoicingRequests2."Error Message2" := COPYSTR(ErrorMessage, 251, 250);
+                EInvoicingRequests2."Error Message3" := COPYSTR(ErrorMessage, 501, 250);
+            END ELSE
+                EInvoicingRequests2."Error Message" := ErrorMessage;
 
-                Status := StatusP;
-                "Request ID" := RequestId;
-                "Request Date" := WORKDATE;
-                "Request Time" := TIME;
-                "User Id" := USERID;
-                //"QR Code URL":= QRCodeURL;
-                //"E Invoice PDF URL":= EInvoicePDFURL;
-                IF STRLEN(InfoDetails) > 250 THEN BEGIN
-                    "Info Details" := COPYSTR(InfoDetails, 1, 250);
-                    "Info Details2" := COPYSTR(InfoDetails, 251, 250);
-                END ELSE
-                    "Info Details" := InfoDetails;
+            EInvoicingRequests2.Status := StatusP;
+            EInvoicingRequests2."Request ID" := RequestId;
+            EInvoicingRequests2."Request Date" := WORKDATE;
+            EInvoicingRequests2."Request Time" := TIME;
+            EInvoicingRequests2."User Id" := USERID;
+            //"QR Code URL":= QRCodeURL;
+            //"E Invoice PDF URL":= EInvoicePDFURL;
+            IF STRLEN(InfoDetails) > 250 THEN BEGIN
+                EInvoicingRequests2."Info Details" := COPYSTR(InfoDetails, 1, 250);
+                EInvoicingRequests2."Info Details2" := COPYSTR(InfoDetails, 251, 250);
+            END ELSE
+                EInvoicingRequests2."Info Details" := InfoDetails;
 
-                IF Irn <> '' THEN BEGIN
-                    IF GUIALLOWED THEN // To avoid error while Background Posting
-                        GenerateQRCode(EInvoicingRequests2);
-                    "E-Invoice Generated" := TRUE;
-                END;
-                MODIFY;
-            END;
+            IF Irn <> '' THEN
+                //IF GUIALLOWED THEN // To avoid error while Background Posting
+                //    GenerateQRCode(EInvoicingRequests2);
+                EInvoicingRequests2."E-Invoice Generated" := TRUE;
+            EInvoicingRequests2.MODIFY();
         END ELSE BEGIN
-            WITH EInvoicingRequests DO BEGIN
-                "Entry No." := CREATEGUID;
-                "Document Type" := DocType;
-                "Document No." := DocumentNo;
-                "Document Date" := DocDate;
-                "Acknowledgement No." := AckNo;
-                "Acknowledgement Date" := AckDt;
-                "IRN No." := Irn;
-                IF STRLEN(SignedQRCode) > 250 THEN BEGIN
-                    "Signed QR Code" := COPYSTR(SignedQRCode, 1, 250);
-                    "Signed QR Code2" := COPYSTR(SignedQRCode, 251, 250);
-                    "Signed QR Code3" := COPYSTR(SignedQRCode, 501, 250);
-                    "Signed QR Code4" := COPYSTR(SignedQRCode, 751, 250);
-                END ELSE
-                    "Signed QR Code" := (SignedQRCode);
+            EInvoicingRequests."Entry No." := CREATEGUID;
+            EInvoicingRequests."Document Type" := DocType;
+            EInvoicingRequests."Document No." := DocumentNo;
+            EInvoicingRequests."Document Date" := DocDate;
+            EInvoicingRequests."Acknowledgement No." := AckNo;
+            EInvoicingRequests."Acknowledgement Date" := AckDt;
+            EInvoicingRequests."IRN No." := Irn;
+            IF STRLEN(SignedQRCode) > 250 THEN BEGIN
+                EInvoicingRequests."Signed QR Code" := COPYSTR(SignedQRCode, 1, 250);
+                EInvoicingRequests."Signed QR Code2" := COPYSTR(SignedQRCode, 251, 250);
+                EInvoicingRequests."Signed QR Code3" := COPYSTR(SignedQRCode, 501, 250);
+                EInvoicingRequests."Signed QR Code4" := COPYSTR(SignedQRCode, 751, 250);
+            END ELSE
+                EInvoicingRequests."Signed QR Code" := (SignedQRCode);
 
-                IF STRLEN(ErrorMessage) > 250 THEN BEGIN
-                    "Error Message" := COPYSTR(ErrorMessage, 1, 250);
-                    "Error Message2" := COPYSTR(ErrorMessage, 251, 250);
-                    "Error Message3" := COPYSTR(ErrorMessage, 501, 250);
-                END ELSE
-                    "Error Message" := ErrorMessage;
+            IF STRLEN(ErrorMessage) > 250 THEN BEGIN
+                EInvoicingRequests."Error Message" := COPYSTR(ErrorMessage, 1, 250);
+                EInvoicingRequests."Error Message2" := COPYSTR(ErrorMessage, 251, 250);
+                EInvoicingRequests."Error Message3" := COPYSTR(ErrorMessage, 501, 250);
+            END ELSE
+                EInvoicingRequests."Error Message" := ErrorMessage;
 
-                Status := StatusP;
-                "Request ID" := RequestId;
-                "Request Date" := WORKDATE;
-                "Request Time" := TIME;
-                "User Id" := USERID;
-                //"QR Code URL":= QRCodeURL;
-                //"E Invoice PDF URL":= EInvoicePDFURL;
-                IF STRLEN(InfoDetails) > 250 THEN BEGIN
-                    "Info Details" := COPYSTR(InfoDetails, 1, 250);
-                    "Info Details2" := COPYSTR(InfoDetails, 251, 250);
-                END ELSE
-                    "Info Details" := InfoDetails;
+            EInvoicingRequests.Status := StatusP;
+            EInvoicingRequests."Request ID" := RequestId;
+            EInvoicingRequests."Request Date" := WORKDATE;
+            EInvoicingRequests."Request Time" := TIME;
+            EInvoicingRequests."User Id" := USERID;
+            //"QR Code URL":= QRCodeURL;
+            //"E Invoice PDF URL":= EInvoicePDFURL;
+            IF STRLEN(InfoDetails) > 250 THEN BEGIN
+                EInvoicingRequests."Info Details" := COPYSTR(InfoDetails, 1, 250);
+                EInvoicingRequests."Info Details2" := COPYSTR(InfoDetails, 251, 250);
+            END ELSE
+                EInvoicingRequests."Info Details" := InfoDetails;
 
-                IF Irn <> '' THEN BEGIN
-                    "E-Invoice Generated" := TRUE;
-                    IF GUIALLOWED THEN // To avoid error while Background Posting
-                        GenerateQRCode(EInvoicingRequests);//temp
-                END;
-                INSERT;
-            END;
+            IF Irn <> '' THEN
+                EInvoicingRequests."E-Invoice Generated" := TRUE;
+            //IF GUIALLOWED THEN // To avoid error while Background Posting
+            //    GenerateQRCode(EInvoicingRequests);//temp
+            EInvoicingRequests.INSERT();
         END;
-    end;
+    END;
 
     local procedure InsertCancelResponse(DocumentNo: Code[20]; DocType: Option " ","Sale Invoice","Sale Cr. Memo",Transfer; Irn: Text; StatusP: Text; ErrorMessage: Text; DocDate: Date; CancelDate: DateTime)
     var
@@ -523,59 +249,30 @@
         EInvoicingRequests2.SETCURRENTKEY("Document Type", "Document No.", "E-Invoice Canceled");
         EInvoicingRequests2.SETRANGE("Document Type", DocType);
         EInvoicingRequests2.SETRANGE("Document No.", DocumentNo);
-        IF EInvoicingRequests2.FINDFIRST THEN BEGIN
-            WITH EInvoicingRequests2 DO BEGIN
-                IF STRLEN(ErrorMessage) > 250 THEN BEGIN
-                    "Error Message" := COPYSTR(ErrorMessage, 1, 250);
-                    "Error Message2" := COPYSTR(ErrorMessage, 251, 250);
-                    "Error Message3" := COPYSTR(ErrorMessage, 501, 250);
-                END ELSE
-                    "Error Message" := ErrorMessage;
+        IF EInvoicingRequests2.FINDFIRST() THEN BEGIN
+            IF STRLEN(ErrorMessage) > 250 THEN BEGIN
+                EInvoicingRequests2."Error Message" := COPYSTR(ErrorMessage, 1, 250);
+                EInvoicingRequests2."Error Message2" := COPYSTR(ErrorMessage, 251, 250);
+                EInvoicingRequests2."Error Message3" := COPYSTR(ErrorMessage, 501, 250);
+            END ELSE
+                EInvoicingRequests2."Error Message" := ErrorMessage;
 
-                IF CancelDate <> 0DT THEN BEGIN
-                    "Cancel Date" := DT2DATE(CancelDate);
-                    "Cancel Time" := DT2TIME(CancelDate);
-                    "Cancel User Id" := USERID;
-                    "E-Invoice Canceled" := TRUE;
-                END;
-                MODIFY;
+            IF CancelDate <> 0DT THEN BEGIN
+                EInvoicingRequests2."Cancel Date" := DT2DATE(CancelDate);
+                EInvoicingRequests2."Cancel Time" := DT2TIME(CancelDate);
+                EInvoicingRequests2."Cancel User Id" := USERID;
+                EInvoicingRequests2."E-Invoice Canceled" := TRUE;
             END;
+            EInvoicingRequests2.MODIFY();
         END;
-    end;
-
-    local procedure GetUOM(UOMCode: Code[10]): Text
-    var
-        UnitofMeasure: Record "Unit of Measure";
-    begin
-        IF ((UnitofMeasure.GET(UOMCode)) AND (UnitofMeasure."GST Reporting UQC" <> '')) THEN
-            EXIT(UnitofMeasure."GST Reporting UQC");
-    end;
-
-    [Scope('Internal')]
-    procedure CheckValidations_BeforePost(var SalesHeader: Record "Sales Header")
-    var
-        SalesLine: Record "Sales Line";
-    begin
-        IF SalesHeader."Document Type" IN [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice, SalesHeader."Document Type"::"Credit Memo"] THEN BEGIN
-            IF (SalesHeader."GST Customer Type" IN
-                       [SalesHeader."GST Customer Type"::Export]) AND (SalesHeader."Nature of Supply" = SalesHeader."Nature of Supply"::B2B)
-                    THEN BEGIN
-                SalesLine.SETRANGE("Document Type", SalesHeader."Document Type");
-                SalesLine.SETRANGE("Document No.", SalesHeader."No.");
-                SalesLine.SETRANGE(Type, SalesLine.Type::Item);
-                IF SalesLine.FINDFIRST THEN
-                    SalesHeader.TESTFIELD("Exit Point");
-            END;
-        END;
-    end;
+    END;
 
     [EventSubscriber(ObjectType::Codeunit, 80, 'OnAfterPostSalesDoc', '', false, false)]
-    [Scope('Internal')]
-    procedure CreateJSONSalesInvoice_OnPost(var SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; SalesShptHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20])
+    local procedure CreateJSONSalesInvoice_OnPost(var SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; SalesShptHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20])
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
-        GetEInvSetup;
+        GetEInvSetup();
         IF EInvIntegrationSetup."Mode of E-Invoice - Sales" = EInvIntegrationSetup."Mode of E-Invoice - Sales"::"BackGround Posting" THEN
             EXIT;
 
@@ -584,30 +281,13 @@
         CreateJson(SalesInvoiceHeader, 1);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 5704, 'OnAfterPostTransferDoc', '', false, false)]
-    [Scope('Internal')]
-    procedure CreateJSONTransferShipment_OnPost(var TransferHeader: Record "Transfer Header"; TransferShptHdrNo: Code[20])
-    var
-        TransferShipmentHeader: Record "Transfer Shipment Header";
-        EInvIntegrationSetup: Record "E-Inv Integration Setup";
-    begin
-        EInvIntegrationSetup.GET;
-        IF EInvIntegrationSetup."Mode of E-Invoice - Transfer" = EInvIntegrationSetup."Mode of E-Invoice - Transfer"::"BackGround Posting" THEN
-            EXIT;
-
-        IF NOT TransferShipmentHeader.GET(TransferShptHdrNo) THEN
-            EXIT;
-        CreateJson(TransferShipmentHeader, 3);
-    end;
 
     [EventSubscriber(ObjectType::Codeunit, 80, 'OnAfterPostSalesDoc', '', false, false)]
-    [Scope('Internal')]
-    procedure CreateJSONSalesCrmemo_OnPost(var SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; SalesShptHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20])
+    local procedure CreateJSONSalesCrmemo_OnPost(var SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; SalesShptHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20])
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        EInvIntegrationSetup: Record "E-Inv Integration Setup";
     begin
-        EInvIntegrationSetup.GET;
+        EInvIntegrationSetup.GET();
         IF EInvIntegrationSetup."Mode of E-Invoice - Sales" = EInvIntegrationSetup."Mode of E-Invoice - Sales"::"BackGround Posting" THEN
             EXIT;
 
@@ -616,1025 +296,239 @@
         CreateJson(SalesCrMemoHeader, 2);
     end;
 
-    [EventSubscriber(ObjectType::Page, 132, 'OnAfterActionEvent', 'Generate E-Invoice', false, false)]
-    [Scope('Internal')]
-    procedure CreateJSONSalesInvoice_OnPostedInvoice(var Rec: Record "Sales Invoice Header")
+    [EventSubscriber(ObjectType::Page, 132, 'OnAfterActionEvent', 'Generate E-Invoice Cleartax', false, false)]
+    local procedure CreateJSONSalesInvoice_OnPostedInvoice(var Rec: Record "Sales Invoice Header")
     begin
         CreateJson(Rec, 1);
     end;
 
-    [EventSubscriber(ObjectType::Page, 5743, 'OnAfterActionEvent', 'Generate E-Invoice', false, false)]
-    [Scope('Internal')]
-    procedure CreateJSONTransferShipment__OnPostedInvoice(var Rec: Record "Transfer Shipment Header")
-    begin
-        CreateJson(Rec, 3);
-    end;
-
-    [EventSubscriber(ObjectType::Page, 134, 'OnAfterActionEvent', 'Generate E-Invoice', false, false)]
-    [Scope('Internal')]
-    procedure CreateJSONSalesCrmemo__OnPostedInvoice(var Rec: Record "Sales Cr.Memo Header")
+    [EventSubscriber(ObjectType::Page, 134, 'OnAfterActionEvent', 'Generate E-Invoice Cleartax', false, false)]
+    local procedure CreateJSONSalesCrmemo__OnPostedInvoice(var Rec: Record "Sales Cr.Memo Header")
     begin
         CreateJson(Rec, 2);
     end;
 
-    [EventSubscriber(ObjectType::Page, 132, 'OnAfterActionEvent', 'Cancel E-Invoice', false, false)]
-    [Scope('Internal')]
-    procedure CancelJSONSalesInvoice_OnPostedInvoice(var Rec: Record "Sales Invoice Header")
+    [EventSubscriber(ObjectType::Page, 132, 'OnAfterActionEvent', 'Cancel E-Invoice Cleartax', false, false)]
+    local procedure CancelJSONSalesInvoice_OnPostedInvoice(var Rec: Record "Sales Invoice Header")
     begin
         CancelJSONSalesInvoice(Rec);
     end;
 
     local procedure CreateJson(RecVariant: Variant; DocumentType: Option " ","Sale Invoice","Sale Cr. Memo",Transfer)
-    var
-        Text50000: Label 'AT365 EInvoice';
     begin
         CASE DocumentType OF
             DocumentType::"Sale Invoice":
                 CreateJSONSalesInvoice(RecVariant);
-            DocumentType::Transfer:
-                CreateJSONTransferShipment(RecVariant);
             DocumentType::"Sale Cr. Memo":
                 CreateJSONSalesCrmemo(RecVariant);
         END;
     end;
 
-    local procedure CreateJSONSalesInvoice(SalesInvoiceHeader: Record "Sales Invoice Header")
+    local procedure CreateJSONSalesInvoice(SalesInvoiceHeader_p: Record "Sales Invoice Header")
     var
-        Customer: Record Customer;
-        SalesInvoiceLine: Record "Sales Invoice Line";
-        ShiptoAddress: Record "Ship-to Address";
-        SalesInvoiceHeader2: Record "Sales Invoice Header";
-        DataExch: Record "Data Exch. Field";
-        TransportMethod: Record "Transport Method";
         Location: Record Location;
-        State_rec: Record State;
-        eCommerceMerchantId: Record "e-Commerce Merchant Id";
-        SalesInvoiceLine2: Record "Sales Invoice Line";
-        SalesInvoiceLine3: Record "Sales Invoice Line";
-        PostedStructureOrderDetails: Record "Posted Structure Order Details";
-        TempBlob: Record TempBlob;
-        ResponseInStream_L: InStream;
-        OutStrm: OutStream;
-        FL: File;
-        HttpStatusCode_L: DotNet HttpStatusCode;
-        ResponseHeaders_L: DotNet NameValueCollection;
-        CustGstin: Code[15];
-        State_Gst: Code[2];
-        CustGstin2: Code[15];
-        InvRoundingGL: Code[20];
-        RefDocNo: Code[20];
-        GstRoundingGL: Code[20];
-        PITRoundingGL: Code[20];
-        TknNo: Text[250];
-        ResponseText: Text;
-        JString: Text;
-        AckNo: Text;
-        AckDt: Text;
-        Irn: Text;
-        Mnth: Text[2];
-        Day: Text[2];
-        SignedQRCode: Text;
-        SNo: Integer;
-        LCYCurrency: Decimal;
+        RecRef: RecordRef;
+        TknNo, AckNo, AckDt, Irn, SignedQRCode, Status, ErrDtls, SignedInv, Info : Text;
         Text50000: Label 'E-Invoice generated successfully for Document No. %1.';
         Text50001: Label '%1 Please share this request ID for support %2.';
     begin
-        WITH SalesInvoiceHeader DO BEGIN
-            IF NOT CheckGST("No.") THEN
-                EXIT;
-            GetEInvSetup;
-            IF (EInvIntegrationSetup."Activation Date" = 0D) OR (EInvIntegrationSetup."Activation Date" > "Posting Date") THEN
-                EXIT;
-            IF ("Nature of Supply" = "Nature of Supply"::B2C) THEN
-                EXIT;
+        RecRef.Open(Database::"Sales Invoice Header");
+        RecRef.GetBySystemId(SalesInvoiceHeader_p."SystemId");
+        SalesInvoiceHeader.GetBySystemId(SalesInvoiceHeader_p."SystemId");
+        IF NOT CheckGST(SalesInvoiceHeader."No.") THEN
+            EXIT;
+        GetEInvSetup();
+        IF (EInvIntegrationSetup."Activation Date" = 0D) OR (EInvIntegrationSetup."Activation Date" > SalesInvoiceHeader."Posting Date") THEN
+            EXIT;
+        IF (SalesInvoiceHeader."Nature of Supply" = SalesInvoiceHeader."Nature of Supply"::B2C) THEN
+            EXIT;
 
-            CheckEInvoiceStatus("No.", 1, FALSE);
+        CheckEInvoiceStatus(SalesInvoiceHeader."No.", 1, FALSE);
 
-            GetCompanyInfo;
-            //TknNo := GetAccessToken;
-            TknNo := EInvIntegrationSetup."Access Token";
-            Location.GET("Location Code");
-            LocGstRegNo := Location."GST Registration No.";
-            OwnerId := Location."Cleartax Owner ID";
-            Customer.GET("Bill-to Customer No.");
-            LCYCurrency := 1;
-            StartJson;
-            AddToJson('Version', '1.1');
-            JsonTextWriter.WritePropertyName('TranDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('TaxSch', 'GST');
-            CASE "GST Customer Type" OF
-                "GST Customer Type"::Export:
-                    BEGIN
-                        IF "GST Without Payment of Duty" THEN
-                            AddToJson('SupTyp', 'EXPWOP')
-                        ELSE
-                            AddToJson('SupTyp', 'EXPWP');
-                    END;
-                "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit":
-                    BEGIN
-                        IF "GST Without Payment of Duty" THEN
-                            AddToJson('SupTyp', 'SEZWOP')
-                        ELSE
-                            AddToJson('SupTyp', 'SEZWP');
-                    END;
-                "GST Customer Type"::"Deemed Export":
-                    AddToJson('SupTyp', 'DEXP');
-                "GST Customer Type"::Registered, "GST Customer Type"::Exempted:
-                    AddToJson('SupTyp', 'B2B');
-            END;
-            AddToJson('RegRev', 'N');
-            IF "POS Out Of India" THEN
-                AddToJson('IgstOnIntra', 'Y')
-            ELSE
-                AddToJson('IgstOnIntra', 'N');
-            IF "e-Commerce Customer" <> '' THEN BEGIN
-                IF eCommerceMerchantId.GET("e-Commerce Customer", "e-Commerce Merchant Id") THEN
-                    AddToJson('EcmGstin', eCommerceMerchantId."Company GST Reg. No.");
-            END;
+        GetCompanyInfo();
+        TknNo := GetAccessToken();
+        TknNo := EInvIntegrationSetup."Access Token";
+        Location.GET(SalesInvoiceHeader."Location Code");
+        LocGstRegNo := Location."GST Registration No.";
+        OwnerId := Location."Cleartax Owner ID";
+        IsInvoice := true;
+        DocumentNo := SalesInvoiceHeader_p."No.";
+        WriteJsonFileHeader();
+        ReadTransactionDetails(SalesInvoiceHeader."GST Customer Type", SalesInvoiceHeader."Ship-to Code");
+        ReadDocumentHeaderDetails();
+        ReadDocumentSellerDetails();
+        ReadDocumentBuyerDetails();
+        ReadDocumentShippingDetails();
+        ReadExportDetails();
+        ReadDocumentTotalDetails();
+        ReadDocumentItemList();
+        GenerateEInvoice('', ResponseText, FALSE);
+        If ResponseText = '' THEN
+            EXIT;
+        clear(JsonTextReader);
+        JsonTextReader.ReadFrom(ResponseText);
 
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('DocDtls');
-            JsonTextWriter.WriteStartObject;
-            IF "Invoice Type" = "Invoice Type"::Taxable THEN
-                AddToJson('Typ', 'INV')
-            ELSE
-                IF ("Invoice Type" = "Invoice Type"::"Debit Note") OR
-                  ("Invoice Type" = "Invoice Type"::Supplementary)
-                THEN
-                    AddToJson('Typ', 'DBN')
-                ELSE
-                    AddToJson('Typ', 'INV');
-            AddToJson('No', "No.");
-            AddToJson('Dt', GetDateFormated("Posting Date"));
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('SellerDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('Gstin', GetGSTIN("Location Code"));
-            AddToJson('LglNm', Location.Name);
-            AddToJson('Addr1', Location.Address);
-            IF Location."Address 2" <> '' THEN
-                AddToJson('Addr2', Location."Address 2");
-
-            AddToJson('Loc', Location.City);
-            AddToJson('Pin', Location."Post Code");
-            AddToJson('Stcd', GetStateCode(Location."State Code"));
-            AddToJson('Ph', Location."Phone No.");
-            AddToJson('Em', Location."E-Mail");
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('BuyerDtls');
-            JsonTextWriter.WriteStartObject;
-
-            IF ("GST Customer Type" = "GST Customer Type"::Export) THEN
-                AddToJson('Gstin', 'URP')
-            ELSE
-                AddToJson('Gstin', Customer."GST Registration No.");
-
-            AddToJson('LglNm', "Bill-to Name");
-            AddToJson('TrdNm', "Bill-to Name");
-            AddToJson('Addr1', "Bill-to Address");
-            IF "Bill-to Address 2" <> '' THEN
-                AddToJson('Addr2', "Bill-to Address 2");
-
-            AddToJson('Loc', "Bill-to City");
-            IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                AddToJson('Pin', '999999')
-            ELSE
-                AddToJson('Pin', "Bill-to Post Code");
-            SalesInvoiceLine3.SETRANGE("Document No.", "No.");
-            SalesInvoiceLine3.SETFILTER("GST Place of Supply", '<>%1', SalesInvoiceLine3."GST Place of Supply"::" ");
-            IF SalesInvoiceLine3.FINDFIRST THEN
-                IF SalesInvoiceLine3."GST Place of Supply" = SalesInvoiceLine3."GST Place of Supply"::"Bill-to Address" THEN BEGIN
-                    IF "GST Customer Type" IN ["GST Customer Type"::Export, "GST Customer Type"::"Deemed Export", "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit"] THEN
-                        AddToJson('Pos', '96')
-                    ELSE
-                        AddToJson('Pos', GetStateCode_POS("GST Bill-to State Code"));
-                    IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                        AddToJson('Stcd', '96')
-                    ELSE
-                        AddToJson('Stcd', GetStateCode("GST Bill-to State Code"));
-                END ELSE
-                    IF SalesInvoiceLine3."GST Place of Supply" = SalesInvoiceLine3."GST Place of Supply"::"Ship-to Address" THEN BEGIN
-                        IF "GST Customer Type" IN ["GST Customer Type"::Export, "GST Customer Type"::"Deemed Export", "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit"] THEN
-                            AddToJson('Pos', '96')
-                        ELSE
-                            AddToJson('Pos', GetStateCode_POS("GST Ship-to State Code"));
-                        IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                            AddToJson('Stcd', '96')
-                        ELSE
-                            AddToJson('Stcd', GetStateCode("GST Ship-to State Code"));
-
-                        IF ShiptoAddress.GET("Sell-to Customer No.", "Ship-to Code") THEN BEGIN
-                            AddToJson('Ph', ShiptoAddress."Phone No.");
-                            AddToJson('Em', ShiptoAddress."E-Mail");
-                        END;
-                    END;
-            JsonTextWriter.WriteEndObject;
-
-            IF ("Ship-to Code" <> '') AND (ShiptoAddress.GET("Sell-to Customer No.", "Ship-to Code")) THEN BEGIN
-                CustGstin := ShiptoAddress."GST Registration No.";
-
-                JsonTextWriter.WritePropertyName('ShipDtls');
-                JsonTextWriter.WriteStartObject;
-                IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                    AddToJson('gstin', 'URP')
-                ELSE
-                    AddToJson('Gstin', CustGstin);
-                AddToJson('LglNm', "Ship-to Name");
-                AddToJson('TrdNm', "Ship-to Name");
-                AddToJson('Addr1', "Ship-to Address");
-                IF "Ship-to Address 2" <> '' THEN
-                    AddToJson('Addr2', "Ship-to Address 2");
-                AddToJson('Loc', "Ship-to City");
-                AddToJson('Pin', "Ship-to Post Code");
-                IF "GST Customer Type" IN ["GST Customer Type"::Export, "GST Customer Type"::"Deemed Export", "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit"] THEN
-                    AddToJson('Stcd', '96')
-                ELSE
-                    AddToJson('Stcd', GetStateCode_POS("GST Bill-to State Code"));
-                JsonTextWriter.WriteEndObject;
-            END;
-            IF "GST Customer Type" IN
-                     ["GST Customer Type"::Export]
-                  THEN BEGIN
-                IF "Currency Factor" <> 0 THEN
-                    LCYCurrency := (1 / "Currency Factor")
-                ELSE
-                    LCYCurrency := 1;
-                JsonTextWriter.WritePropertyName('ExpDtls');
-                JsonTextWriter.WriteStartObject;
-                AddToJson('ShipBNo', "Bill Of Export No.");
-                AddToJson('ShipBDt', GetDateFormated("Bill Of Export Date"));
-                AddToJson('Port', "Exit Point");
-                AddToJson('RefClm', 'N');
-                AddToJson('ForCur', "Currency Code");
-                AddToJson('CntCode', "Bill-to Country/Region Code");
-                JsonTextWriter.WriteEndObject;
-            END;
-
-            IF ("Invoice Type" = "Invoice Type"::"Debit Note") OR
-                ("Invoice Type" = "Invoice Type"::Supplementary)
-              THEN BEGIN
-                RefDocNo := GetRefInvNo(SalesInvoiceHeader."No.");
-                IF RefDocNo = '' THEN
-                    RefDocNo := SalesInvoiceHeader."Reference Invoice No.";
-                IF SalesInvoiceHeader2.GET(RefDocNo) THEN BEGIN
-                    JsonTextWriter.WritePropertyName('RefDtls');
-                    JsonTextWriter.WriteStartObject;
-                    AddToJson('InvRm', 'Sales Invoice');
-                    JsonTextWriter.WritePropertyName('DocPerdDtls');
-                    JsonTextWriter.WriteStartObject;
-                    AddToJson('InvStDt', GetDateFormated(SalesInvoiceHeader2."Posting Date"));
-                    AddToJson('InvEndDt', GetDateFormated(SalesInvoiceHeader2."Posting Date"));
-                    JsonTextWriter.WriteEndObject;
-                    JsonTextWriter.WritePropertyName('PrecDocDtls');
-                    JsonTextWriter.WriteStartArray;
-                    JsonTextWriter.WriteStartObject;
-                    RefDocNo := SalesInvoiceHeader2."No.";
-
-                    AddToJson('InvNo', RefDocNo);
-                    AddToJson('InvDt', GetDateFormated(SalesInvoiceHeader2."Posting Date"));
-                    JsonTextWriter.WriteEndObject;
-                    JsonTextWriter.WriteEndArray;
-                    JsonTextWriter.WriteEndObject;
-                END;
-            END;
-
-            JsonTextWriter.WritePropertyName('ValDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('AssVal', ROUND(GetTaxableAmountSalesInvoice("No.") * LCYCurrency, 0.01, '='));
-            AddToJson('CgstVal', GetGSTAmount("No.", 'CGST'));
-            AddToJson('SgstVal', GetGSTAmount("No.", 'SGST'));
-            AddToJson('IgstVal', GetGSTAmount("No.", 'IGST'));
-            AddToJson('CesVal', GetGSTAmount("No.", 'CESS'));
-
-            SalesInvoiceLine2.SETRANGE("Document No.", "No.");
-            SalesInvoiceLine2.CALCSUMS("Line Amount", "Inv. Discount Amount", "Total GST Amount", "TDS/TCS Amount");
-            AddToJson('Discount', ROUND(SalesInvoiceLine2."Inv. Discount Amount" * LCYCurrency, 0.01, '='));
-            //AddToJson('Discount',ROUND((SalesInvoiceLine2."Line Amount"+SalesInvoiceLine2."TDS/TCS Amount"+SalesInvoiceLine2."Total GST Amount"-SalesInvoiceLine2."Inv. Discount Amount") *LCYCurrency,0.01,'='));
-
-            GetRoundingGL(Customer."Customer Posting Group", GstRoundingGL, InvRoundingGL, PITRoundingGL);
-            SalesInvoiceLine2.SETRANGE(Type, SalesInvoiceLine2.Type::"G/L Account");
-            IF GstRoundingGL <> '' THEN
-                SalesInvoiceLine2.SETFILTER("No.", '%1|%2|%3', GstRoundingGL, InvRoundingGL, PITRoundingGL) //Rounding G/L
-            ELSE
-                SalesInvoiceLine2.SETFILTER("No.", '%1|%2', InvRoundingGL, PITRoundingGL);
-            SalesInvoiceLine2.CALCSUMS("Line Amount");
-            AddToJson('RndOffAmt', ROUND(SalesInvoiceLine2."Line Amount" * LCYCurrency, 0.01, '='));
-            //CALCFIELDS("Amount to Customer");
-            //AddToJson('TotInvVal',ROUND("Amount to Customer"*LCYCurrency,0.01,'='));
-            SalesInvoiceLine2.SETRANGE("No.");
-            SalesInvoiceLine2.CALCSUMS("Line Amount", "Inv. Discount Amount", "Total GST Amount", "TDS/TCS Amount");
-            AddToJson('TotInvVal', ROUND((SalesInvoiceLine2."Line Amount" + SalesInvoiceLine2."TDS/TCS Amount" + SalesInvoiceLine2."Total GST Amount" - SalesInvoiceLine2."Inv. Discount Amount") * LCYCurrency, 0.01, '='));
-            JsonTextWriter.WriteEndObject;
-
-            CLEAR(SNo);
-            SalesInvoiceLine.SETRANGE("Document No.", "No.");
-            IF GstRoundingGL <> '' THEN
-                SalesInvoiceLine.SETFILTER("No.", '<>%1&<>%2&<>%3', GstRoundingGL, InvRoundingGL, PITRoundingGL) //Rounding G/L
-            ELSE
-                SalesInvoiceLine.SETFILTER("No.", '<>%1&<>%2', InvRoundingGL, PITRoundingGL);
-            SalesInvoiceLine.SETFILTER(Quantity, '<>%1', 0);
-            IF SalesInvoiceLine.FINDSET THEN BEGIN
-                JsonTextWriter.WritePropertyName('ItemList');
-                JsonTextWriter.WriteStartArray;
-                REPEAT
-                    IF SalesInvoiceLine."Unit Price" > 0 THEN BEGIN
-                        SNo += 1;
-                        JsonTextWriter.WriteStartObject;
-                        AddToJson('SlNo', SNo);
-                        AddToJson('PrdDesc', SalesInvoiceLine.Description);
-                        IF SalesInvoiceLine."GST Group Type" = SalesInvoiceLine."GST Group Type"::Service THEN
-                            AddToJson('IsServc', 'Y')
-                        ELSE
-                            AddToJson('IsServc', 'N');
-                        AddToJson('HsnCd', SalesInvoiceLine."HSN/SAC Code");
-                        AddToJson('Qty', SalesInvoiceLine.Quantity);
-                        IF SalesInvoiceLine."GST Group Type" = SalesInvoiceLine."GST Group Type"::Service THEN
-                            AddToJson('Unit', 'OTH')
-                        ELSE
-                            AddToJson('Unit', GetUOM(SalesInvoiceLine."Unit of Measure Code"));
-                        AddToJson('UnitPrice', ROUND(SalesInvoiceLine."Unit Price" * LCYCurrency, 0.01, '='));
-                        AddToJson('TotAmt', ROUND((SalesInvoiceLine."Unit Price" * SalesInvoiceLine.Quantity) * LCYCurrency, 0.01, '='));
-
-                        PostedStructureOrderDetails.SETRANGE(Type, PostedStructureOrderDetails.Type::Sale);
-                        PostedStructureOrderDetails.SETRANGE("Document Type", PostedStructureOrderDetails."Document Type"::Invoice);
-                        PostedStructureOrderDetails.SETRANGE("No.", "No.");
-                        PostedStructureOrderDetails.SETRANGE("Structure Code", Structure);
-                        IF PostedStructureOrderDetails.FINDFIRST THEN BEGIN
-                            IF (PostedStructureOrderDetails."Include Line Discount") AND (PostedStructureOrderDetails."Include Invoice Discount") THEN
-                                AddToJson('Discount', ROUND((SalesInvoiceLine."Line Discount Amount" + SalesInvoiceLine."Inv. Discount Amount") * LCYCurrency, 0.01, '='))
-                            ELSE
-                                IF (NOT PostedStructureOrderDetails."Include Line Discount") AND (PostedStructureOrderDetails."Include Invoice Discount") THEN
-                                    AddToJson('Discount', ROUND((SalesInvoiceLine."Inv. Discount Amount") * LCYCurrency, 0.01, '='))
-                                ELSE
-                                    IF (PostedStructureOrderDetails."Include Line Discount") AND (NOT PostedStructureOrderDetails."Include Invoice Discount") THEN
-                                        AddToJson('Discount', ROUND((SalesInvoiceLine."Line Discount Amount") * LCYCurrency, 0.01, '='));
-                        END;
-
-                        AddToJson('AssAmt', ROUND(SalesInvoiceLine."GST Base Amount" * LCYCurrency, 0.01, '='));
-                        IF SalesInvoiceLine."GST Jurisdiction Type" = SalesInvoiceLine."GST Jurisdiction Type"::Interstate THEN
-                            AddToJson('GstRt', GetGSTRate(SalesInvoiceLine."Document No.", 'IGST', SalesInvoiceLine."Line No."))
-                        ELSE
-                            AddToJson('GstRt', GetGSTRate(SalesInvoiceLine."Document No.", 'CGST', SalesInvoiceLine."Line No.") * 2);
-                        AddToJson('CgstAmt', GetGSTAmountLineWise(SalesInvoiceLine."Document No.", 'CGST', SalesInvoiceLine."Line No."));
-                        AddToJson('SgstAmt', GetGSTAmountLineWise(SalesInvoiceLine."Document No.", 'SGST', SalesInvoiceLine."Line No."));
-                        AddToJson('IgstAmt', GetGSTAmountLineWise(SalesInvoiceLine."Document No.", 'IGST', SalesInvoiceLine."Line No."));
-                        AddToJson('CesRt', GetGSTRate(SalesInvoiceLine."Document No.", 'CESS', SalesInvoiceLine."Line No."));
-                        AddToJson('CesAmt', GetGSTAmountLineWise(SalesInvoiceLine."Document No.", 'CESS', SalesInvoiceLine."Line No."));
-                        AddToJson('OthChrg', ROUND((SalesInvoiceLine."TDS/TCS Amount") * LCYCurrency, 0.01, '='));
-                        //AddToJson('TotItemVal',ROUND((SalesInvoiceLine."Line Amount"+SalesInvoiceLine."TDS/TCS Amount"+SalesInvoiceLine."Total GST Amount"-SalesInvoiceLine."Inv. Discount Amount")*LCYCurrency,0.01,'='));
-                        AddToJson('TotItemVal', ROUND((SalesInvoiceLine."Amount Including Tax" + SalesInvoiceLine."Total GST Amount") * LCYCurrency, 0.01, '='));
-                        JsonTextWriter.WriteEndObject;
-                    END
-                UNTIL SalesInvoiceLine.NEXT = 0;
-            END;
-            JsonTextWriter.WriteEndArray;
-            EndJson;
-
-
-            GenerateEInvoice('', ResponseText, FALSE);
-
-            Json := ResponseText;
-            ReadJSon(Json, DataExch);
-
-            AckNo := GetJsonNodeValue('AckNo');
-            AckDt := GetJsonNodeValue('AckDt');
-            Irn := GetJsonNodeValue('Irn');
-            SignedQRCode := GetJsonNodeValue('SignedQRCode');
-            InsertResponse('', "No.", 1, AckNo, AckDt, Irn,
-                          SignedQRCode, GetJsonNodeValue('Status'), GetJsonNodeValue('ErrorDetails..error_message'), "Posting Date"
-                    , '', GetJsonNodeValue('SignedInvoice'), GetJsonNodeValue('info..Desc'));
+        JsonTextReader.Get('AckNo', JsonToken);
+        AckNo := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('AckDt', JsonToken);
+        AckDt := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('Irn', JsonToken);
+        Irn := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('SignedQRCode', JsonToken);
+        SignedQRCode := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('Status', JsonToken);
+        Status := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('ErrorDetails..error_message', JsonToken);
+        ErrDtls := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('SignedInvoice', JsonToken);
+        SignedInv := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('info..Desc', JsonToken);
+        Info := JsonToken.AsValue().AsText();
+        InsertResponse('', SalesInvoiceHeader."No.", 1, AckNo, AckDt, Irn,
+                      SignedQRCode, Status, ErrDtls, SalesInvoiceHeader."Posting Date"
+                , '', SignedInv, Info);
+        IF Irn <> '' THEN
+            GetEInvoiceResponse(RecRef);
+        COMMIT();
+        IF Info <> '' THEN
+            MESSAGE(Info)
+        ELSE
             IF Irn <> '' THEN
-                ValidateIRNandImportDetails(
-                          SalesInvoiceHeader,
-                          Irn, AckNo, SignedQRCode, AckDt);
-            COMMIT;
-            IF GetJsonNodeValue('info..Desc') <> '' THEN
-                MESSAGE(GetJsonNodeValue('info..Desc'))
+                MESSAGE(Text50000, SalesInvoiceHeader."No.")
             ELSE
-                IF Irn <> '' THEN
-                    MESSAGE(Text50000, "No.")
-                ELSE
-                    ERROR(Text50001, GetJsonNodeValue('ErrorDetails..error_message'), '');
-        END;
-    end;
+                ERROR(Text50001, ErrDtls, '');
+    END;
 
-    local procedure CreateJSONTransferShipment(TransferShipmentHeader: Record "Transfer Shipment Header")
+    local procedure CreateJSONSalesCrmemo(SalesCrMemoHeader_p: Record "Sales Cr.Memo Header")
     var
-        TransferShipmentLine: Record "Transfer Shipment Line";
-        ShiptoAddress: Record "Ship-to Address";
-        TransferShipmentHeader2: Record "Transfer Shipment Header";
-        DataExch: Record "Data Exch. Field";
-        TransportMethod: Record "Transport Method";
         Location: Record Location;
-        State_rec: Record State;
-        EInvIntegrationSetup: Record "E-Inv Integration Setup";
-        eCommerceMerchantId: Record "e-Commerce Merchant Id";
-        LocationTo: Record Location;
-        TransferShipmentLine2: Record "Transfer Shipment Line";
-        TempBlob: Record TempBlob;
-        ResponseInStream_L: InStream;
-        OutStrm: OutStream;
-        FL: File;
-        HttpStatusCode_L: DotNet HttpStatusCode;
-        ResponseHeaders_L: DotNet NameValueCollection;
-        CustGstin: Code[15];
-        State_Gst: Code[2];
-        CustGstin2: Code[15];
-        TknNo: Text[50];
-        ResponseText: Text;
-        JString: Text;
-        AckNo: Text;
-        Irn: Text;
-        Mnth: Text[2];
-        Day: Text[2];
-        SignedQRCode: Text;
-        SNo: Integer;
+        RecRef: RecordRef;
+        TknNo, JString, AckNo, AckDt, Irn, SignedQRCode, Status, ErrDtls, SignedInv, Info : Text;
         Text50000: Label 'E-Invoice generated successfully for Document No. %1.';
         Text50001: Label '%1 Please share this request ID for support %2.';
-        AckDt: Variant;
     begin
-        WITH TransferShipmentHeader DO BEGIN
-            IF NOT CheckGST("No.") THEN
-                EXIT;
-            EInvIntegrationSetup.GET;
+        RecRef.Open(Database::"Sales Cr.Memo Header");
+        RecRef.GetBySystemId(SalesCrMemoHeader_p."SystemId");
+        SalesCrMemoHeader.GetBySystemId(SalesCrMemoHeader_p."SystemId");
+        IF NOT CheckGST(SalesCrMemoHeader."No.") THEN
+            EXIT;
+        GetEInvSetup();
+        IF (EInvIntegrationSetup."Activation Date" = 0D) OR (EInvIntegrationSetup."Activation Date" > SalesCrMemoHeader."Posting Date") THEN
+            EXIT;
+        IF (SalesCrMemoHeader."Nature of Supply" = SalesCrMemoHeader."Nature of Supply"::B2C) THEN
+            EXIT;
 
-            GetCompanyInfo;
-            TknNo := GetAccessToken;
-            Location.GET("Transfer-from Code");
-            LocationTo.GET("Transfer-to Code");
+        CheckEInvoiceStatus(SalesCrMemoHeader."No.", 1, FALSE);
 
-            //IF Location."State Code" = LocationTo."State Code" THEN
-            IF Location."GST Registration No." = LocationTo."GST Registration No." THEN
-                EXIT;
-            CheckEInvoiceStatus("No.", 3, FALSE);
+        GetCompanyInfo();
+        TknNo := GetAccessToken();
+        TknNo := EInvIntegrationSetup."Access Token";
+        Location.GET(SalesInvoiceHeader."Location Code");
+        LocGstRegNo := Location."GST Registration No.";
+        OwnerId := Location."Cleartax Owner ID";
+        DocumentNo := SalesCrMemoHeader_p."No.";
+        WriteJsonFileHeader();
+        ReadTransactionDetails(SalesCrMemoHeader."GST Customer Type", SalesCrMemoHeader."Ship-to Code");
+        ReadDocumentHeaderDetails();
+        ReadDocumentSellerDetails();
+        ReadDocumentBuyerDetails();
+        ReadDocumentShippingDetails();
+        ReadExportDetails();
+        ReadDocumentTotalDetails();
+        ReadDocumentItemList();
+        GenerateEInvoice('', ResponseText, FALSE);
+        If ResponseText = '' THEN
+            EXIT;
+        clear(JsonTextReader);
+        JsonTextReader.ReadFrom(ResponseText);
 
-            StartJson;
-            AddToJson('access_token', TknNo);
-            AddToJson('user_gstin', GetGSTIN("Transfer-from Code"));
-            AddToJson('data_soure', 'erp');
-
-            JsonTextWriter.WritePropertyName('transaction_details');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('supply_type', 'B2B');
-            AddToJson('charge_type', 'N');
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('document_details');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('document_type', 'INV');
-            AddToJson('document_number', "No.");
-            AddToJson('document_date', GetDateFormated("Posting Date"));
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('seller_details');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('gstin', GetGSTIN("Transfer-from Code"));
-
-            AddToJson('legal_name', CompanyInformation.Name);
-            AddToJson('trade_name', Location.Name);
-            AddToJson('address1', Location.Address);
-            IF Location."Address 2" <> '' THEN
-                AddToJson('address2', Location."Address 2");
-
-            AddToJson('location', Location.City);
-            AddToJson('pincode', Location."Post Code");
-            AddToJson('state_code', GetStateCode(Location."State Code"));
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('buyer_details');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('gstin', GetGSTIN("Transfer-to Code"));
-            AddToJson('legal_name', CompanyInformation.Name);
-            AddToJson('trade_name', LocationTo.Name);
-            AddToJson('address1', LocationTo.Address);
-            IF LocationTo."Address 2" <> '' THEN
-                AddToJson('address2', LocationTo."Address 2");
-
-            AddToJson('location', LocationTo.City);
-            AddToJson('pincode', LocationTo."Post Code");
-            AddToJson('place_of_supply', GetStateCode_POS(LocationTo."State Code"));
-            AddToJson('state_code', GetStateCode(LocationTo."State Code"));
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('value_details');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('total_assessable_value', ROUND(GetTaxableAmountTransfer("No."), 0.01, '='));
-            AddToJson('total_cgst_value', GetGSTAmount("No.", 'CGST'));
-            AddToJson('total_sgst_value', GetGSTAmount("No.", 'SGST'));
-            AddToJson('total_igst_value', GetGSTAmount("No.", 'IGST'));
-            AddToJson('total_cess_value', GetGSTAmount("No.", 'CESS'));
-            //AddToJson('total_cess_value_of_state',GetGSTAmount("No.",'CESS'));
-
-            TransferShipmentLine2.SETRANGE("Document No.", "No.");
-            TransferShipmentLine2.CALCSUMS("Total GST Amount");
-
-            AddToJson('total_invoice_value', ROUND(GetTaxableAmountTransfer("No.") + TransferShipmentLine2."Total GST Amount", 0.01, '='));
-            JsonTextWriter.WriteEndObject;
-
-            CLEAR(SNo);
-            TransferShipmentLine.SETRANGE("Document No.", "No.");
-            TransferShipmentLine.SETFILTER("Item No.", '<>%1', '');
-            TransferShipmentLine.SETFILTER(Quantity, '<>%1', 0);
-            IF TransferShipmentLine.FINDSET THEN BEGIN
-                JsonTextWriter.WritePropertyName('item_list');
-                JsonTextWriter.WriteStartArray;
-                REPEAT
-                    SNo += 1;
-                    JsonTextWriter.WriteStartObject;
-                    AddToJson('item_serial_number', SNo);
-                    AddToJson('product_description', TransferShipmentLine.Description);
-                    AddToJson('is_service', 'N');
-                    AddToJson('hsn_code', TransferShipmentLine."HSN/SAC Code");
-                    AddToJson('quantity', TransferShipmentLine.Quantity);
-                    AddToJson('unit', GetUOM(TransferShipmentLine."Unit of Measure Code"));
-                    AddToJson('unit_price', ROUND(TransferShipmentLine."Unit Price", 0.01, '='));
-                    AddToJson('total_amount', ROUND(TransferShipmentLine."GST Base Amount", 0.01, '='));
-                    AddToJson('assessable_value', ROUND(TransferShipmentLine."GST Base Amount", 0.01, '='));
-                    IF Location."State Code" <> LocationTo."State Code" THEN
-                        AddToJson('gst_rate', GetGSTRate(TransferShipmentLine."Document No.", 'IGST', TransferShipmentLine."Line No."))
-                    ELSE
-                        AddToJson('gst_rate', GetGSTRate(TransferShipmentLine."Document No.", 'CGST', TransferShipmentLine."Line No.") * 2);
-                    AddToJson('cgst_amount', GetGSTAmountLineWise(TransferShipmentLine."Document No.", 'CGST', TransferShipmentLine."Line No."));
-                    AddToJson('sgst_amount', GetGSTAmountLineWise(TransferShipmentLine."Document No.", 'SGST', TransferShipmentLine."Line No."));
-                    AddToJson('igst_amount', GetGSTAmountLineWise(TransferShipmentLine."Document No.", 'IGST', TransferShipmentLine."Line No."));
-                    AddToJson('cess_rate', GetGSTRate(TransferShipmentLine."Document No.", 'CESS', TransferShipmentLine."Line No."));
-                    AddToJson('cess_amount', GetGSTAmountLineWise(TransferShipmentLine."Document No.", 'CESS', TransferShipmentLine."Line No."));
-                    AddToJson('cess_nonadvol_value', 0);
-                    //AddToJson('state_cess_rate',GetGSTRate(TransferShipmentLine."Document No.",'CESS',TransferShipmentLine."Line No."));
-                    //AddToJson('state_cess_amount',GetGSTAmountLineWise(TransferShipmentLine."Document No.",'CESS',TransferShipmentLine."Line No."));
-                    AddToJson('total_item_value', ROUND(TransferShipmentLine."GST Base Amount" + TransferShipmentLine."Total GST Amount", 0.01, '='));
-                    JsonTextWriter.WriteEndObject;
-                UNTIL TransferShipmentLine.NEXT = 0;
-            END;
-            JsonTextWriter.WriteEndArray;
-            EndJson;
-
-            GenerateEInvoice('', ResponseText, FALSE);
-
-            Json := ResponseText;
-            ReadJSon(Json, DataExch);
-
-            AckNo := GetJsonNodeValue('results.message.AckNo');
-            AckDt := GetJsonNodeValue('results.message.AckDt');
-            Irn := GetJsonNodeValue('results.message.Irn');
-            SignedQRCode := GetJsonNodeValue('results.message.SignedQRCode');
-            InsertResponse(GetJsonNodeValue('results.requestId'), "No.", 3, AckNo, AckDt,
-                Irn, SignedQRCode, GetJsonNodeValue('results.status'), GetJsonNodeValue('results.errorMessage'), "Posting Date"
-                              , GetJsonNodeValue('results.message.QRCodeUrl'), GetJsonNodeValue('results.message.EinvoicePdf'), GetJsonNodeValue('results.InfoDtls'));
-            COMMIT;
+        JsonTextReader.Get('AckNo', JsonToken);
+        AckNo := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('AckDt', JsonToken);
+        AckDt := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('Irn', JsonToken);
+        Irn := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('SignedQRCode', JsonToken);
+        SignedQRCode := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('Status', JsonToken);
+        Status := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('ErrorDetails..error_message', JsonToken);
+        ErrDtls := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('SignedInvoice', JsonToken);
+        SignedInv := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('info..Desc', JsonToken);
+        Info := JsonToken.AsValue().AsText();
+        InsertResponse('', SalesCrMemoHeader."No.", 1, AckNo, AckDt, Irn,
+                      SignedQRCode, Status, ErrDtls, SalesCrMemoHeader."Posting Date"
+                , '', SignedInv, Info);
+        IF Irn <> '' THEN
+            GetEInvoiceResponse(RecRef);
+        COMMIT();
+        IF Info <> '' THEN
+            MESSAGE(Info)
+        ELSE
             IF Irn <> '' THEN
-                MESSAGE(Text50000, "No.")
+                MESSAGE(Text50000, SalesCrMemoHeader."No.")
             ELSE
-                ERROR(Text50001, GetJsonNodeValue('results.errorMessage'), GetJsonNodeValue('results.requestId'));
-        END;
+                ERROR(Text50001, ErrDtls, '');
     end;
 
-    local procedure CreateJSONSalesCrmemo(SalesCrMemoHeader: Record "Sales Cr.Memo Header")
-    var
-        Customer: Record Customer;
-        SalesCrMemoLine: Record "Sales Cr.Memo Line";
-        ShiptoAddress: Record "Ship-to Address";
-        SalesCrMemoHeader2: Record "Sales Cr.Memo Header";
-        DataExch: Record "Data Exch. Field";
-        TransportMethod: Record "Transport Method";
-        Location: Record Location;
-        State_rec: Record State;
-        EInvIntegrationSetup: Record "E-Inv Integration Setup";
-        eCommerceMerchantId: Record "e-Commerce Merchant Id";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        EInvoicingRequests: Record "E-Invoicing Requests";
-        TempBlob: Record TempBlob;
-        SalesCrMemoLine2: Record "Sales Cr.Memo Line";
-        SalesCrMemoLine3: Record "Sales Cr.Memo Line";
-        PostedStructureOrderDetails: Record "Posted Structure Order Details";
-        ResponseInStream_L: InStream;
-        OutStrm: OutStream;
-        FL: File;
-        HttpStatusCode_L: DotNet HttpStatusCode;
-        ResponseHeaders_L: DotNet NameValueCollection;
-        CustGstin: Code[15];
-        State_Gst: Code[2];
-        RefDocNo: Code[20];
-        GstRoundingGL: Code[20];
-        InvRoundingGL: Code[20];
-        PITRoundingGL: Code[20];
-        TknNo: Text;
-        ResponseText: Text;
-        JString: Text;
-        AckNo: Text;
-        Irn: Text;
-        Mnth: Text[2];
-        Day: Text[2];
-        SignedQRCode: Text;
-        Text50000: Label 'You cannot generate E-Invoice for Credit Memo %1 as E-Invoice for Applied Invoice %2 is not generated.';
-        AckDt: Variant;
-        SNo: Integer;
-        LCYCurrency: Decimal;
-        Text50001: Label 'E-Invoice generated successfully for Document No. %1.';
-        Text50002: Label '%1 Please share this request ID for support %2.';
-    begin
-        WITH SalesCrMemoHeader DO BEGIN
-            IF NOT CheckGST("No.") THEN
-                EXIT;
-            EInvIntegrationSetup.GET;
-            IF (EInvIntegrationSetup."Activation Date" = 0D) OR (EInvIntegrationSetup."Activation Date" > "Posting Date") THEN
-                EXIT;
-            IF ("Nature of Supply" = "Nature of Supply"::B2C) THEN
-                EXIT;
-            RefDocNo := GetRefInvNo(SalesCrMemoHeader."No.");
-            IF RefDocNo = '' THEN
-                RefDocNo := SalesCrMemoHeader."Reference Invoice No.";
-
-            IF SalesInvoiceHeader.GET(RefDocNo) THEN
-                IF SalesInvoiceHeader."Posting Date" >= EInvIntegrationSetup."Activation Date" THEN BEGIN // Date acc. to E-Inv Live Date
-                                                                                                          //EXIT;
-                    EInvoicingRequests.SETCURRENTKEY("Document Type", "Document No.", "E-Invoice Generated");
-                    EInvoicingRequests.SETRANGE("Document Type", EInvoicingRequests."Document Type"::"Sale Invoice");
-                    EInvoicingRequests.SETRANGE("Document No.", RefDocNo);
-                    EInvoicingRequests.SETRANGE("E-Invoice Generated", FALSE);
-                    IF EInvoicingRequests.FINDFIRST THEN
-                        ERROR(Text50000, SalesCrMemoHeader."No.", RefDocNo);
-                END;
-            CheckEInvoiceStatus("No.", 2, FALSE);
-
-            GetCompanyInfo;
-            //TknNo := GetAccessToken;
-            TknNo := EInvIntegrationSetup."Access Token";
-            Location.GET("Location Code");
-            OwnerId := Location."Cleartax Owner ID";
-            LocGstRegNo := Location."GST Registration No.";
-            Customer.GET("Bill-to Customer No.");
-            LCYCurrency := 1;
-            StartJson;
-            AddToJson('Version', '1.1');
-            JsonTextWriter.WritePropertyName('TranDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('TaxSch', 'GST');
-            CASE "GST Customer Type" OF
-                "GST Customer Type"::Export:
-                    BEGIN
-                        IF "GST Without Payment of Duty" THEN
-                            AddToJson('SupTyp', 'EXPWOP')
-                        ELSE
-                            AddToJson('SupTyp', 'EXPWP');
-                    END;
-                "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit":
-                    BEGIN
-                        IF "GST Without Payment of Duty" THEN
-                            AddToJson('SupTyp', 'SEZWOP')
-                        ELSE
-                            AddToJson('SupTyp', 'SEZWP');
-                    END;
-                "GST Customer Type"::"Deemed Export":
-                    AddToJson('SupTyp', 'DEXP');
-                "GST Customer Type"::Registered, "GST Customer Type"::Exempted:
-                    AddToJson('SupTyp', 'B2B');
-            END;
-            AddToJson('RegRev', 'N');
-            IF "POS Out Of India" THEN
-                AddToJson('IgstOnIntra', 'Y')
-            ELSE
-                AddToJson('IgstOnIntra', 'N');
-            IF "e-Commerce Customer" <> '' THEN BEGIN
-                IF eCommerceMerchantId.GET("e-Commerce Customer", "e-Commerce Merchant Id") THEN
-                    AddToJson('EcmGstin', eCommerceMerchantId."Company GST Reg. No.");
-            END;
-
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('DocDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('Typ', 'CRN');
-            AddToJson('No', "No.");
-            AddToJson('Dt', GetDateFormated("Posting Date"));
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('SellerDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('Gstin', GetGSTIN("Location Code"));
-            AddToJson('LglNm', CompanyInformation.Name);
-            AddToJson('LglNm', Location.Name);
-            AddToJson('Addr1', Location.Address);
-            IF Location."Address 2" <> '' THEN
-                AddToJson('Addr2', Location."Address 2");
-
-            AddToJson('Loc', Location.City);
-            AddToJson('Pin', Location."Post Code");
-            AddToJson('Stcd', GetStateCode(Location."State Code"));
-            AddToJson('Ph', Location."Phone No.");
-            AddToJson('Em', Location."E-Mail");
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('BuyerDtls');
-            JsonTextWriter.WriteStartObject;
-
-            IF ("GST Customer Type" = "GST Customer Type"::Export) THEN
-                AddToJson('Gstin', 'URP')
-            ELSE
-                AddToJson('Gstin', Customer."GST Registration No.");
-
-            AddToJson('LglNm', "Bill-to Name");
-            AddToJson('TrdNm', "Bill-to Name");
-            AddToJson('Addr1', "Bill-to Address");
-            IF "Bill-to Address 2" <> '' THEN
-                AddToJson('Addr2', "Bill-to Address 2");
-
-            AddToJson('Loc', "Bill-to City");
-            IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                AddToJson('Pin', '999999')
-            ELSE
-                AddToJson('Pin', "Bill-to Post Code");
-
-
-            AddToJson('place_of_supply', GetStateCode_POS("GST Bill-to State Code"));
-            AddToJson('Stcd', GetStateCode("GST Bill-to State Code"));
-
-            SalesCrMemoLine3.SETRANGE("Document No.", "No.");
-            SalesCrMemoLine3.SETFILTER("GST Place of Supply", '<>%1', SalesCrMemoLine3."GST Place of Supply"::" ");
-            IF SalesCrMemoLine3.FINDFIRST THEN
-                IF SalesCrMemoLine3."GST Place of Supply" = SalesCrMemoLine3."GST Place of Supply"::"Bill-to Address" THEN BEGIN
-                    IF "GST Customer Type" IN ["GST Customer Type"::Export, "GST Customer Type"::"Deemed Export", "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit"] THEN
-                        AddToJson('Pos', '96')
-                    ELSE
-                        AddToJson('Pos', GetStateCode_POS("GST Bill-to State Code"));
-                    IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                        AddToJson('Stcd', '96')
-                    ELSE
-                        AddToJson('Stcd', GetStateCode("GST Bill-to State Code"));
-                END ELSE
-                    IF SalesCrMemoLine3."GST Place of Supply" = SalesCrMemoLine3."GST Place of Supply"::"Ship-to Address" THEN BEGIN
-                        IF "GST Customer Type" IN ["GST Customer Type"::Export, "GST Customer Type"::"Deemed Export", "GST Customer Type"::"SEZ Development", "GST Customer Type"::"SEZ Unit"] THEN
-                            AddToJson('Pos', '96')
-                        ELSE
-                            AddToJson('Pos', GetStateCode_POS("GST Ship-to State Code"));
-
-                        IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                            AddToJson('Stcd', '96')
-                        ELSE
-                            AddToJson('Stcd', GetStateCode("GST Ship-to State Code"));
-
-                        IF ShiptoAddress.GET("Sell-to Customer No.", "Ship-to Code") THEN BEGIN
-                            AddToJson('Ph', ShiptoAddress."Phone No.");
-                            AddToJson('Em', ShiptoAddress."E-Mail");
-                        END;
-                    END;
-            JsonTextWriter.WriteEndObject;
-
-            IF ("Ship-to Code" <> '') AND (ShiptoAddress.GET("Sell-to Customer No.", "Ship-to Code")) THEN BEGIN
-                CustGstin := ShiptoAddress."GST Registration No.";
-
-                JsonTextWriter.WritePropertyName('ShipDtls');
-                JsonTextWriter.WriteStartObject;
-                IF "GST Customer Type" = "GST Customer Type"::Export THEN
-                    AddToJson('gstin', 'URP')
-                ELSE
-                    AddToJson('Gstin', CustGstin);
-                AddToJson('LglNm', "Ship-to Name");
-                AddToJson('TrdNm', "Ship-to Name");
-                AddToJson('Addr1', "Ship-to Address");
-                IF "Ship-to Address 2" <> '' THEN
-                    AddToJson('Addr2', "Ship-to Address 2");
-                AddToJson('Loc', "Ship-to City");
-                AddToJson('Pin', "Ship-to Post Code");
-                AddToJson('Stcd', GetStateCode("GST Ship-to State Code"));
-                JsonTextWriter.WriteEndObject;
-            END;
-            IF "GST Customer Type" IN
-                ["GST Customer Type"::Export]
-                   THEN BEGIN
-                IF "Currency Factor" <> 0 THEN
-                    LCYCurrency := (1 / "Currency Factor")
-                ELSE
-                    LCYCurrency := 1;
-                JsonTextWriter.WritePropertyName('ExpDtls');
-                JsonTextWriter.WriteStartObject;
-                AddToJson('ShipBNo', "Bill Of Export No.");
-                AddToJson('ShipBDt', GetDateFormated("Bill Of Export Date"));
-                AddToJson('Port', "Exit Point");
-                AddToJson('RefClm', 'Y');
-                AddToJson('ForCur', "Currency Code");
-                AddToJson('CntCode', "Bill-to Country/Region Code");
-                JsonTextWriter.WriteEndObject;
-            END;
-
-            JsonTextWriter.WritePropertyName('RefDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('InvRm', 'Sale Return');
-            JsonTextWriter.WritePropertyName('DocPerdDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('InvStDt', GetDateFormated(SalesInvoiceHeader."Posting Date"));
-            AddToJson('InvEndDt', GetDateFormated(SalesInvoiceHeader."Posting Date"));
-            JsonTextWriter.WriteEndObject;
-            JsonTextWriter.WritePropertyName('PrecDocDtls');
-            JsonTextWriter.WriteStartArray;
-            JsonTextWriter.WriteStartObject;
-            AddToJson('InvNo', SalesInvoiceHeader."No.");
-            AddToJson('InvDt', GetDateFormated(SalesInvoiceHeader."Posting Date"));
-            JsonTextWriter.WriteEndObject;
-            JsonTextWriter.WriteEndArray;
-            JsonTextWriter.WriteEndObject;
-
-            JsonTextWriter.WritePropertyName('ValDtls');
-            JsonTextWriter.WriteStartObject;
-            AddToJson('AssVal', ROUND(GetTaxableAmountSCrMemo("No.") * LCYCurrency, 0.01, '='));
-            AddToJson('CgstVal', GetGSTAmount("No.", 'CGST'));
-            AddToJson('SgstVal', GetGSTAmount("No.", 'SGST'));
-            AddToJson('IgstVal', GetGSTAmount("No.", 'IGST'));
-            AddToJson('CesVal', GetGSTAmount("No.", 'CESS'));
-
-            SalesCrMemoLine2.SETRANGE("Document No.", "No.");
-            SalesCrMemoLine2.CALCSUMS("Line Amount", "Inv. Discount Amount", "Total GST Amount");
-            AddToJson('Discount', ROUND(SalesCrMemoLine2."Inv. Discount Amount" * LCYCurrency, 0.01, '='));
-            //AddToJson('Discount',ROUND((SalesCrMemoLine2."Line Amount"+SalesCrMemoLine2."Total GST Amount"-SalesCrMemoLine2."Inv. Discount Amount") *LCYCurrency,0.01,'='));
-            GetRoundingGL(Customer."Customer Posting Group", GstRoundingGL, InvRoundingGL, PITRoundingGL);
-            SalesCrMemoLine2.SETRANGE(Type, SalesCrMemoLine2.Type::"G/L Account");
-            IF GstRoundingGL <> '' THEN
-                SalesCrMemoLine2.SETFILTER("No.", '%1|%2|%3', GstRoundingGL, InvRoundingGL, PITRoundingGL) //Rounding G/L
-            ELSE
-                SalesCrMemoLine2.SETFILTER("No.", '%1|%2', InvRoundingGL, PITRoundingGL);
-            SalesCrMemoLine2.CALCSUMS("Line Amount");
-            AddToJson('RndOffAmt', ROUND(SalesCrMemoLine2."Line Amount" * LCYCurrency, 0.01, '='));
-            //CALCFIELDS("Amount to Customer");
-            //AddToJson('TotInvVal',ROUND("Amount to Customer"*LCYCurrency,0.01,'='));
-            SalesCrMemoLine2.SETRANGE("No.");
-            SalesCrMemoLine2.CALCSUMS("Line Amount", "Inv. Discount Amount", "Total GST Amount", "TDS/TCS Amount");
-            AddToJson('TotInvVal', ROUND((SalesCrMemoLine2."Line Amount" + SalesCrMemoLine2."TDS/TCS Amount" + SalesCrMemoLine2."Total GST Amount" - SalesCrMemoLine2."Inv. Discount Amount") * LCYCurrency, 0.01, '='));
-            JsonTextWriter.WriteEndObject;
-
-            CLEAR(SNo);
-            SalesCrMemoLine.SETRANGE("Document No.", "No.");
-            IF GstRoundingGL <> '' THEN
-                SalesCrMemoLine.SETFILTER("No.", '<>%1&<>%2&<>%3', GstRoundingGL, InvRoundingGL, PITRoundingGL) //Rounding G/L
-            ELSE
-                SalesCrMemoLine.SETFILTER("No.", '<>%1&<>%2', InvRoundingGL, PITRoundingGL);
-            SalesCrMemoLine.SETFILTER(Quantity, '<>%1', 0);
-            IF SalesCrMemoLine.FINDSET THEN BEGIN
-                JsonTextWriter.WritePropertyName('ItemList');
-                JsonTextWriter.WriteStartArray;
-                REPEAT
-                    SNo += 1;
-                    JsonTextWriter.WriteStartObject;
-                    AddToJson('SlNo', SNo);
-                    AddToJson('PrdDesc', SalesCrMemoLine.Description);
-                    IF SalesCrMemoLine."GST Group Type" = SalesCrMemoLine."GST Group Type"::Service THEN
-                        AddToJson('IsServc', 'Y')
-                    ELSE
-                        AddToJson('IsServc', 'N');
-                    AddToJson('HsnCd', SalesCrMemoLine."HSN/SAC Code");
-                    AddToJson('Qty', SalesCrMemoLine.Quantity);
-                    IF SalesCrMemoLine."GST Group Type" = SalesCrMemoLine."GST Group Type"::Service THEN
-                        AddToJson('Unit', 'OTH')
-                    ELSE
-                        AddToJson('Unit', GetUOM(SalesCrMemoLine."Unit of Measure Code"));
-                    AddToJson('UnitPrice', ROUND(SalesCrMemoLine."Unit Price" * LCYCurrency, 0.01, '='));
-                    AddToJson('TotAmt', ROUND((SalesCrMemoLine."Unit Price" * SalesCrMemoLine.Quantity) * LCYCurrency, 0.01, '='));
-
-                    PostedStructureOrderDetails.SETRANGE(Type, PostedStructureOrderDetails.Type::Sale);
-                    PostedStructureOrderDetails.SETRANGE("Document Type", PostedStructureOrderDetails."Document Type"::"Credit Memo");
-                    PostedStructureOrderDetails.SETRANGE("No.", "No.");
-                    PostedStructureOrderDetails.SETRANGE("Structure Code", Structure);
-                    IF PostedStructureOrderDetails.FINDFIRST THEN BEGIN
-                        IF (PostedStructureOrderDetails."Include Line Discount") AND (PostedStructureOrderDetails."Include Invoice Discount") THEN
-                            AddToJson('Discount', ROUND((SalesCrMemoLine."Line Discount Amount" + SalesCrMemoLine."Inv. Discount Amount") * LCYCurrency, 0.01, '='))
-                        ELSE
-                            IF (NOT PostedStructureOrderDetails."Include Line Discount") AND (PostedStructureOrderDetails."Include Invoice Discount") THEN
-                                AddToJson('Discount', ROUND((SalesCrMemoLine."Inv. Discount Amount") * LCYCurrency, 0.01, '='))
-                            ELSE
-                                IF (PostedStructureOrderDetails."Include Line Discount") AND (NOT PostedStructureOrderDetails."Include Invoice Discount") THEN
-                                    AddToJson('Discount', ROUND((SalesCrMemoLine."Line Discount Amount") * LCYCurrency, 0.01, '='));
-                    END;
-
-                    AddToJson('AssAmt', ROUND(SalesCrMemoLine."GST Base Amount" * LCYCurrency, 0.01, '='));
-                    IF SalesCrMemoLine."GST Jurisdiction Type" = SalesCrMemoLine."GST Jurisdiction Type"::Interstate THEN
-                        AddToJson('GstRt', GetGSTRate(SalesCrMemoLine."Document No.", 'IGST', SalesCrMemoLine."Line No."))
-                    ELSE
-                        AddToJson('GstRt', GetGSTRate(SalesCrMemoLine."Document No.", 'CGST', SalesCrMemoLine."Line No.") * 2);
-                    AddToJson('CgstAmt', GetGSTAmountLineWise(SalesCrMemoLine."Document No.", 'CGST', SalesCrMemoLine."Line No."));
-                    AddToJson('SgstAmt', GetGSTAmountLineWise(SalesCrMemoLine."Document No.", 'SGST', SalesCrMemoLine."Line No."));
-                    AddToJson('IgstAmt', GetGSTAmountLineWise(SalesCrMemoLine."Document No.", 'IGST', SalesCrMemoLine."Line No."));
-                    AddToJson('CesRt', GetGSTRate(SalesCrMemoLine."Document No.", 'CESS', SalesCrMemoLine."Line No."));
-                    AddToJson('CesAmt', GetGSTAmountLineWise(SalesCrMemoLine."Document No.", 'CESS', SalesCrMemoLine."Line No."));
-                    //AddToJson('TotItemVal',ROUND((SalesCrMemoLine."Line Amount"+SalesCrMemoLine."Total GST Amount"-SalesCrMemoLine."Inv. Discount Amount")*LCYCurrency,0.01,'='));
-                    AddToJson('TotItemVal', ROUND((SalesCrMemoLine."Amount Including Tax" + SalesCrMemoLine."Total GST Amount") * LCYCurrency, 0.01, '='));
-                    JsonTextWriter.WriteEndObject;
-                UNTIL SalesCrMemoLine.NEXT = 0;
-            END;
-            JsonTextWriter.WriteEndArray;
-            EndJson;
-
-            GenerateEInvoice('', ResponseText, FALSE);
-
-            Json := ResponseText;
-            ReadJSon(Json, DataExch);
-
-            AckNo := GetJsonNodeValue('AckNo');
-            AckDt := GetJsonNodeValue('AckDt');
-            Irn := GetJsonNodeValue('Irn');
-            SignedQRCode := GetJsonNodeValue('SignedQRCode');
-            InsertResponse('', "No.", 1, AckNo, AckDt, Irn,
-                          SignedQRCode, GetJsonNodeValue('Status'), GetJsonNodeValue('ErrorDetails..error_message'), "Posting Date"
-                    , '', GetJsonNodeValue('SignedInvoice'), GetJsonNodeValue('info..Desc'));
-            IF Irn <> '' THEN
-                ValidateIRNandImportDetailsCrMemo(
-                          SalesCrMemoHeader,
-                          Irn, AckNo, SignedQRCode, AckDt);
-            COMMIT;
-            IF GetJsonNodeValue('info..Desc') <> '' THEN
-                MESSAGE(GetJsonNodeValue('info..Desc'))
-            ELSE
-                IF Irn <> '' THEN
-                    MESSAGE(Text50000, "No.")
-                ELSE
-                    ERROR(Text50001, GetJsonNodeValue('ErrorDetails..error_message'), '');
-        END;
-    end;
-
-    local procedure CancelJSONSalesInvoice(var SalesInvoiceHeader: Record "Sales Invoice Header")
+    local procedure CancelJSONSalesInvoice(var SalesInvoiceHeader_p: Record "Sales Invoice Header")
     var
         Location: Record Location;
-        TempBlob: Record TempBlob;
-        ResponseInStream_L: InStream;
-        OutStrm: OutStream;
-        FL: File;
-        HttpStatusCode_L: DotNet HttpStatusCode;
-        ResponseHeaders_L: DotNet NameValueCollection;
-        TknNo: Text[250];
-        ResponseText: Text;
-        JString: Text;
-        Text50000: Label 'E-Invoice generated successfully for Document No. %1.';
-        Text50001: Label '%1 Please share this request ID for support %2.';
         TypeHelper: Codeunit "Type Helper";
-        DataExch: Record "Data Exch. Field";
-        Irn: Text;
+        TknNo: Text[250];
+        Irn, Status, ErrDtls, Info : Text;
         CancelDate: DateTime;
         DTVariant: Variant;
+        Text50000: Label 'E-Invoice generated successfully for Document No. %1.';
+        Text50001: Label '%1 Please share this request ID for support %2.';
     begin
-        WITH SalesInvoiceHeader DO BEGIN
-            IF NOT CheckGST("No.") THEN
-                EXIT;
-            GetEInvSetup;
-            IF ("Nature of Supply" = "Nature of Supply"::B2C) THEN
-                EXIT;
+        IF NOT CheckGST(SalesInvoiceHeader_p."No.") THEN
+            EXIT;
+        GetEInvSetup();
+        IF (SalesInvoiceHeader_p."Nature of Supply" = SalesInvoiceHeader_p."Nature of Supply"::B2C) THEN
+            EXIT;
 
-            CheckEInvoiceStatus("No.", 1, TRUE);
+        CheckEInvoiceStatus(SalesInvoiceHeader_p."No.", 1, TRUE);
 
-            Location.GET("Location Code");
-            OwnerId := Location."Cleartax Owner ID";
-            LocGstRegNo := Location."GST Registration No.";
-            TESTFIELD("Cancel Reason");
-            GetCompanyInfo;
-            TknNo := EInvIntegrationSetup."Access Token";
-            StartJson;
-            AddToJson('irn', "IRN Hash");
-            AddToJson('CnlRsn', TypeHelper.GetOptionNo(FORMAT("Cancel Reason"), ' ,Duplicate,Data Entry Mistake,Order Canceled,Other'));
-            AddToJson('CnlRem', FORMAT("Cancel Reason"));
-            EndJson;
+        Location.GET(SalesInvoiceHeader_p."Location Code");
+        OwnerId := Location."Cleartax Owner ID";
+        LocGstRegNo := Location."GST Registration No.";
+        SalesInvoiceHeader_p.TESTFIELD("Cancel Reason");
+        GetCompanyInfo();
+        TknNo := EInvIntegrationSetup."Access Token";
+        AddToJson('irn', SalesInvoiceHeader_p."IRN Hash");
+        AddToJson('CnlRsn', TypeHelper.GetOptionNo(FORMAT(SalesInvoiceHeader_p."Cancel Reason"), ' ,Duplicate,Data Entry Mistake,Order Canceled,Other'));
+        AddToJson('CnlRem', FORMAT(SalesInvoiceHeader_p."Cancel Reason"));
 
+        GenerateEInvoice('', ResponseText, TRUE);
 
-            GenerateEInvoice('', ResponseText, TRUE);
+        clear(JsonTextReader);
+        JsonTextReader.ReadFrom(ResponseText);
 
-            Json := ResponseText;
-            ReadJSon(Json, DataExch);
-
-            Irn := GetJsonNodeValue('Irn');
-            DTVariant := 0DT;
-            TypeHelper.Evaluate(DTVariant, GetJsonNodeValue('CancelDate'), '', '');
-            CancelDate := DTVariant;
-            InsertCancelResponse("No.", 1, Irn, GetJsonNodeValue('Status'), GetJsonNodeValue('ErrorDetails..error_message'),
-                        "Posting Date", CancelDate);
-            "E-Inv. Cancelled Date" := CancelDate;
-            MODIFY;
-            COMMIT;
-            IF GetJsonNodeValue('Success') = 'Y' THEN
-                MESSAGE(Text90000)
-            ELSE
-                ERROR(Text50001, GetJsonNodeValue('ErrorDetails..error_message'), '');
-        END;
-    end;
-
-    local procedure UpdateIRNOnDoc(DocNo: Code[20]; DocType: Option " ","Sale Invoice","Sale Cr. Memo",Transfer; IRN: Text)
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        TransferShipmentHeader: Record "Transfer Shipment Header";
-    begin
-        IF DocType = 1 THEN BEGIN
-            IF SalesInvoiceHeader.GET(DocNo) THEN BEGIN
-                SalesInvoiceHeader."IRN Hash" := IRN;
-                SalesInvoiceHeader.MODIFY;
-            END;
-        END ELSE
-            IF DocType = 2 THEN BEGIN
-                IF SalesCrMemoHeader.GET(DocNo) THEN BEGIN
-                    SalesCrMemoHeader."IRN Hash" := IRN;
-                    SalesCrMemoHeader.MODIFY;
-                END;
-            END;
-    end;
+        JsonTextReader.Get('Irn', JsonToken);
+        Irn := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('Status', JsonToken);
+        Status := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('CancelDate', JsonToken);
+        DTVariant := 0DT;
+        TypeHelper.Evaluate(DTVariant, JsonToken.AsValue().AsText(), '', '');
+        CancelDate := DTVariant;
+        JsonTextReader.Get('ErrorDetails..error_message', JsonToken);
+        ErrDtls := JsonToken.AsValue().AsText();
+        JsonTextReader.Get('Success', JsonToken);
+        Info := JsonToken.AsValue().AsText();
+        InsertCancelResponse(SalesInvoiceHeader_p."No.", 1, Irn, Status, ErrDtls,
+                    SalesInvoiceHeader_p."Posting Date", CancelDate);
+        SalesInvoiceHeader_p."E-Inv. Cancelled Date" := CancelDate;
+        SalesInvoiceHeader_p.MODIFY();
+        COMMIT();
+        IF Info = 'Y' THEN
+            MESSAGE(Text90000)
+        ELSE
+            ERROR(Text50001, ErrDtls, '');
+    END;
 
     local procedure CheckEInvoiceStatus(DocumentNo: Code[20]; DocType: Option; Canceled: Boolean)
     var
@@ -1652,210 +546,23 @@
             ERROR(Text50000, DocumentNo);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, 33083461, 'CheckEInvoiceStatusForReportPrinting', '', false, false)]
-    local procedure CheckEInvoiceStatusForReportPrint(DocType: Option " ","Sale Invoice","Sale Cr. Memo",Transfer; DocNo: Code[20])
-    var
-        GSTManagement: Codeunit "GST Management";
-        EInvoicingRequests: Record "E-Invoicing Requests";
-        Text50000: Label 'E-Invoice is not generated for Document No. %1.';
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        TransferShipmentHeader: Record "Transfer Shipment Header";
-        Location: Record Location;
-        LocationTo: Record Location;
-        EInvIntegrationSetup: Record "E-Inv Integration Setup";
-    begin
-        EInvIntegrationSetup.GET;
-        CASE DocType OF
-            DocType::"Sale Invoice":
-                BEGIN
-                    IF SalesInvoiceHeader.GET(DocNo) THEN BEGIN
-                        IF SalesInvoiceHeader."Nature of Supply" = SalesInvoiceHeader."Nature of Supply"::B2C THEN
-                            EXIT;
-                        IF NOT GSTManagement.CheckGSTStrucure(SalesInvoiceHeader.Structure) THEN
-                            EXIT;
-                        IF SalesInvoiceHeader."Posting Date" < EInvIntegrationSetup."Activation Date" THEN
-                            EXIT;
-                    END;
-                END;
-            DocType::"Sale Cr. Memo":
-                BEGIN
-                    IF SalesCrMemoHeader.GET(DocNo) THEN BEGIN
-                        IF SalesCrMemoHeader."Nature of Supply" = SalesCrMemoHeader."Nature of Supply"::B2C THEN
-                            EXIT;
-                        IF NOT GSTManagement.CheckGSTStrucure(SalesCrMemoHeader.Structure) THEN
-                            EXIT;
-                        IF SalesCrMemoHeader."Posting Date" < EInvIntegrationSetup."Activation Date" THEN
-                            EXIT;
-                    END;
-                END;
-            DocType::Transfer:
-                BEGIN
-                    IF TransferShipmentHeader.GET(DocNo) THEN BEGIN
-                        Location.GET(TransferShipmentHeader."Transfer-from Code");
-                        LocationTo.GET(TransferShipmentHeader."Transfer-to Code");
-                        IF Location."State Code" = LocationTo."State Code" THEN
-                            EXIT;
-                        IF NOT GSTManagement.CheckGSTStrucure(TransferShipmentHeader.Structure) THEN
-                            EXIT;
-                        IF TransferShipmentHeader."Posting Date" < EInvIntegrationSetup."Activation Date" THEN
-                            EXIT;
-                    END;
-                END;
-        END;
-
-        EInvoicingRequests.SETCURRENTKEY("Document Type", "Document No.", "E-Invoice Generated");
-        EInvoicingRequests.SETRANGE("Document Type", DocType);
-        EInvoicingRequests.SETRANGE("Document No.", DocNo);
-        EInvoicingRequests.SETRANGE("E-Invoice Generated", TRUE);
-        IF NOT EInvoicingRequests.FINDFIRST THEN
-            ERROR(Text50000, DocNo);
-    end;
-
     local procedure GetRefInvNo(DocNo: Code[20]) RefInvNo: Code[20]
     var
         ReferenceInvoiceNo: Record "Reference Invoice No.";
     begin
         ReferenceInvoiceNo.SETRANGE("Document No.", DocNo);
-        IF ReferenceInvoiceNo.FINDFIRST THEN
+        IF ReferenceInvoiceNo.FINDFIRST() THEN
             RefInvNo := ReferenceInvoiceNo."Reference Invoice Nos."
         ELSE
             RefInvNo := '';
     end;
 
-    local procedure "//QRCode"()
-    begin
-    end;
-
-    local procedure GetQRCode(QRCodeInput: Text[1024]) QRCodeFileName: Text[1024]
-    var
-        [RunOnClient]
-        IBarCodeProvider: DotNet IBarcodeProvider;
-    begin
-        GetBarCodeProvider(IBarCodeProvider);
-        QRCodeFileName := IBarCodeProvider.GetBarcode(QRCodeInput);
-    end;
-
-    [Scope('Internal')]
-    procedure MoveToMagicPath(SourceFileName: Text[1024]) DestinationFileName: Text[1024]
-    var
-        FileSystemObject: Automation;
-    begin
-        // User Temp Path
-        DestinationFileName := FileManagement.ClientTempFileName('');
-        IF ISCLEAR(FileSystemObject) THEN
-            CREATE(FileSystemObject, TRUE, TRUE);
-        FileSystemObject.MoveFile(SourceFileName, DestinationFileName);
-    end;
-
-    [Scope('Internal')]
-    procedure GetBarCodeProvider(var IBarCodeProvider: DotNet IBarcodeProvider)
-    var
-        [RunOnClient]
-        QRCodeProvider: DotNet QRCodeProvider;
-    begin
-        QRCodeProvider := QRCodeProvider.QRCodeProvider;
-        IBarCodeProvider := QRCodeProvider;
-    end;
-
-    [Scope('Internal')]
-    procedure GenerateQRCode(var EInvoicingRequests: Record "E-Invoicing Requests")
-    var
-        QRCodeInput: Text[1024];
-        QRCodeFileName: Text[1024];
-        TempBlob: Record TempBlob;
-        Text50000: Label 'QR Code doesn''t exist for Document No %1, as its E-Invoice is not processed.';
-    begin
-        QRCodeInput := EInvoicingRequests."Signed QR Code" + EInvoicingRequests."Signed QR Code2" + EInvoicingRequests."Signed QR Code3" + EInvoicingRequests."Signed QR Code4";
-
-        QRCodeFileName := GetQRCode(QRCodeInput);
-        QRCodeFileName := MoveToMagicPath(QRCodeFileName); // To avoid confirmation dialogue on RTC
-        // Load the image from file into the BLOB field
-        CLEAR(TempBlob);
-        FileManagement.BLOBImport(TempBlob, QRCodeFileName);
-        IF TempBlob.Blob.HASVALUE THEN
-            EInvoicingRequests."QR Image" := TempBlob.Blob;
-
-        // Erase the temporary file
-        IF NOT ISSERVICETIER THEN
-            IF EXISTS(QRCodeFileName) THEN
-                ERASE(QRCodeFileName);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, 33083461, 'ReturnQRCodeEinvoicing', '', false, false)]
-    [Scope('Internal')]
-    procedure ReturnQRImage(DocType: Option; DocNo: Code[20]; var TempBlob: Record TempBlob; var IRN: Text)
-    var
-        QRCodeInput: Text[1024];
-        QRCodeFileName: Text[1024];
-        Text50000: Label 'QR Code doesn''t exist for Document No %1, as its E-Invoice is not processed.';
-        EInvoicingRequests: Record "E-Invoicing Requests";
-    begin
-        EInvoicingRequests.SETCURRENTKEY("Document Type", "Document No.", "E-Invoice Generated");
-        EInvoicingRequests.SETRANGE("Document Type", DocType);
-        EInvoicingRequests.SETRANGE("Document No.", DocNo);
-        EInvoicingRequests.SETRANGE("E-Invoice Generated", TRUE);
-        EInvoicingRequests.SETFILTER("Signed QR Code", '<>%1', '');
-        IF EInvoicingRequests.FINDFIRST THEN BEGIN
-            QRCodeInput := EInvoicingRequests."Signed QR Code" + EInvoicingRequests."Signed QR Code2" + EInvoicingRequests."Signed QR Code3" + EInvoicingRequests."Signed QR Code4";
-            IRN := EInvoicingRequests."IRN No.";
-        END;
-
-        IF QRCodeInput <> '' THEN BEGIN
-            QRCodeFileName := GetQRCode(QRCodeInput);
-            QRCodeFileName := MoveToMagicPath(QRCodeFileName); // To avoid confirmation dialogue on RTC
-                                                               // Load the image from file into the BLOB field
-            CLEAR(TempBlob);
-            FileManagement.BLOBImport(TempBlob, QRCodeFileName);
-        END;
-    end;
-
     local procedure GetEInvSetup()
     begin
         IF NOT SetupFound THEN BEGIN
-            EInvIntegrationSetup.GET;
+            EInvIntegrationSetup.GET();
             SetupFound := TRUE;
         END;
-    end;
-
-    local procedure ValidateIRNandImportDetails(SalesInvoiceHeader: Record "Sales Invoice Header"; IRNValue2: Text; AckValue2: Text; SignedQRCodeValue2: Text; AckDt2: Text): Boolean
-    var
-        RecRef: RecordRef;
-        FieldRef: FieldRef;
-        TempDateTime: DateTime;
-    begin
-        RecRef.GET(SalesInvoiceHeader.RECORDID);
-        FieldRef := RecRef.FIELD(16628);
-        FieldRef.VALUE := IRNValue2;
-        FieldRef := RecRef.FIELD(16627);
-        FieldRef.VALUE := AckValue2;
-        FieldRef := RecRef.FIELD(16632);
-        CLEAR(TempDateTime);
-        EVALUATE(TempDateTime, ConvertAckDt(AckDt2));
-        FieldRef.VALUE := TempDateTime;
-        FieldRef := RecRef.FIELD(16633);
-        FieldRef.VALUE := TRUE;
-        GenrateQRCode(SignedQRCodeValue2, RecRef);
-    end;
-
-    local procedure ValidateIRNandImportDetailsCrMemo(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; IRNValue2: Text; AckValue2: Text; SignedQRCodeValue2: Text; AckDt2: Text): Boolean
-    var
-        RecRef: RecordRef;
-        FieldRef: FieldRef;
-        TempDateTime: DateTime;
-    begin
-        RecRef.GET(SalesCrMemoHeader.RECORDID);
-        FieldRef := RecRef.FIELD(16628);
-        FieldRef.VALUE := IRNValue2;
-        FieldRef := RecRef.FIELD(16627);
-        FieldRef.VALUE := AckValue2;
-        FieldRef := RecRef.FIELD(16632);
-        CLEAR(TempDateTime);
-        EVALUATE(TempDateTime, ConvertAckDt(AckDt2));
-        FieldRef.VALUE := TempDateTime;
-        FieldRef := RecRef.FIELD(16633);
-        FieldRef.VALUE := TRUE;
-        GenrateQRCode(SignedQRCodeValue2, RecRef);
     end;
 
     local procedure ConvertAckDt(AckDt2: Text) DateTime: Text
@@ -1873,32 +580,1228 @@
         DateTime := DD + '-' + MM + '-' + YYYY + ' ' + COPYSTR(AckDt2, 12, 8);
     end;
 
-    local procedure GenrateQRCode(QRCodeTxt: Text; var RecRef: RecordRef)
-    var
-        TempBlob: Record TempBlob;
-        FieldRef: FieldRef;
-        QRCodeInput: Text;
-        QRCodeFileName: Text;
+    local procedure WriteJsonFileHeader()
     begin
-        // Save a QR code image into a file in a temporary folder.
-        QRCodeInput := QRCodeTxt;
-        QRCodeFileName := GetQRCode(QRCodeInput);
-        QRCodeFileName := MoveToMagicPath(QRCodeFileName); // To avoid confirmation dialogue on RTC.
-
-        // Load the image from file into the BLOB field.
-        CLEAR(TempBlob);
-        TempBlob.CALCFIELDS(Blob);
-        FileManagement.BLOBImport(TempBlob, QRCodeFileName);
-
-        FieldRef := RecRef.FIELD(16629);
-        FieldRef.VALUE := TempBlob.Blob;
-        RecRef.MODIFY;
-
-        // Erase the temporary file.
-        IF NOT ISSERVICETIER THEN
-            IF EXISTS(QRCodeFileName) THEN
-                ERASE(QRCodeFileName);
+        JObject.Add('Version', '1.1');
+        JsonArrayData.Add(JObject);
     end;
-}
 
- */
+    local procedure ReadTransactionDetails(GSTCustType: Enum "GST Customer Type"; ShipToCode: Code[12])
+    begin
+        Clear(JsonArrayData);
+        if IsInvoice then
+            ReadInvoiceTransactionDetails(GSTCustType, ShipToCode)
+        else
+            ReadCreditMemoTransactionDetails(GSTCustType, ShipToCode);
+    end;
+
+    local procedure ReadCreditMemoTransactionDetails(GSTCustType: Enum "GST Customer Type"; ShipToCode: Code[12])
+    var
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        NatureOfSupply: Text[7];
+        SupplyType: Text[3];
+        IgstOnIntra: Text[3];
+    begin
+        if IsInvoice then
+            exit;
+
+        case GSTCustType of
+            SalesInvoiceHeader."GST Customer Type"::Registered, SalesInvoiceHeader."GST Customer Type"::Exempted:
+                NatureOfSupply := 'B2B';
+
+            SalesInvoiceHeader."GST Customer Type"::Export:
+                if SalesInvoiceHeader."GST Without Payment of Duty" then
+                    NatureOfSupply := 'EXPWOP'
+                else
+                    NatureOfSupply := 'EXPWP';
+
+            SalesInvoiceHeader."GST Customer Type"::"Deemed Export":
+                NatureOfSupply := 'DEXP';
+
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Development", SalesInvoiceHeader."GST Customer Type"::"SEZ Unit":
+                if SalesInvoiceHeader."GST Without Payment of Duty" then
+                    NatureOfSupply := 'SEZWOP'
+                else
+                    NatureOfSupply := 'SEZWP';
+        end;
+
+        if ShipToCode <> '' then begin
+            SalesCrMemoLine.SetRange("Document No.", DocumentNo);
+            if SalesCrMemoLine.FindSet() then
+                repeat
+                    if SalesCrMemoLine."GST Place of Supply" = SalesCrMemoLine."GST Place of Supply"::"Ship-to Address" then
+                        SupplyType := 'REG'
+                    else
+                        SupplyType := 'SHP';
+                until SalesCrMemoLine.Next() = 0;
+        end else
+            SupplyType := 'REG';
+
+        if SalesCrMemoHeader."POS Out Of India" then
+            IgstOnIntra := 'Y'
+        else
+            IgstOnIntra := 'N';
+
+        WriteTransactionDetails(NatureOfSupply, 'N', '', IgstOnIntra);
+    end;
+
+    local procedure ReadInvoiceTransactionDetails(GSTCustType: Enum "GST Customer Type"; ShipToCode: Code[12])
+    var
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        NatureOfSupplyCategory: Text[7];
+        SupplyType: Text[3];
+        IgstOnIntra: Text[3];
+    begin
+        if not IsInvoice then
+            exit;
+
+        case GSTCustType of
+            SalesInvoiceHeader."GST Customer Type"::Registered, SalesInvoiceHeader."GST Customer Type"::Exempted:
+                NatureOfSupplyCategory := 'B2B';
+
+            SalesInvoiceHeader."GST Customer Type"::Export:
+                if SalesInvoiceHeader."GST Without Payment of Duty" then
+                    NatureOfSupplyCategory := 'EXPWOP'
+                else
+                    NatureOfSupplyCategory := 'EXPWP';
+
+            SalesInvoiceHeader."GST Customer Type"::"Deemed Export":
+                NatureOfSupplyCategory := 'DEXP';
+
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Development", SalesInvoiceHeader."GST Customer Type"::"SEZ Unit":
+                IF SalesInvoiceHeader."GST Without Payment of Duty" THEN
+                    NatureOfSupplyCategory := 'SEZWOP'
+                ELSE
+                    NatureOfSupplyCategory := 'SEZWP';
+        end;
+
+        if ShipToCode <> '' then begin
+            SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+            if SalesInvoiceLine.FindSet() then
+                repeat
+                    if SalesInvoiceLine."GST Place of Supply" <> SalesInvoiceLine."GST Place of Supply"::"Ship-to Address" then
+                        SupplyType := 'SHP'
+                    else
+                        SupplyType := 'REG';
+                until SalesInvoiceLine.Next() = 0;
+        end else
+            SupplyType := 'REG';
+
+        if SalesInvoiceHeader."POS Out Of India" then
+            IgstOnIntra := 'Y'
+        else
+            IgstOnIntra := 'N';
+
+        WriteTransactionDetails(NatureOfSupplyCategory, 'N', '', IgstOnIntra);
+    end;
+
+    local procedure WriteTransactionDetails(
+        SupplyCategory: Text[7];
+        RegRev: Text[2];
+        EcmGstin: Text[15];
+        IgstOnIntra: Text[3])
+    var
+        JTranDetails: JsonObject;
+    begin
+        JTranDetails.Add('TaxSch', 'GST');
+        JTranDetails.Add('SupTyp', SupplyCategory);
+        JTranDetails.Add('RegRev', RegRev);
+
+        if EcmGstin <> '' then
+            JTranDetails.Add('EcmGstin', EcmGstin);
+
+        JTranDetails.Add('IgstOnIntra', IgstOnIntra);
+
+        JObject.Add('TranDtls', JTranDetails);
+    end;
+
+    local procedure ReadDocumentHeaderDetails()
+    var
+        InvoiceType: Text[3];
+        PostingDate: Text[10];
+        OriginalInvoiceNo: Text[16];
+    begin
+        Clear(JsonArrayData);
+        if IsInvoice then begin
+            if (SalesInvoiceHeader."Invoice Type" = SalesInvoiceHeader."Invoice Type"::"Debit Note") or
+               (SalesInvoiceHeader."Invoice Type" = SalesInvoiceHeader."Invoice Type"::Supplementary)
+            then
+                InvoiceType := 'DBN'
+            else
+                InvoiceType := 'INV';
+            PostingDate := Format(SalesInvoiceHeader."Posting Date", 0, '<Day,2>/<Month,2>/<Year4>');
+        end else begin
+            InvoiceType := 'CRN';
+            PostingDate := Format(SalesCrMemoHeader."Posting Date", 0, '<Day,2>/<Month,2>/<Year4>');
+        end;
+
+        OriginalInvoiceNo := CopyStr(GetRefInvNo(DocumentNo), 1, 16);
+        WriteDocumentHeaderDetails(InvoiceType, CopyStr(DocumentNo, 1, 16), PostingDate, OriginalInvoiceNo);
+    end;
+
+    local procedure WriteDocumentHeaderDetails(InvoiceType: Text[3]; DocumentNo: Text[16]; PostingDate: Text[10]; OriginalInvoiceNo: Text[16])
+    var
+        JDocumentHeaderDetails: JsonObject;
+    begin
+        JDocumentHeaderDetails.Add('Typ', InvoiceType);
+        JDocumentHeaderDetails.Add('No', DocumentNo);
+        JDocumentHeaderDetails.Add('Dt', PostingDate);
+        JDocumentHeaderDetails.Add('OrgInvNo', OriginalInvoiceNo);
+
+        JObject.Add('DocDtls', JDocumentHeaderDetails);
+    end;
+
+    local procedure ReadDocumentSellerDetails()
+    var
+        CompanyInformationBuff: Record "Company Information";
+        LocationBuff: Record "Location";
+        StateBuff: Record "State";
+        GSTRegistrationNo: Text[20];
+        CompanyName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        Flno: Text[60];
+        Loc: Text[60];
+        City: Text[60];
+        StateCode: Text[10];
+        PhoneNumber: Text[10];
+        Email: Text[50];
+        Pin: Integer;
+        PhoneNoValidation: Text[30];
+    begin
+        Clear(JsonArrayData);
+        if IsInvoice then begin
+            GSTRegistrationNo := SalesInvoiceHeader."Location GST Reg. No.";
+            LocationBuff.Get(SalesInvoiceHeader."Location Code");
+        end else begin
+            GSTRegistrationNo := SalesCrMemoHeader."Location GST Reg. No.";
+            LocationBuff.Get(SalesCrMemoHeader."Location Code");
+        end;
+
+        CompanyInformationBuff.Get();
+        CompanyName := CompanyInformationBuff.Name;
+        Address := LocationBuff.Address;
+        Address2 := LocationBuff."Address 2";
+        Flno := '';
+        Loc := '';
+        City := LocationBuff.City;
+        if LocationBuff."Post Code" <> '' then
+            Evaluate(Pin, (CopyStr(LocationBuff."Post Code", 1, 6)))
+        else
+            Pin := 000000;
+
+        StateBuff.Get(LocationBuff."State Code");
+        StateCode := StateBuff."State Code (GST Reg. No.)";
+
+        if LocationBuff."Phone No." <> '' then
+            PhoneNumber := CopyStr(LocationBuff."Phone No.", 1, 10)
+        else
+            PhoneNumber := '000000';
+
+        if LocationBuff."E-Mail" <> '' then
+            Email := CopyStr(LocationBuff."E-Mail", 1, 50)
+        else
+            Email := '0000@00';
+
+        PhoneNoValidation := '!@*()+=-[]\\\;,./{}|\":<>?';
+        PhoneNumber := DelChr(PhoneNumber, '=', PhoneNoValidation);
+        WriteSellerDetails(GSTRegistrationNo, CompanyName, Address, Address2, City, Pin, StateCode, PhoneNumber, Email);
+    end;
+
+    local procedure WriteSellerDetails(
+        GSTRegistrationNo: Text[20];
+        CompanyName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        City: Text[60];
+        PostCode: Integer;
+        StateCode: Text[10];
+        PhoneNumber: Text[10];
+        Email: Text[50])
+    var
+        JSellerDetails: JsonObject;
+    begin
+        JSellerDetails.Add('Gstin', GSTRegistrationNo);
+        JSellerDetails.Add('LglNm', CompanyName);
+        JSellerDetails.Add('Addr1', Address);
+
+        if Address2 <> '' then
+            JSellerDetails.Add('Addr2', Address2);
+
+        JSellerDetails.Add('Loc', City);
+        JSellerDetails.Add('Pin', PostCode);
+        JSellerDetails.Add('Stcd', StateCode);
+
+        if PhoneNumber <> '' then
+            JSellerDetails.Add('Ph', PhoneNumber)
+        else
+            JSellerDetails.Add('Ph', '000000');
+
+        if Email <> '' then
+            JSellerDetails.Add('Em', Email)
+        else
+            JSellerDetails.Add('Em', '0000@00');
+
+        JObject.Add('SellerDtls', JSellerDetails);
+    end;
+
+    local procedure ReadDocumentBuyerDetails()
+    begin
+        Clear(JsonArrayData);
+        if IsInvoice then
+            ReadInvoiceBuyerDetails()
+        else
+            ReadCrMemoBuyerDetails();
+    end;
+
+    local procedure ReadInvoiceBuyerDetails()
+    var
+        Contact: Record Contact;
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        ShiptoAddress: Record "Ship-to Address";
+        StateBuff: Record State;
+        GSTRegistrationNumber: Text[20];
+        CompanyName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        Floor: Text[60];
+        AddressLocation: Text[60];
+        City: Text[60];
+        StateCode: Text[10];
+        PhoneNumber: Text[10];
+        Email: Text[50];
+        Pin: Integer;
+        PhoneNoValidation: Text[30];
+    begin
+        if SalesInvoiceHeader."Customer GST Reg. No." <> '' then
+            GSTRegistrationNumber := SalesInvoiceHeader."Customer GST Reg. No."
+        else
+            GSTRegistrationNumber := 'URP';
+
+        CompanyName := SalesInvoiceHeader."Bill-to Name";
+        Address := SalesInvoiceHeader."Bill-to Address";
+        Address2 := SalesInvoiceHeader."Bill-to Address 2";
+        Floor := '';
+        AddressLocation := '';
+        City := SalesInvoiceHeader."Bill-to City";
+
+        if SalesInvoiceHeader."Bill-to Post Code" <> '' then
+            Evaluate(Pin, (CopyStr(SalesInvoiceHeader."Bill-to Post Code", 1, 6)))
+        else
+            Pin := 000000;
+
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
+        if SalesInvoiceLine.FindFirst() then
+            case SalesInvoiceLine."GST Place of Supply" of
+                SalesInvoiceLine."GST Place of Supply"::"Bill-to Address":
+                    begin
+                        if not (SalesInvoiceHeader."GST Customer Type" = SalesInvoiceHeader."GST Customer Type"::Export) then begin
+                            StateBuff.Get(SalesInvoiceHeader."GST Bill-to State Code");
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
+                        end else
+                            StateCode := '';
+
+                        if Contact.Get(SalesInvoiceHeader."Bill-to Contact No.") then begin
+                            PhoneNumber := CopyStr(Contact."Phone No.", 1, 10);
+                            Email := CopyStr(Contact."E-Mail", 1, 50);
+                        end else begin
+                            PhoneNumber := '';
+                            Email := '';
+                        end;
+                    end;
+
+                SalesInvoiceLine."GST Place of Supply"::"Ship-to Address":
+                    begin
+                        if not (SalesInvoiceHeader."GST Customer Type" = SalesInvoiceHeader."GST Customer Type"::Export) then begin
+                            StateBuff.Get(SalesInvoiceHeader."GST Ship-to State Code");
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
+                        end else
+                            StateCode := '';
+
+                        if ShiptoAddress.Get(SalesInvoiceHeader."Sell-to Customer No.", SalesInvoiceHeader."Ship-to Code") then begin
+                            PhoneNumber := CopyStr(ShiptoAddress."Phone No.", 1, 10);
+                            Email := CopyStr(ShiptoAddress."E-Mail", 1, 50);
+                        end else begin
+                            PhoneNumber := '';
+                            Email := '';
+                        end;
+                    end;
+                else begin
+                    StateCode := '';
+                    PhoneNumber := '';
+                    Email := '';
+                end;
+            end;
+
+        PhoneNoValidation := '!@*()+=-[]\\\;,./{}|\":<>?';
+        PhoneNumber := DelChr(PhoneNumber, '=', PhoneNoValidation);
+        WriteBuyerDetails(GSTRegistrationNumber, CompanyName, Address, Address2, City, Pin, StateCode, PhoneNumber, Email);
+    end;
+
+    local procedure ReadCrMemoBuyerDetails()
+    var
+        Contact: Record Contact;
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        ShiptoAddress: Record "Ship-to Address";
+        StateBuff: Record State;
+        GSTRegistrationNumber: Text[20];
+        CompanyName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        Floor: Text[60];
+        AddressLocation: Text[60];
+        City: Text[60];
+        Pin: Integer;
+        StateCode: Text[10];
+        PhoneNumber: Text[10];
+        Email: Text[50];
+        PhoneNoValidation: Text[30];
+    begin
+        if SalesCrMemoHeader."Customer GST Reg. No." <> '' then
+            GSTRegistrationNumber := SalesCrMemoHeader."Customer GST Reg. No."
+        else
+            GSTRegistrationNumber := 'URP';
+        CompanyName := SalesCrMemoHeader."Bill-to Name";
+        Address := SalesCrMemoHeader."Bill-to Address";
+        Address2 := SalesCrMemoHeader."Bill-to Address 2";
+        Floor := '';
+        AddressLocation := '';
+        City := SalesCrMemoHeader."Bill-to City";
+        if SalesCrMemoHeader."Bill-to Post Code" <> '' then
+            Evaluate(Pin, (CopyStr(SalesCrMemoHeader."Bill-to Post Code", 1, 6)))
+        else
+            Pin := 000000;
+
+        StateCode := '';
+        PhoneNumber := '';
+        Email := '';
+
+        SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        if SalesCrMemoLine.FindFirst() then
+            case SalesCrMemoLine."GST Place of Supply" of
+
+                SalesCrMemoLine."GST Place of Supply"::"Bill-to Address":
+                    begin
+                        if not (SalesCrMemoHeader."GST Customer Type" = SalesCrMemoHeader."GST Customer Type"::Export) then begin
+                            StateBuff.Get(SalesCrMemoHeader."GST Bill-to State Code");
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
+                        end;
+
+                        if Contact.Get(SalesCrMemoHeader."Bill-to Contact No.") then begin
+                            PhoneNumber := CopyStr(Contact."Phone No.", 1, 10);
+                            Email := CopyStr(Contact."E-Mail", 1, 50);
+                        end;
+                    end;
+
+                SalesCrMemoLine."GST Place of Supply"::"Ship-to Address":
+                    begin
+                        if not (SalesCrMemoHeader."GST Customer Type" = SalesCrMemoHeader."GST Customer Type"::Export) then begin
+                            StateBuff.Get(SalesCrMemoHeader."GST Ship-to State Code");
+                            StateCode := StateBuff."State Code (GST Reg. No.)";
+                        end;
+
+                        if ShiptoAddress.Get(SalesCrMemoHeader."Sell-to Customer No.", SalesCrMemoHeader."Ship-to Code") then begin
+                            PhoneNumber := CopyStr(ShiptoAddress."Phone No.", 1, 10);
+                            Email := CopyStr(ShiptoAddress."E-Mail", 1, 50);
+                        end;
+                    end;
+            end;
+
+        PhoneNoValidation := '!@*()+=-[]\\\;,./{}|\":<>?';
+        PhoneNumber := DelChr(PhoneNumber, '=', PhoneNoValidation);
+        WriteBuyerDetails(GSTRegistrationNumber, CompanyName, Address, Address2, City, Pin, StateCode, PhoneNumber, Email);
+    end;
+
+    local procedure WriteBuyerDetails(
+        GSTRegistrationNumber: Text[20];
+        CompanyName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        City: Text[60];
+        Pin: Integer;
+        StateCode: Text[10];
+        PhoneNumber: Text[10];
+        EmailID: Text[50])
+    var
+        JBuyerDetails: JsonObject;
+    begin
+        JBuyerDetails.Add('Gstin', GSTRegistrationNumber);
+        JBuyerDetails.Add('LglNm', CompanyName);
+
+        if StateCode <> '' then
+            JBuyerDetails.Add('POS', StateCode)
+        else
+            JBuyerDetails.Add('POS', '96');
+
+        JBuyerDetails.Add('Addr1', Address);
+
+        if Address2 <> '' then
+            JBuyerDetails.Add('Addr2', Address2);
+
+        JBuyerDetails.Add('Loc', City);
+        JBuyerDetails.Add('Stcd', StateCode);
+        JBuyerDetails.Add('Pin', Pin);
+
+        if PhoneNumber <> '' then
+            JBuyerDetails.Add('Ph', PhoneNumber)
+        else
+            JBuyerDetails.Add('Ph', '000000');
+
+        if EmailID <> '' then
+            JBuyerDetails.Add('Em', EmailID)
+        else
+            JBuyerDetails.Add('Em', '0000@00');
+
+        JObject.Add('BuyerDtls', JBuyerDetails);
+    end;
+
+    local procedure ReadDocumentShippingDetails()
+    var
+        ShiptoAddress: Record "Ship-to Address";
+        StateBuff: Record State;
+        PostCode: Integer;
+        GSTRegistrationNumber: Text[20];
+        CompanyName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        City: Text[100];
+        StateCode: Text[10];
+        PhoneNumber: Text[10];
+        EmailID: Text[50];
+    begin
+        Clear(JsonArrayData);
+        if IsInvoice and (SalesInvoiceHeader."Ship-to Code" <> '') then begin
+            ShiptoAddress.Get(SalesInvoiceHeader."Sell-to Customer No.", SalesInvoiceHeader."Ship-to Code");
+            StateBuff.Get(SalesInvoiceHeader."GST Ship-to State Code");
+            CompanyName := SalesInvoiceHeader."Ship-to Name";
+            Address := SalesInvoiceHeader."Ship-to Address";
+            Address2 := SalesInvoiceHeader."Ship-to Address 2";
+            City := SalesInvoiceHeader."Ship-to City";
+            Evaluate(PostCode, (CopyStr(SalesInvoiceHeader."Ship-to Post Code", 1, 6)));
+        end else
+            if SalesCrMemoHeader."Ship-to Code" <> '' then begin
+                ShiptoAddress.Get(SalesCrMemoHeader."Sell-to Customer No.", SalesCrMemoHeader."Ship-to Code");
+                StateBuff.Get(SalesCrMemoHeader."GST Ship-to State Code");
+                CompanyName := SalesCrMemoHeader."Ship-to Name";
+                Address := SalesCrMemoHeader."Ship-to Address";
+                Address2 := SalesCrMemoHeader."Ship-to Address 2";
+                City := SalesCrMemoHeader."Ship-to City";
+                Evaluate(PostCode, CopyStr(SalesCrMemoHeader."Ship-to Post Code", 1, 6));
+            end;
+        if ShiptoAddress."GST Registration No." <> '' then
+            GSTRegistrationNumber := ShiptoAddress."GST Registration No."
+        else
+            GSTRegistrationNumber := SalesInvoiceHeader."Location GST Reg. No.";
+
+        StateCode := StateBuff."State Code (GST Reg. No.)";
+        PhoneNumber := CopyStr(ShiptoAddress."Phone No.", 1, 10);
+        EmailID := CopyStr(ShiptoAddress."E-Mail", 1, 50);
+        WriteShippingDetails(GSTRegistrationNumber, CompanyName, Address, Address2, City, PostCode, StateCode);
+    end;
+
+    local procedure WriteShippingDetails(
+        GSTRegistrationNumber: Text[20];
+        CompanyName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        AddressLocation: Text[100];
+        PostCode: Integer;
+        StateCode: Text[10])
+    var
+        Pin: Integer;
+        JShippingDetails: JsonObject;
+    begin
+        Pin := 000000;
+        JShippingDetails.Add('Gstin', GSTRegistrationNumber);
+        JShippingDetails.Add('LglNm', CompanyName);
+        JShippingDetails.Add('TrdNm', CompanyName);
+        JShippingDetails.Add('Addr1', Address);
+
+        if Address2 <> '' then
+            JShippingDetails.Add('Addr2', Address2);
+
+        JShippingDetails.Add('Loc', AddressLocation);
+
+        if PostCode <> 0 then
+            JShippingDetails.Add('Pin', PostCode)
+        else
+            JShippingDetails.Add('Pin', Pin);
+
+        JShippingDetails.Add('Stcd', StateCode);
+
+        if CompanyName <> '' then
+            JObject.Add('ShipDtls', JShippingDetails);
+    end;
+
+    local procedure ReadDocumentTotalDetails()
+    var
+        AssessableAmount: Decimal;
+        CGSTAmount: Decimal;
+        SGSTAmount: Decimal;
+        IGSTAmount: Decimal;
+        CessAmount: Decimal;
+        StateCessAmount: Decimal;
+        CESSNonAvailmentAmount: Decimal;
+        DiscountAmount: Decimal;
+        OtherCharges: Decimal;
+        TotalInvoiceValue: Decimal;
+    begin
+        Clear(JsonArrayData);
+        GetGSTValue(AssessableAmount, CGSTAmount, SGSTAmount, IGSTAmount, CessAmount, StateCessAmount, CESSNonAvailmentAmount, DiscountAmount, OtherCharges, TotalInvoiceValue);
+        WriteDocumentTotalDetails(AssessableAmount, CGSTAmount, SGSTAmount, IGSTAmount, CessAmount, CESSNonAvailmentAmount, DiscountAmount, OtherCharges, TotalInvoiceValue);
+    end;
+
+    local procedure WriteDocumentTotalDetails(
+        AssessableAmount: Decimal;
+        CGSTAmount: Decimal;
+        SGSTAmount: Decimal;
+        IGSTAmount: Decimal;
+        CessAmount: Decimal;
+        CessNonAdvanceVal: Decimal;
+        DiscountAmount: Decimal;
+        OtherCharges: Decimal;
+        TotalInvoiceAmount: Decimal)
+    var
+        JDocTotalDetails: JsonObject;
+        RoundOffAmt: Integer;
+    begin
+        RoundOffAmt := 0;
+        JDocTotalDetails.Add('Assval', AssessableAmount);
+        JDocTotalDetails.Add('CgstVal', CGSTAmount);
+        JDocTotalDetails.Add('SgstVAl', SGSTAmount);
+        JDocTotalDetails.Add('IgstVal', IGSTAmount);
+        JDocTotalDetails.Add('CesVal', CessAmount);
+        JDocTotalDetails.Add('CesNonAdVal', CessNonAdvanceVal);
+        JDocTotalDetails.Add('Discount', DiscountAmount);
+        JDocTotalDetails.Add('OthChrg', OtherCharges);
+
+        if RndOffAmt = 0 then
+            JDocTotalDetails.Add('RndOffAmt', RoundOffAmt)
+        else
+            JDocTotalDetails.Add('RndOffAmt', RndOffAmt);
+
+        JDocTotalDetails.Add('TotInvVal', TotalInvoiceAmount);
+
+        JObject.Add('ValDtls', JDocTotalDetails);
+    end;
+
+    local procedure GetGSTValue(
+    var AssessableAmount: Decimal;
+    var CGSTAmount: Decimal;
+    var SGSTAmount: Decimal;
+    var IGSTAmount: Decimal;
+    var CessAmount: Decimal;
+    var StateCessValue: Decimal;
+    var CessNonAdvanceAmount: Decimal;
+    var DiscountAmount: Decimal;
+    var OtherCharges: Decimal;
+    var TotalInvoiceValue: Decimal)
+    var
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        GSTLedgerEntry: Record "GST Ledger Entry";
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        TotGSTAmt: Decimal;
+    begin
+        GSTLedgerEntry.SetRange("Document No.", DocumentNo);
+
+        GSTLedgerEntry.SetRange("GST Component Code", CGSTLbl);
+        if GSTLedgerEntry.FindSet() then
+            repeat
+                CGSTAmount += Abs(GSTLedgerEntry."GST Amount");
+            until GSTLedgerEntry.Next() = 0
+        else
+            CGSTAmount := 0;
+
+        GSTLedgerEntry.SetRange("GST Component Code", SGSTLbl);
+        if GSTLedgerEntry.FindSet() then
+            repeat
+                SGSTAmount += Abs(GSTLedgerEntry."GST Amount")
+            until GSTLedgerEntry.Next() = 0
+        else
+            SGSTAmount := 0;
+
+        GSTLedgerEntry.SetRange("GST Component Code", IGSTLbl);
+        if GSTLedgerEntry.FindSet() then
+            repeat
+                IGSTAmount += Abs(GSTLedgerEntry."GST Amount")
+            until GSTLedgerEntry.Next() = 0
+        else
+            IGSTAmount := 0;
+
+        CessAmount := 0;
+        CessNonAdvanceAmount := 0;
+
+        DetailedGSTLedgerEntry.SetRange("Document No.", DocumentNo);
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", CESSLbl);
+        if DetailedGSTLedgerEntry.FindFirst() then
+            repeat
+                if DetailedGSTLedgerEntry."GST %" > 0 then
+                    CessAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
+                else
+                    CessNonAdvanceAmount += Abs(DetailedGSTLedgerEntry."GST Amount");
+            until GSTLedgerEntry.Next() = 0;
+
+        GSTLedgerEntry.SetFilter("GST Component Code", '<>CGST|<>SGST|<>IGST|<>CESS');
+        if GSTLedgerEntry.FindSet() then
+            repeat
+                StateCessValue += Abs(GSTLedgerEntry."GST Amount");
+            until GSTLedgerEntry.Next() = 0;
+
+        if IsInvoice then begin
+            SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+            if SalesInvoiceLine.FindSet() then
+                repeat
+                    AssessableAmount += SalesInvoiceLine.Amount;
+                    DiscountAmount += SalesInvoiceLine."Inv. Discount Amount";
+                until SalesInvoiceLine.Next() = 0;
+            TotGSTAmt := CGSTAmount + SGSTAmount + IGSTAmount + CessAmount + CessNonAdvanceAmount + StateCessValue;
+
+            AssessableAmount := Round(
+                CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                  WorkDate(), SalesInvoiceHeader."Currency Code", AssessableAmount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            TotGSTAmt := Round(
+                CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                  WorkDate(), SalesInvoiceHeader."Currency Code", TotGSTAmt, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            DiscountAmount := Round(
+                CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                  WorkDate(), SalesInvoiceHeader."Currency Code", DiscountAmount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+        end else begin
+            SalesCrMemoLine.SetRange("Document No.", DocumentNo);
+            if SalesCrMemoLine.FindSet() then begin
+                repeat
+                    AssessableAmount += SalesCrMemoLine.Amount;
+                    DiscountAmount += SalesCrMemoLine."Inv. Discount Amount";
+                until SalesCrMemoLine.Next() = 0;
+                TotGSTAmt := CGSTAmount + SGSTAmount + IGSTAmount + CessAmount + CessNonAdvanceAmount + StateCessValue;
+            end;
+
+            AssessableAmount := Round(
+                CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(),
+                    SalesCrMemoHeader."Currency Code",
+                    AssessableAmount,
+                    SalesCrMemoHeader."Currency Factor"),
+                    0.01,
+                    '=');
+
+            TotGSTAmt := Round(
+                CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(),
+                    SalesCrMemoHeader."Currency Code",
+                    TotGSTAmt,
+                    SalesCrMemoHeader."Currency Factor"),
+                    0.01,
+                    '=');
+
+            DiscountAmount := Round(
+                CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(),
+                    SalesCrMemoHeader."Currency Code",
+                    DiscountAmount,
+                    SalesCrMemoHeader."Currency Factor"),
+                    0.01,
+                    '=');
+        end;
+
+        CustLedgerEntry.SetCurrentKey("Document No.");
+        CustLedgerEntry.SetRange("Document No.", DocumentNo);
+        if IsInvoice then begin
+            CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Invoice);
+            CustLedgerEntry.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
+        end else begin
+            CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::"Credit Memo");
+            CustLedgerEntry.SetRange("Customer No.", SalesCrMemoHeader."Bill-to Customer No.");
+        end;
+
+        if CustLedgerEntry.FindFirst() then begin
+            CustLedgerEntry.CalcFields("Amount (LCY)");
+            TotalInvoiceValue := Abs(CustLedgerEntry."Amount (LCY)");
+        end;
+
+        OtherCharges := CalculateOtherCharges(DocumentNo);
+    end;
+
+    local procedure CalculateOtherCharges(DocNo: code[20]) Amount: Decimal
+    var
+        TaxBaseSubscribers: Codeunit "Tax Base Subscribers";
+    begin
+        TaxBaseSubscribers.GetAmountFromDocumentNoForEInv(DocNo, Amount);
+    end;
+
+    local procedure ReadDocumentItemList()
+    var
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        AssessableAmount: Decimal;
+        GstRate: Decimal;
+        CGSTRate: Decimal;
+        SGSTRate: Decimal;
+        IGSTRate: Decimal;
+        CessRate: Decimal;
+        CesNonAdval: Decimal;
+        StateCess: Decimal;
+        CGSTValue: Decimal;
+        SGSTValue: Decimal;
+        IGSTValue: Decimal;
+        IsServc: Text[1];
+        Count: Integer;
+    begin
+        Count := 1;
+        Clear(JsonArrayData);
+        if IsInvoice then begin
+            SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+            SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
+            SalesInvoiceLine.SetFilter(Quantity, '<>%1', 0);
+            if SalesInvoiceLine.FindSet() then begin
+                if SalesInvoiceLine.Count > 100 then
+                    Error(SalesLinesMaxCountLimitErr, SalesInvoiceLine.Count);
+                repeat
+                    if SalesInvoiceLine."GST Assessable Value (LCY)" <> 0 then
+                        AssessableAmount := SalesInvoiceLine."GST Assessable Value (LCY)"
+                    else
+                        AssessableAmount := SalesInvoiceLine.Amount;
+
+                    if SalesInvoiceLine."GST Group Type" = SalesInvoiceLine."GST Group Type"::Goods then
+                        IsServc := 'N'
+                    else
+                        IsServc := 'Y';
+
+                    GetGSTComponentRate(
+                        SalesInvoiceLine."Document No.",
+                        SalesInvoiceLine."Line No.",
+                        CGSTRate,
+                        SGSTRate,
+                        IGSTRate,
+                        CessRate,
+                        CesNonAdval,
+                        StateCess);
+
+                    if SalesInvoiceLine."GST Jurisdiction Type" = SalesInvoiceLine."GST Jurisdiction Type"::Intrastate then
+                        GstRate := CGSTRate + SGSTRate
+                    else
+                        GstRate := IGSTRate;
+
+                    GetGSTValueForLine(SalesInvoiceLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
+                    if SalesInvoiceLine."No." <> GetInvoiceRoundingAccountForInvoice() then
+                        WriteItem(
+                          Format(Count),
+                          SalesInvoiceLine.Description + SalesInvoiceLine."Description 2",
+                          SalesInvoiceLine."HSN/SAC Code",
+                          GstRate, SalesInvoiceLine.Quantity,
+                          CopyStr(SalesInvoiceLine."Unit of Measure Code", 1, 3),
+                          Round(SalesInvoiceLine."Unit Price", 0.001, '='),
+                          SalesInvoiceLine."Line Amount" + SalesInvoiceLine."Line Discount Amount",
+                          SalesInvoiceLine."Line Discount Amount", 0,
+                          AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval,
+                          AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
+                          IsServc)
+                    else
+                        RndOffAmt := SalesInvoiceLine.Amount;
+                    Count += 1;
+                until SalesInvoiceLine.Next() = 0;
+            end;
+
+            JObject.Add('ItemList', JsonArrayData);
+        end else begin
+            SalesCrMemoLine.SetRange("Document No.", DocumentNo);
+            SalesCrMemoLine.SetFilter(Type, '<>%1', SalesCrMemoLine.Type::" ");
+            SalesCrMemoLine.SetFilter(Quantity, '<>%1', 0);
+            if SalesCrMemoLine.FindSet() then begin
+                if SalesCrMemoLine.Count > 100 then
+                    Error(SalesLinesMaxCountLimitErr, SalesCrMemoLine.Count);
+
+                repeat
+                    if SalesCrMemoLine."GST Assessable Value (LCY)" <> 0 then
+                        AssessableAmount := SalesCrMemoLine."GST Assessable Value (LCY)"
+                    else
+                        AssessableAmount := SalesCrMemoLine.Amount;
+
+                    if SalesCrMemoLine."GST Group Type" = SalesCrMemoLine."GST Group Type"::Goods then
+                        IsServc := 'N'
+                    else
+                        IsServc := 'Y';
+
+                    GetGSTComponentRate(
+                        SalesCrMemoLine."Document No.",
+                        SalesCrMemoLine."Line No.",
+                        CGSTRate,
+                        SGSTRate,
+                        IGSTRate,
+                        CessRate,
+                        CesNonAdval,
+                        StateCess);
+
+                    if SalesCrMemoLine."GST Jurisdiction Type" = SalesCrMemoLine."GST Jurisdiction Type"::Intrastate then
+                        GstRate := CGSTRate + SGSTRate
+                    else
+                        GstRate := IGSTRate;
+
+                    GetGSTValueForLine(SalesCrMemoLine."Line No.", CGSTValue, SGSTValue, IGSTValue);
+                    if SalesCrMemoLine."No." <> GetInvoiceRoundingAccountForCreditMemo() then
+                        WriteItem(
+                          Format(Count),
+                          SalesCrMemoLine.Description + SalesCrMemoLine."Description 2",
+                          SalesCrMemoLine."HSN/SAC Code", GstRate,
+                          SalesCrMemoLine.Quantity,
+                          CopyStr(SalesCrMemoLine."Unit of Measure Code", 1, 3),
+                          Round(SalesCrMemoLine."Unit Price", 0.001, '='),
+                          SalesCrMemoLine."Line Amount" + SalesCrMemoLine."Line Discount Amount",
+                          SalesCrMemoLine."Line Discount Amount", 0,
+                          AssessableAmount, CGSTValue, SGSTValue, IGSTValue, CessRate, CesNonAdval,
+                          AssessableAmount + CGSTValue + SGSTValue + IGSTValue,
+                          IsServc)
+                    else
+                        RndOffAmt := SalesCrMemoLine.Amount;
+
+                    Count += 1;
+                until SalesCrMemoLine.Next() = 0;
+            end;
+
+            JObject.Add('ItemList', JsonArrayData);
+        end;
+    end;
+
+    local procedure GetInvoiceRoundingAccountForInvoice(): Code[20]
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        CustomerPostingGroup: Record "Customer Posting Group";
+    begin
+        if not SalesInvoiceHeader.Get(DocumentNo) then
+            exit;
+
+        if not CustomerPostingGroup.Get(SalesInvoiceHeader."Customer Posting Group") then
+            exit;
+
+        exit(CustomerPostingGroup."Invoice Rounding Account");
+    end;
+
+    local procedure GetInvoiceRoundingAccountForCreditMemo(): Code[20]
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        CustomerPostingGroup: Record "Customer Posting Group";
+    begin
+        if not SalesCrMemoHeader.Get(DocumentNo) then
+            exit;
+
+        if not CustomerPostingGroup.Get(SalesCrMemoHeader."Customer Posting Group") then
+            exit;
+
+        exit(CustomerPostingGroup."Invoice Rounding Account");
+    end;
+
+    local procedure WriteItem(
+        SlNo: Text[10];
+        ProductName: Text;
+        HSNCode: Text[10];
+        GstRate: Decimal;
+        Quantity: Decimal;
+        Unit: Text[3];
+        UnitPrice: Decimal;
+        TotAmount: Decimal;
+        Discount: Decimal;
+        OtherCharges: Decimal;
+        AssessableAmount: Decimal;
+        CGSTRate: Decimal;
+        SGSTRate: Decimal;
+        IGSTRate: Decimal;
+        CESSRate: Decimal;
+        CessNonAdvanceAmount: Decimal;
+        TotalItemValue: Decimal;
+        IsServc: Text[1])
+    var
+        JItem: JsonObject;
+    begin
+        JItem.Add('SlNo', SlNo);
+        JItem.Add('PrdDesc', ProductName);
+        JItem.Add('IsServc', IsServc);
+        JItem.Add('HsnCd', HSNCode);
+        JItem.Add('Qty', Quantity);
+        JItem.Add('Unit', Unit);
+        JItem.Add('UnitPrice', UnitPrice);
+        JItem.Add('TotAmt', TotAmount);
+        JItem.Add('Discount', Discount);
+        JItem.Add('OthChrg', OtherCharges);
+        JItem.Add('AssAmt', AssessableAmount);
+        JItem.Add('GstRt', GstRate);
+        JItem.Add('CgstAmt', CGSTRate);
+        JItem.Add('SgstAmt', SGSTRate);
+        JItem.Add('IgstAmt', IGSTRate);
+        JItem.Add('CesRt', CESSRate);
+        JItem.Add('CesAmt', 0);
+
+        JItem.Add('CesNonAdval', CessNonAdvanceAmount);
+        JItem.Add('TotItemVal', TotalItemValue);
+
+        JsonArrayData.Add(JItem);
+    end;
+
+    local procedure GetGSTValueForLine(
+    DocumentLineNo: Integer;
+    var CGSTLineAmount: Decimal;
+    var SGSTLineAmount: Decimal;
+    var IGSTLineAmount: Decimal)
+    var
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+    begin
+        CGSTLineAmount := 0;
+        SGSTLineAmount := 0;
+        IGSTLineAmount := 0;
+
+        DetailedGSTLedgerEntry.SetRange("Document No.", DocumentNo);
+        DetailedGSTLedgerEntry.SetRange("Document Line No.", DocumentLineNo);
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", CGSTLbl);
+        if DetailedGSTLedgerEntry.FindSet() then
+            repeat
+                CGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount");
+            until DetailedGSTLedgerEntry.Next() = 0;
+
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", SGSTLbl);
+        if DetailedGSTLedgerEntry.FindSet() then
+            repeat
+                SGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
+            until DetailedGSTLedgerEntry.Next() = 0;
+
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", IGSTLbl);
+        if DetailedGSTLedgerEntry.FindSet() then
+            repeat
+                IGSTLineAmount += Abs(DetailedGSTLedgerEntry."GST Amount")
+            until DetailedGSTLedgerEntry.Next() = 0;
+    end;
+
+    local procedure GetGSTComponentRate(
+    DocumentNo: Code[20];
+    LineNo: Integer;
+    var CGSTRate: Decimal;
+    var SGSTRate: Decimal;
+    var IGSTRate: Decimal;
+    var CessRate: Decimal;
+    var CessNonAdvanceAmount: Decimal;
+    var StateCess: Decimal)
+    var
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+    begin
+        DetailedGSTLedgerEntry.SetRange("Document No.", DocumentNo);
+        DetailedGSTLedgerEntry.SetRange("Document Line No.", LineNo);
+
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", CGSTLbl);
+        if DetailedGSTLedgerEntry.FindFirst() then
+            CGSTRate := DetailedGSTLedgerEntry."GST %"
+        else
+            CGSTRate := 0;
+
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", SGSTLbl);
+        if DetailedGSTLedgerEntry.FindFirst() then
+            SGSTRate := DetailedGSTLedgerEntry."GST %"
+        else
+            SGSTRate := 0;
+
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", IGSTLbl);
+        if DetailedGSTLedgerEntry.FindFirst() then
+            IGSTRate := DetailedGSTLedgerEntry."GST %"
+        else
+            IGSTRate := 0;
+
+        CessRate := 0;
+        CessNonAdvanceAmount := 0;
+        DetailedGSTLedgerEntry.SetRange("GST Component Code", CESSLbl);
+        if DetailedGSTLedgerEntry.FindFirst() then
+            if DetailedGSTLedgerEntry."GST %" > 0 then
+                CessRate := DetailedGSTLedgerEntry."GST %"
+            else
+                CessNonAdvanceAmount := Abs(DetailedGSTLedgerEntry."GST Amount");
+
+        StateCess := 0;
+        DetailedGSTLedgerEntry.SetRange("GST Component Code");
+        if DetailedGSTLedgerEntry.FindSet() then
+            repeat
+                if not (DetailedGSTLedgerEntry."GST Component Code" in [CGSTLbl, SGSTLbl, IGSTLbl, CESSLbl])
+                then
+                    StateCess := DetailedGSTLedgerEntry."GST %";
+            until DetailedGSTLedgerEntry.Next() = 0;
+    end;
+
+    local procedure ReadExportDetails()
+    begin
+        Clear(JsonArrayData);
+        if IsInvoice then
+            ReadInvoiceExportDetails()
+        else
+            ReadCrMemoExportDetails();
+    end;
+
+    local procedure ReadCrMemoExportDetails()
+    var
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        ExportCategory: Text[3];
+        WithPayOfDuty: Text[1];
+        ShipmentBillNo: Text[16];
+        ShipmentBillDate: Text[10];
+        ExitPort: Text[10];
+        DocumentAmount: Decimal;
+        CurrencyCode: Text[3];
+        CountryCode: Text[2];
+    begin
+        if IsInvoice then
+            exit;
+
+        if not (SalesCrMemoHeader."GST Customer Type" in [
+            SalesCrMemoHeader."GST Customer Type"::Export,
+            SalesCrMemoHeader."GST Customer Type"::"Deemed Export",
+            SalesCrMemoHeader."GST Customer Type"::"SEZ Unit",
+            SalesCrMemoHeader."GST Customer Type"::"SEZ Development"])
+        then
+            exit;
+
+        case SalesCrMemoHeader."GST Customer Type" of
+            SalesCrMemoHeader."GST Customer Type"::Export:
+                ExportCategory := 'DIR';
+            SalesCrMemoHeader."GST Customer Type"::"Deemed Export":
+                ExportCategory := 'DEM';
+            SalesCrMemoHeader."GST Customer Type"::"SEZ Unit":
+                ExportCategory := 'SEZ';
+            "GST Customer Type"::"SEZ Development":
+                ExportCategory := 'SED';
+        end;
+
+        if SalesCrMemoHeader."GST Without Payment of Duty" then
+            WithPayOfDuty := 'N'
+        else
+            WithPayOfDuty := 'Y';
+
+        ShipmentBillNo := CopyStr(SalesCrMemoHeader."Bill Of Export No.", 1, 16);
+        ShipmentBillDate := Format(SalesCrMemoHeader."Bill Of Export Date", 0, '<Day,2>/<Month,2>/<Year4>');
+        ExitPort := SalesCrMemoHeader."Exit Point";
+
+        SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        if SalesCrMemoLine.FindSet() then
+            repeat
+                DocumentAmount := DocumentAmount + SalesCrMemoLine.Amount;
+            until SalesCrMemoLine.Next() = 0;
+
+        CurrencyCode := CopyStr(SalesCrMemoHeader."Currency Code", 1, 3);
+        CountryCode := CopyStr(SalesCrMemoHeader."Bill-to Country/Region Code", 1, 2);
+
+        WriteExportDetails(WithPayOfDuty, ShipmentBillNo, ShipmentBillDate, ExitPort, CurrencyCode, CountryCode);
+    end;
+
+    local procedure ReadInvoiceExportDetails()
+    var
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        ExportCategory: Text[3];
+        WithPayOfDuty: Text[1];
+        ShipmentBillNo: Text[16];
+        ShipmentBillDate: Text[10];
+        ExitPort: Text[10];
+        DocumentAmount: Decimal;
+        CurrencyCode: Text[3];
+        CountryCode: Text[2];
+    begin
+        if not IsInvoice then
+            exit;
+
+        if not (SalesInvoiceHeader."GST Customer Type" in [
+            SalesInvoiceHeader."GST Customer Type"::Export,
+            SalesInvoiceHeader."GST Customer Type"::"Deemed Export",
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Unit",
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Development"])
+        then
+            exit;
+
+        case SalesInvoiceHeader."GST Customer Type" of
+            SalesInvoiceHeader."GST Customer Type"::Export:
+                ExportCategory := 'DIR';
+            SalesInvoiceHeader."GST Customer Type"::"Deemed Export":
+                ExportCategory := 'DEM';
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Unit":
+                ExportCategory := 'SEZ';
+            SalesInvoiceHeader."GST Customer Type"::"SEZ Development":
+                ExportCategory := 'SED';
+        end;
+
+        if SalesInvoiceHeader."GST Without Payment of Duty" then
+            WithPayOfDuty := 'N'
+        else
+            WithPayOfDuty := 'Y';
+
+        ShipmentBillNo := CopyStr(SalesInvoiceHeader."Bill Of Export No.", 1, 16);
+        ShipmentBillDate := Format(SalesInvoiceHeader."Bill Of Export Date", 0, '<Day,2>/<Month,2>/<Year4>');
+        ExitPort := SalesInvoiceHeader."Exit Point";
+
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        if SalesInvoiceLine.FindSet() then
+            repeat
+                DocumentAmount := DocumentAmount + SalesInvoiceLine.Amount;
+            until SalesInvoiceLine.Next() = 0;
+
+        CurrencyCode := CopyStr(SalesInvoiceHeader."Currency Code", 1, 3);
+        CountryCode := CopyStr(SalesInvoiceHeader."Bill-to Country/Region Code", 1, 2);
+
+        WriteExportDetails(WithPayOfDuty, ShipmentBillNo, ShipmentBillDate, ExitPort, CurrencyCode, CountryCode);
+    end;
+
+    local procedure WriteExportDetails(
+        WithPayOfDuty: Text[1];
+        ShipmentBillNo: Text[16];
+        ShipmentBillDate: Text[10];
+        ExitPort: Text[10];
+        CurrencyCode: Text[3];
+        CountryCode: Text[2])
+    var
+        JExpDetails: JsonObject;
+    begin
+        JExpDetails.Add('ShipBNo', ShipmentBillNo);
+        JExpDetails.Add('ShipBDt', ShipmentBillDate);
+        JExpDetails.Add('Port', ExitPort);
+        JExpDetails.Add('RefClm', WithPayOfDuty);
+        JExpDetails.Add('ForCur', CurrencyCode);
+        JExpDetails.Add('CntCode', CountryCode);
+
+        JObject.Add('ExpDtls', JExpDetails);
+    end;
+
+    procedure GetEInvoiceResponse(var RecRef: RecordRef)
+    var
+        JSONManagement: Codeunit "JSON Management";
+        QRGenerator: Codeunit "QR Generator";
+        TempBlob: Codeunit "Temp Blob";
+        FieldRef: FieldRef;
+        JsonString: Text;
+        TempIRNTxt: Text;
+        TempDateTime: DateTime;
+        AcknowledgementDateTimeText: Text;
+        AcknowledgementDate: Date;
+        AcknowledgementTime: Time;
+    begin
+        JsonString := ResponseText;
+        if (JsonString = '') or (JsonString = '[]') then
+            exit;
+
+        JSONManagement.InitializeObject(JsonString);
+        if JSONManagement.GetValue(IRNTxt) <> '' then begin
+            FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo("IRN Hash"));
+            FieldRef.Value := JSONManagement.GetValue(IRNTxt);
+            FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo("Acknowledgement No."));
+            FieldRef.Value := JSONManagement.GetValue(AcknowledgementNoTxt);
+
+            AcknowledgementDateTimeText := JSONManagement.GetValue(AcknowledgementDateTxt);
+            Evaluate(AcknowledgementDate, CopyStr(AcknowledgementDateTimeText, 1, 10));
+            Evaluate(AcknowledgementTime, CopyStr(AcknowledgementDateTimeText, 11, 8));
+            TempDateTime := CreateDateTime(AcknowledgementDate, AcknowledgementTime);
+            FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo("Acknowledgement Date"));
+
+            FieldRef.Value := TempDateTime;
+            FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo(IsJSONImported));
+            FieldRef.Value := true;
+            QRGenerator.GenerateQRCodeImage(JSONManagement.GetValue(SignedQRCodeTxt), TempBlob);
+            FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo("QR Code"));
+            TempBlob.ToRecordRef(RecRef, SalesInvoiceHeader.FieldNo("QR Code"));
+            RecRef.Modify();
+        end else
+            Error(IRNHashErr, TempIRNTxt);
+    end;
+
+}

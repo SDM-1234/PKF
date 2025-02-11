@@ -13,7 +13,18 @@
             "launchBrowser": true,
             "enableLongRunningSqlStatements": true,
             "enableSqlInformationDebugger": true,
-            "schemaUpdateMode":"Recreate"
+            "schemaUpdateMode": "Synchronize"
+        },
+        {
+            "name": "AL: Generated Attach request",
+            "request": "attach",
+            "type": "al",
+            "environmentType": "Sandbox",
+            "environmentName": "DEV01",
+            "sessionId": 270174,
+            "breakOnNext": "WebClient",
+            "breakOnError": "ExcludeTry",
+            "tenant": "accf4f9d-3eb8-4ecb-9225-309f325fff53"
         }
     ]
 }

@@ -3,6 +3,7 @@ page 50020 "E-Invoice Integration Setup"
     ApplicationArea = All;
     PageType = Card;
     SourceTable = "E-Inv Integration Setup";
+    UsageCategory = Tasks;
 
     layout
     {

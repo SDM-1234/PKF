@@ -4,6 +4,7 @@ page 50021 "E-Invoice Requests"
     DeleteAllowed = false;
     PageType = List;
     SourceTable = "E-Invoicing Requests";
+    UsageCategory = History;
 
     layout
     {
