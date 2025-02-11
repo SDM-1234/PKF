@@ -110,7 +110,7 @@ page 50017 "Reminder Matrix"
     }
 
     var
-        MatrixRecord: array[32] of Record Date;
+        MatrixRecord: array[32] of Record Date temporary;
         MatrixMgt: Codeunit "Matrix Management";
         FilterTokens: Codeunit "Filter Tokens";
         ColumnSet: Text[1024];
@@ -123,8 +123,8 @@ page 50017 "Reminder Matrix"
 
     local procedure SetColumns(SetWantedPar: Option)
     begin
-        this.MatrixMgt.GeneratePeriodMatrixData(SetWantedPar, ARRAYLEN(this.Matrix_ColumnCaptions), false, this.ViewBy, this.DateFilter, PKFirstRecInSet, Matrix_ColumnCaptions, ColumnSet,
-        this.ColumnSetLength, this.MatrixRecord);
+        // this.MatrixMgt.GeneratePeriodMatrixData(SetWantedPar, ARRAYLEN(this.Matrix_ColumnCaptions), false, this.ViewBy, this.DateFilter, PKFirstRecInSet, Matrix_ColumnCaptions, ColumnSet,
+        // this.ColumnSetLength, this.MatrixRecord);
         CurrPage.MatrixSubPage.PAGE.SetMatrixData(Matrix_ColumnCaptions, MatrixRecord, DateFilter, ColumnSetLength);
         CurrPage.UPDATE(false);
     end;
