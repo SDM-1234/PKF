@@ -203,7 +203,7 @@ report 50080 "Bank Payment Voucher"
         GetVendor: Record Vendor;
         RecGenJounLine: Record "Gen. Journal Line";
         RecState: Record State;
-        ReportCheck: Report Check;
+        ReportCheck: Report "Check Report";
         BankAccountNo: Code[20];
         CheckNo: Code[10];
         TempDocumentNo: Code[20];

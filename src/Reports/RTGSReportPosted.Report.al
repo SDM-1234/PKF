@@ -1041,7 +1041,7 @@ report 50021 "RTGS Report Posted"
         GLAcc: Record "G/L Account";
         RecBeneficiary: Record Beneficiary;
         RecGenJounLine: Record "G/L Entry";
-        ReportCheck: Report Check;
+        ReportCheck: Report "Check Report";
         Cheque: Boolean;
         BankAccountNo: Code[30];
         CheckNo: Code[35];

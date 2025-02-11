@@ -467,12 +467,12 @@ report 50010 "Sales Invoice GST"
     var
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
+        ReportCheck: Report "Check Report";
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
-        ReportCheck: Report Check;
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         IsRent: Boolean;

@@ -1,49 +1,50 @@
-report 50004 "Sales Invoice GST SEZ"
+report 50016 "Credit Memo Fee GST"
 {
     DefaultLayout = RDLC;
-    RDLCLayout = 'src/ReportsLayout/SalesInvoiceGSTSEZ.rdl';
-    UseRequestPage = true;
-    ApplicationArea = All;
-    Caption = 'Sales Invoice GST SEZ';
-    PreviewMode = PrintLayout;
+    RDLCLayout = 'src/ReportsLayout//CreditMemoFeeGST.rdl';
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    Caption = 'Credit Memo';
 
     dataset
     {
-        dataitem("Sales Invoice Header"; "Sales Invoice Header")
+        dataitem("Sales Cr.Memo Header"; "Sales Cr.Memo Header")
         {
             RequestFilterFields = "No.";
-            column(Document_No; "Sales Invoice Header"."No.")
+            column(Document_No; "Sales Cr.Memo Header"."No.")
             {
             }
-            column(Posting_Date; FORMAT("Sales Invoice Header"."Posting Date", 0, 1))
+            column(Posting_Date; FORMAT("Sales Cr.Memo Header"."Posting Date", 0, 1))
             {
             }
-            column(Customer_No; "Sales Invoice Header"."Bill-to Customer No.")
+            column(ExtDocNo; "Sales Cr.Memo Header"."External Document No.")
             {
             }
-            column(Customer_Name; "Sales Invoice Header"."Bill-to Name")
+            column(Customer_No; "Sales Cr.Memo Header"."Bill-to Customer No.")
             {
             }
-            column(Customer_Add; "Sales Invoice Header"."Bill-to Address")
+            column(Customer_Name; "Sales Cr.Memo Header"."Bill-to Name")
             {
             }
-            column(Customer_Add_2; "Sales Invoice Header"."Bill-to Address 2")
+            column(Customer_Add; "Sales Cr.Memo Header"."Bill-to Address")
             {
             }
-            column(Customer_City; "Sales Invoice Header"."Bill-to City")
+            column(Customer_Add_2; "Sales Cr.Memo Header"."Bill-to Address 2")
             {
             }
-            column(Customer_PostCode; "Sales Invoice Header"."Bill-to Post Code")
+            column(Customer_City; "Sales Cr.Memo Header"."Bill-to City")
+            {
+            }
+            column(Customer_PostCode; "Sales Cr.Memo Header"."Bill-to Post Code")
             {
             }
             column(Customer_Country; CountryName)
             {
             }
-            column(Remarks_Header; "Sales Invoice Header".Remarks)
+            column(Remarks_Header; "Sales Cr.Memo Header".Remarks)
             {
             }
-            column(Work_Order_No; "Sales Invoice Header"."Work Order No.")
+            column(Work_Order_No; "Sales Cr.Memo Header"."Work Order No.")
             {
             }
             column(Customer_Contact; Customer.Contact)
@@ -139,16 +140,16 @@ report 50004 "Sales Invoice GST SEZ"
             column(ServTaxRegRec_Description; LocGstNo)
             {
             }
+            column(Cus_GST_No; Customer."GST Registration No.")
+            {
+            }
+            column(BilltoCustomerState_SalesInvoiceHeader; "Sales Cr.Memo Header"."GST Bill-to State Code")
+            {
+            }
             column(MSMENo; MSMENo)
             {
             }
             column(MSMEText; MSMEText)
-            {
-            }
-            column(Cus_GST_No; Customer."GST Registration No.")
-            {
-            }
-            column(BilltoCustomerState_SalesInvoiceHeader; "Sales Invoice Header"."GST Bill-to State Code")
             {
             }
             column(StateName; StateName)
@@ -160,29 +161,29 @@ report 50004 "Sales Invoice GST SEZ"
             column(QRCode; "QR Code")
             {
             }
-            dataitem("Sales Invoice Line"; "Sales Invoice Line")
+            dataitem("Sales Cr.Memo Line"; "Sales Cr.Memo Line")
             {
                 DataItemLink = "Document No." = FIELD("No.");
                 DataItemTableView = SORTING("Document No.", "Line No.");
-                column(LOB_Line; "Sales Invoice Header".LOB)
+                column(LOB_Line; "Sales Cr.Memo Header".LOB)
                 {
                 }
-                column(Segment_Line; "Sales Invoice Header".Segment)
+                column(Segment_Line; "Sales Cr.Memo Header".Segment)
                 {
                 }
-                column(Scope1_Line; "Sales Invoice Line".Scope1)
+                column(Scope1_Line; "Sales Cr.Memo Line".Scope1)
                 {
                 }
-                column(Scope2_Line; "Sales Invoice Line".Scope2)
+                column(Scope2_Line; "Sales Cr.Memo Line".Scope2)
                 {
                 }
-                column(Scope3_Line; "Sales Invoice Line".Scope3)
+                column(Scope3_Line; "Sales Cr.Memo Line".Scope3)
                 {
                 }
-                column(Scope4_Line; "Sales Invoice Line".Scope4)
+                column(Scope4_Line; "Sales Cr.Memo Line".Scope4)
                 {
                 }
-                column(Line_Amount; "Sales Invoice Line"."Line Amount")
+                column(Line_Amount; "Sales Cr.Memo Line"."Line Amount")
                 {
                 }
                 column(Sub_Total; SubTotal)
@@ -256,15 +257,10 @@ report 50004 "Sales Invoice GST SEZ"
                 var
                     DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
                 begin
-                    //IF ServTaxRegRec.GET(CompanyInformation."Service Tax Registration No.") THEN;
-
-                    //ServiceTax += "Service Tax Amount";
-                    //SBTax += "Service Tax SBC Amount";
-                    //KKCTax += "KK Cess Amount";
                     SubTotal += "Line Amount";
-                    GrandTotal += "Sales Invoice Line"."Amount Including VAT";
+                    GrandTotal += "Sales Cr.Memo Line"."Amount Including VAT";
                     ReportCheck.InitTextVariable();
-                    ReportCheck.FormatNoText(AmountInWords, GrandTotal, "Sales Invoice Header"."Currency Code");
+                    ReportCheck.FormatNoText(AmountInWords, GrandTotal, "Sales Cr.Memo Header"."Currency Code");
 
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
@@ -281,7 +277,7 @@ report 50004 "Sales Invoice GST SEZ"
 
                     DetailedGSTLedgerEntry.SETCURRENTKEY("Transaction Type", "Document Type", "Document No.", "Document Line No.");
                     DetailedGSTLedgerEntry.SETRANGE("Transaction Type", DetailedGSTLedgerEntry."Transaction Type"::Sales);
-                    DetailedGSTLedgerEntry.SETRANGE("Document Type", DetailedGSTLedgerEntry."Document Type"::Invoice);
+                    DetailedGSTLedgerEntry.SETRANGE("Document Type", DetailedGSTLedgerEntry."Document Type"::"Credit Memo");
                     DetailedGSTLedgerEntry.SETRANGE("Document No.", "Document No.");
                     DetailedGSTLedgerEntry.SETRANGE("Document Line No.", "Line No.");
                     DetailedGSTLedgerEntry.SETRANGE("No.", "No.");
@@ -293,8 +289,7 @@ report 50004 "Sales Invoice GST SEZ"
 
                     DetailedGSTLedgerEntry.SETRANGE("GST Component Code", 'IGST');
                     IF DetailedGSTLedgerEntry.FINDFIRST() THEN BEGIN
-                        //IGST_Rate := DetailedGSTLedgerEntry."GST %";
-                        IGST_Rate := 0;
+                        IGST_Rate := DetailedGSTLedgerEntry."GST %";
                         IGST_Amt := DetailedGSTLedgerEntry."GST Amount";
                     END;
 
@@ -342,14 +337,14 @@ report 50004 "Sales Invoice GST SEZ"
                 ELSE
                     RecFax := '';
 
-                IF "Sales Invoice Header"."Currency Code" = '' THEN
+                IF "Sales Cr.Memo Header"."Currency Code" = '' THEN
                     CurrencyCode := 'INR'
                 ELSE
                     CurrencyCode := "Currency Code";
 
                 CLEAR(MSMENo);
                 CLEAR(LocGstNo);
-                IF "Sales Invoice Header"."Location Code" <> '' THEN BEGIN
+                IF "Sales Cr.Memo Header"."Location Code" <> '' THEN BEGIN
                     IF LocationL.GET("Location Code") THEN BEGIN
                         LocGstNo := LocationL."GST Registration No.";
                         MSMENo := LocationL."MSME No.";
@@ -364,18 +359,7 @@ report 50004 "Sales Invoice GST SEZ"
                 ELSE
                     MSMEText := 'MSME No. :';
 
-                IF CompanyInformation.Name <> 'PKF SRIDHAR & SANTHANAM LLP' THEN
-                    IF CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP' THEN
-                        IF SalesPerson.GET("Salesperson Code") THEN BEGIN
-                            SalesCode := 'Responsible Person: ';
-                            SalesPersonName := SalesPerson.Name;
-                        END
-                        ELSE
-                            CLEAR(SalesPersonName);
-
-
-
-                IF StateL.GET("Sales Invoice Header"."GST Bill-to State Code") THEN
+                IF StateL.GET("Sales Cr.Memo Header"."GST Bill-to State Code") THEN
                     StateName := StateL.Description
                 ELSE
                     CLEAR(StateName);
@@ -401,17 +385,17 @@ report 50004 "Sales Invoice GST SEZ"
         {
             area(content)
             {
-                field(IsRent; IsRent)
+                field(_IsRent; IsRent)
                 {
                     Caption = 'Rent';
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Rent field.';
+                    ToolTip = 'Check if the service is Rent';
                 }
-                field(IsDuplicate; IsDuplicate)
+                field(_IsDuplicate; IsDuplicate)
                 {
                     Caption = 'Duplicate';
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the value of the Duplicate field.';
+                    ToolTip = 'Check if the document is Duplicate';
                 }
             }
         }
@@ -439,6 +423,7 @@ report 50004 "Sales Invoice GST SEZ"
     var
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
+        RecLocation: Record Location;
         ReportCheck: Report "Check Report";
         ServiceTax: Decimal;
         SBTax: Decimal;
@@ -448,7 +433,6 @@ report 50004 "Sales Invoice GST SEZ"
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         IsRent: Boolean;
-        //ServTaxRegRec: Record "Service Tax Registration Nos.";
         VarText: array[10] of Text;
         IsDuplicate: Boolean;
         DuplicateCap: Text;
@@ -466,20 +450,16 @@ report 50004 "Sales Invoice GST SEZ"
         TotIGST: Decimal;
         StateName: Text[50];
         CountryName: Text[50];
-        RecLocation: Record Location;
         MSMENo: Code[20];
         MSMEText: Text[10];
         RecPhone: Text[45];
         RecFax: Text[45];
-        SalesPerson: Record "Salesperson/Purchaser";
-        SalesCode: Code[10];
-        SalesPersonName: Text[30];
 
     local procedure BankDetails()
     begin
 
         IF CompanyInformation.Name = 'PKF SRIDHAR & SANTHANAM LLP' THEN
-            IF "Sales Invoice Header"."Customer Posting Group" = 'DOMESTIC' THEN BEGIN
+            IF "Sales Cr.Memo Header"."Customer Posting Group" = 'DOMESTIC' THEN BEGIN
                 VarText[10] := 'Bank Details:';
                 VarText[1] := 'INDIAN BANK ACCOUNT NO: 6343272369';
                 VarText[2] := 'Name: PKF SRIDHAR & SANTHANAM LLP';
@@ -499,15 +479,14 @@ report 50004 "Sales Invoice GST SEZ"
                 VarText[3] := 'Beneficiary Name and address: PKF SRIDHAR AND SANTHANAM LLP';
                 VarText[4] := 'KRD GEE GEE Crystal, No. 91-92, 7th Floor, Dr. Radhakrishnan Salai,';
                 VarText[5] := 'Mylapore, Chennai - 600 004';
-                VarText[6] := 'Beneficiary Branch Address: HDFC BANK LIMITED, NO.115, R.K. Salai,';
-                VarText[7] := 'Opp Kalyani Hospital, Chennai - 600 004';
+                VarText[6] := 'Beneficiary Branch Address: HDFC BANK LIMITED, NO.5, Sait Colony,';
+                VarText[7] := '1st Street, Egmore, Chennai - 600 008';
                 VarText[8] := 'Beneficiary bank swift code: HDFCINBBCHE';
-                VarText[9] := 'IFSC Code: HDFC 000 1097';
+                VarText[9] := 'IFSC Code: HDFC 000 1284';
             END;
 
-
         IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN
-            IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
+            IF "Sales Cr.Memo Header"."Location Code" = 'MUM' THEN BEGIN
                 VarText[10] := 'Bank Details:';
                 VarText[1] := 'Bank Account No. 003605001058';
                 VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
@@ -519,7 +498,7 @@ report 50004 "Sales Invoice GST SEZ"
                 VarText[8] := '';
                 VarText[9] := '';
             END ELSE
-                IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
+                IF "Sales Cr.Memo Header"."Location Code" = 'CHN' THEN BEGIN
                     VarText[10] := 'Bank Details:';
                     VarText[1] := 'Bank Account No. 000105006757';
                     VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
@@ -531,75 +510,6 @@ report 50004 "Sales Invoice GST SEZ"
                     VarText[8] := '';
                     VarText[9] := '';
                 END;
-        //ZOHO.RSF.1471[-]
-        case "Sales Invoice Header"."Bank Selection For Report" of
-            "Sales Invoice Header"."Bank Selection For Report"::ICICI2:
-                begin
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 003605001058';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: ICICI Bank';
-                    VarText[4] := 'Branch: Maratha Mandir';
-                    VarText[5] := 'IFSC: ICIC0000036';
-                    VarText[6] := 'SWIFT Code: ICICNBBCTS';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                END;
-            "Sales Invoice Header"."Bank Selection For Report"::ICICI:
-                BEGIN
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 000105006757';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: ICICI Bank';
-                    VarText[4] := 'Branch: Cenotaph Road,Chennai 600018';
-                    VarText[5] := 'IFSC: ICIC0000001';
-                    VarText[6] := 'SWIFT Code: ICICINBBNRI';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                END;
-            "Sales Invoice Header"."Bank Selection For Report"::INDIAN:
-                begin
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 408084558';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: INDIAN Bank';
-                    VarText[4] := 'Branch: RK Salai, Mylapore, Chennai-600004';
-                    VarText[5] := 'IFSC: IDIB000D035';
-                    VarText[6] := 'SWIFT Code: IDIBINBB';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                end;
-            "Sales Invoice Header"."Bank Selection For Report"::HDFC:
-                BEGIN
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 99900020122000';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: HDFC Bank';
-                    VarText[4] := 'Branch: RK Salai, Mylapore, Chennai-600004';
-                    VarText[5] := 'IFSC: HDFC0001097';
-                    VarText[6] := 'SWIFT Code: HDFCINBBCHE';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                END;
-            "Sales Invoice Header"."Bank Selection For Report"::HDFC2:
-                BEGIN
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 50200080438699';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: HDFC Bank';
-                    VarText[4] := 'Branch: RK Salai, Mylapore, Chennai-600004';
-                    VarText[5] := 'IFSC: HDFC0001097';
-                    VarText[6] := 'SWIFT Code: HDFCINBBCHE';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                END;
-        //ZOHO.RSF.1471[+]
-        end;
 
         IF CompanyInformation.Name = 'PROBOTIQ SOLUTIONS PRIVATE LIMITED' THEN BEGIN
             VarText[10] := 'Bank Details:';
