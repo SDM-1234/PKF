@@ -54,7 +54,7 @@ pageextension 50020 PostedSalesInvoice extends "Posted Sales Invoice"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
-                ToolTip = 'Generate E-Invoice Cleartax';
+                ToolTip = 'Generate E-Invoice Online';
                 ApplicationArea = All;
             }
             action("Cancel E-Invoice Cleartax")
@@ -64,7 +64,7 @@ pageextension 50020 PostedSalesInvoice extends "Posted Sales Invoice"
                 PromotedCategory = Process;
                 PromotedIsBig = true;
                 ApplicationArea = All;
-                ToolTip = 'Cancel E-Invoice Cleartax';
+                ToolTip = 'Cancel E-Invoice Online';
             }
         }
         // addafter("Print Excise Invoice")

@@ -198,7 +198,7 @@ report 50065 "Indian BanK - Single Line"
         RecBankAccount: Record "Bank Account";
         RecGenJournalLine: Record "Gen. Journal Line";
         RecVendor: Record Vendor;
-        CheckReport: Report Check;
+        CheckReport: Report "Check Report";
         Amt: Decimal;
         Address2: Text[50];
         Address: Text[100];

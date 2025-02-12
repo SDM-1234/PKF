@@ -442,7 +442,7 @@ report 50001 "Proforma Invoice"
         RecLocation: Record Location;
         PayTerms: Record "Payment Terms";
         SalesPerson: Record "Salesperson/Purchaser";
-        ReportCheck: Report Check;
+        ReportCheck: Report "Check Report";
         SubTotal: Decimal;
         GrandTotal: Decimal;
         AmountInWords: array[2] of Text[80];
