@@ -98,8 +98,10 @@ codeunit 50001 "API Consumer E-Invoicing"
     procedure GenerateEInvoice(JsonString: Text; var ResponseText_p: Text; Cancel: Boolean)
     var
         HttpClient: HttpClient;
+        RequestMessage: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
         RequestHeader_L: HttpHeaders;
+        ContentHeaders: HttpHeaders;
         HttpContent: HttpContent;
         Url: Text;
         IsSuccessful: Boolean;
@@ -114,26 +116,29 @@ codeunit 50001 "API Consumer E-Invoicing"
         ELSE
             Url := EInvIntegrationSetup."Cancel E-Invoice URL";
 
-        HttpContent.GetHeaders(RequestHeader_L);
-
+        RequestMessage.SetRequestUri(Url);
+        RequestMessage.Method('POST');
+        RequestMessage.GetHeaders(RequestHeader_L);
         RequestHeader_L.Add('X-Cleartax-Auth-Token', EInvIntegrationSetup."Access Token");
         RequestHeader_L.Add('owner_id', OwnerId);
         RequestHeader_L.Add('gstin', LocGstRegNo);
         RequestHeader_L.Add('x-cleartax-product', 'EInvoice');
-        if RequestHeader_L.Contains('Content-Type') then RequestHeader_L.Remove('Content-Type');
-        RequestHeader_L.Add('Content-Type', 'application/json');
-
-        if RequestHeader_L.Contains('Content-Encoding') then RequestHeader_L.Remove('Content-Encoding');
-        RequestHeader_L.Add('Content-Encoding', 'UTF8');
-
         HttpContent.WriteFrom(json);
+        HttpContent.GetHeaders(ContentHeaders);
+        if ContentHeaders.Contains('Content-Type') then ContentHeaders.Remove('Content-Type');
+        ContentHeaders.Add('Content-Type', 'application/json');
+        if ContentHeaders.Contains('Content-Encoding') then ContentHeaders.Remove('Content-Encoding');
+        ContentHeaders.Add('Content-Encoding', 'UTF8');
 
-        IsSuccessful := HttpClient.Post(Url, HttpContent, HttpResponse);
+        HttpContent.GetHeaders(ContentHeaders);
+        RequestMessage.Content(HttpContent);
+
+        IsSuccessful := HttpClient.Send(RequestMessage, HttpResponse);
         if (not IsSuccessful) and (HttpResponse.HttpStatusCode = 400) then begin
             Message(HttpResponse.ReasonPhrase);
             EXIT;
         end;
-        HttpResponse.Content().WriteFrom(ResponseText_p);
+        HttpResponse.Content().ReadAs(ResponseText_p);
     end;
 
     local procedure GetCompanyInfo()
