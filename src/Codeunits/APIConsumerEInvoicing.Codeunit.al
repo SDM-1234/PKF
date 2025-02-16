@@ -1,6 +1,6 @@
 codeunit 50001 "API Consumer E-Invoicing"
 {
-
+    Permissions = tabledata "Sales Invoice Header" = rm, tabledata "Sales Cr.Memo Header" = rm;
     trigger OnRun()
     begin
     end;
@@ -10,12 +10,15 @@ codeunit 50001 "API Consumer E-Invoicing"
         CompanyInformation: Record "Company Information";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        JsonBuffer: Record "JSON Buffer" Temporary;
+        JsonTextReaderCU: Codeunit "Json Text Reader/Writer";
+        JsonDataToken: JsonToken;
         StringBuilder: TextBuilder;
         Json: Text;
         JsonToken: JsonToken;
         JsonTextWriter: JsonObject;
         JsonTextReader: JsonObject;
-        JObject: JsonObject;
+        JObject, JObjectFinal : JsonObject;
         JsonArrayData: JsonArray;
         MessageText, ResponseText, OwnerId, LocGstRegNo, DocumentNo : Text;
         SetupFound, IsInvoice : Boolean;
@@ -74,7 +77,7 @@ codeunit 50001 "API Consumer E-Invoicing"
             IsSuccessful := HttpClient.Post(EInvIntegrationSetup."Access Token URL", HttpContent, HttpResponse);
 
             HttpWebRequestMgt.SetRequestUri(EInvIntegrationSetup."Access Token URL");
-            HttpWebRequestMgt.Method('POST');
+            HttpWebRequestMgt.Method('PUT');
             RequestHeader_L.Add('Content-Type', 'application/json');
             RequestHeader_L.Add('Accept', 'application/json');
             HttpContent.GetHeaders(RequestHeader_L);
@@ -104,10 +107,10 @@ codeunit 50001 "API Consumer E-Invoicing"
         ContentHeaders: HttpHeaders;
         HttpContent: HttpContent;
         Url: Text;
-        IsSuccessful: Boolean;
     begin
         GetEInvSetup();
         GetJson();
+        Json := '[' + Json + ']';
         IF GUIALLOWED THEN // To avoid error while Background Posting
             IF CONFIRM('Do you want view the JSON') THEN
                 MESSAGE('%1', Json);
@@ -117,24 +120,20 @@ codeunit 50001 "API Consumer E-Invoicing"
             Url := EInvIntegrationSetup."Cancel E-Invoice URL";
 
         RequestMessage.SetRequestUri(Url);
-        RequestMessage.Method('POST');
+        RequestMessage.Method('PUT');
         RequestMessage.GetHeaders(RequestHeader_L);
         RequestHeader_L.Add('X-Cleartax-Auth-Token', EInvIntegrationSetup."Access Token");
-        RequestHeader_L.Add('owner_id', OwnerId);
         RequestHeader_L.Add('gstin', LocGstRegNo);
-        RequestHeader_L.Add('x-cleartax-product', 'EInvoice');
         HttpContent.WriteFrom(json);
         HttpContent.GetHeaders(ContentHeaders);
         if ContentHeaders.Contains('Content-Type') then ContentHeaders.Remove('Content-Type');
         ContentHeaders.Add('Content-Type', 'application/json');
-        if ContentHeaders.Contains('Content-Encoding') then ContentHeaders.Remove('Content-Encoding');
-        ContentHeaders.Add('Content-Encoding', 'UTF8');
 
         HttpContent.GetHeaders(ContentHeaders);
         RequestMessage.Content(HttpContent);
 
-        IsSuccessful := HttpClient.Send(RequestMessage, HttpResponse);
-        if (not IsSuccessful) and (HttpResponse.HttpStatusCode = 400) then begin
+        HttpClient.Send(RequestMessage, HttpResponse);
+        if (HttpResponse.HttpStatusCode <> 200) then begin
             Message(HttpResponse.ReasonPhrase);
             EXIT;
         end;
@@ -189,8 +188,8 @@ codeunit 50001 "API Consumer E-Invoicing"
             EInvoicingRequests2."Request Date" := WORKDATE;
             EInvoicingRequests2."Request Time" := TIME;
             EInvoicingRequests2."User Id" := USERID;
-            //"QR Code URL":= QRCodeURL;
-            //"E Invoice PDF URL":= EInvoicePDFURL;
+            EInvoicingRequests2."QR Code URL" := QRCodeURL;
+            EInvoicingRequests2."E Invoice PDF URL" := EInvoicePDFURL;
             IF STRLEN(InfoDetails) > 250 THEN BEGIN
                 EInvoicingRequests2."Info Details" := COPYSTR(InfoDetails, 1, 250);
                 EInvoicingRequests2."Info Details2" := COPYSTR(InfoDetails, 251, 250);
@@ -198,8 +197,6 @@ codeunit 50001 "API Consumer E-Invoicing"
                 EInvoicingRequests2."Info Details" := InfoDetails;
 
             IF Irn <> '' THEN
-                //IF GUIALLOWED THEN // To avoid error while Background Posting
-                //    GenerateQRCode(EInvoicingRequests2);
                 EInvoicingRequests2."E-Invoice Generated" := TRUE;
             EInvoicingRequests2.MODIFY();
         END ELSE BEGIN
@@ -230,8 +227,8 @@ codeunit 50001 "API Consumer E-Invoicing"
             EInvoicingRequests."Request Date" := WORKDATE;
             EInvoicingRequests."Request Time" := TIME;
             EInvoicingRequests."User Id" := USERID;
-            //"QR Code URL":= QRCodeURL;
-            //"E Invoice PDF URL":= EInvoicePDFURL;
+            EInvoicingRequests."QR Code URL" := QRCodeURL;
+            EInvoicingRequests."E Invoice PDF URL" := EInvoicePDFURL;
             IF STRLEN(InfoDetails) > 250 THEN BEGIN
                 EInvoicingRequests."Info Details" := COPYSTR(InfoDetails, 1, 250);
                 EInvoicingRequests."Info Details2" := COPYSTR(InfoDetails, 251, 250);
@@ -240,8 +237,6 @@ codeunit 50001 "API Consumer E-Invoicing"
 
             IF Irn <> '' THEN
                 EInvoicingRequests."E-Invoice Generated" := TRUE;
-            //IF GUIALLOWED THEN // To avoid error while Background Posting
-            //    GenerateQRCode(EInvoicingRequests);//temp
             EInvoicingRequests.INSERT();
         END;
     END;
@@ -367,33 +362,34 @@ codeunit 50001 "API Consumer E-Invoicing"
         ReadExportDetails();
         ReadDocumentTotalDetails();
         ReadDocumentItemList();
+        WriteJsonFileTrans();
         GenerateEInvoice('', ResponseText, FALSE);
         If ResponseText = '' THEN
             EXIT;
-        clear(JsonTextReader);
-        JsonTextReader.ReadFrom(ResponseText);
 
-        JsonTextReader.Get('AckNo', JsonToken);
-        AckNo := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('AckDt', JsonToken);
-        AckDt := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('Irn', JsonToken);
-        Irn := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('SignedQRCode', JsonToken);
-        SignedQRCode := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('Status', JsonToken);
-        Status := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('ErrorDetails..error_message', JsonToken);
-        ErrDtls := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('SignedInvoice', JsonToken);
-        SignedInv := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('info..Desc', JsonToken);
-        Info := JsonToken.AsValue().AsText();
+        JsonTextReaderCU.ReadJSonToJSonBuffer(ResponseText, JsonBuffer);
+
+        if GetJsonNodeValue('[0].govt_response.Success') = 'N' then begin
+            Clear(JsonDataToken);
+            ErrDtls := GetJsonNodeValue('[0].govt_response.ErrorDetails[0].error_message');
+            InsertResponse('', SalesInvoiceHeader."No.", 1, AckNo, AckDt, Irn,
+              SignedQRCode, Status, ErrDtls, SalesInvoiceHeader."Posting Date"
+                , '', SignedInv, Info);
+            COMMIT();
+            ERROR(Text50001, ErrDtls, '');
+        end;
+        AckNo := GetJsonNodeValue('[0].govt_response.AckNo');
+        AckDt := GetJsonNodeValue('[0].govt_response.AckDt');
+        Irn := GetJsonNodeValue('[0].govt_response.Irn');
+        SignedQRCode := GetJsonNodeValue('[0].govt_response.SignedQRCode');
+        Status := GetJsonNodeValue('[0].govt_response.Status');
+        SignedInv := GetJsonNodeValue('[0].govt_response.SignedInvoice');
+        Info := GetJsonNodeValue('[0].govt_response.info[0].Desc');
         InsertResponse('', SalesInvoiceHeader."No.", 1, AckNo, AckDt, Irn,
                       SignedQRCode, Status, ErrDtls, SalesInvoiceHeader."Posting Date"
                 , '', SignedInv, Info);
         IF Irn <> '' THEN
-            GetEInvoiceResponse(RecRef);
+            GetEInvoiceResponse(RecRef, AckNo, AckDt, Irn, SignedQRCode);
         COMMIT();
         IF Info <> '' THEN
             MESSAGE(Info)
@@ -428,7 +424,7 @@ codeunit 50001 "API Consumer E-Invoicing"
         GetCompanyInfo();
         TknNo := GetAccessToken();
         TknNo := EInvIntegrationSetup."Access Token";
-        Location.GET(SalesInvoiceHeader."Location Code");
+        Location.GET(SalesCrMemoHeader_p."Location Code");
         LocGstRegNo := Location."GST Registration No.";
         OwnerId := Location."Cleartax Owner ID";
         DocumentNo := SalesCrMemoHeader_p."No.";
@@ -441,39 +437,40 @@ codeunit 50001 "API Consumer E-Invoicing"
         ReadExportDetails();
         ReadDocumentTotalDetails();
         ReadDocumentItemList();
+        WriteJsonFileTrans();
         GenerateEInvoice('', ResponseText, FALSE);
         If ResponseText = '' THEN
             EXIT;
-        clear(JsonTextReader);
-        JsonTextReader.ReadFrom(ResponseText);
 
-        JsonTextReader.Get('AckNo', JsonToken);
-        AckNo := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('AckDt', JsonToken);
-        AckDt := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('Irn', JsonToken);
-        Irn := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('SignedQRCode', JsonToken);
-        SignedQRCode := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('Status', JsonToken);
-        Status := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('ErrorDetails..error_message', JsonToken);
-        ErrDtls := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('SignedInvoice', JsonToken);
-        SignedInv := JsonToken.AsValue().AsText();
-        JsonTextReader.Get('info..Desc', JsonToken);
-        Info := JsonToken.AsValue().AsText();
-        InsertResponse('', SalesCrMemoHeader."No.", 1, AckNo, AckDt, Irn,
+        JsonTextReaderCU.ReadJSonToJSonBuffer(ResponseText, JsonBuffer);
+
+        if GetJsonNodeValue('[0].govt_response.Success') = 'N' then begin
+            Clear(JsonDataToken);
+            ErrDtls := GetJsonNodeValue('[0].govt_response.ErrorDetails[0].error_message');
+            InsertResponse('', SalesCrMemoHeader."No.", 2, AckNo, AckDt, Irn,
+              SignedQRCode, Status, ErrDtls, SalesCrMemoHeader."Posting Date"
+                , '', SignedInv, Info);
+            COMMIT();
+            ERROR(Text50001, ErrDtls, '');
+        end;
+        AckNo := GetJsonNodeValue('[0].govt_response.AckNo');
+        AckDt := GetJsonNodeValue('[0].govt_response.AckDt');
+        Irn := GetJsonNodeValue('[0].govt_response.Irn');
+        SignedQRCode := GetJsonNodeValue('[0].govt_response.SignedQRCode');
+        Status := GetJsonNodeValue('[0].govt_response.Status');
+        SignedInv := GetJsonNodeValue('[0].govt_response.SignedInvoice');
+        Info := GetJsonNodeValue('[0].govt_response.info[0].Desc');
+        InsertResponse('', SalesCrMemoHeader."No.", 2, AckNo, AckDt, Irn,
                       SignedQRCode, Status, ErrDtls, SalesCrMemoHeader."Posting Date"
                 , '', SignedInv, Info);
         IF Irn <> '' THEN
-            GetEInvoiceResponse(RecRef);
+            GetEInvoiceResponse(RecRef, AckNo, AckDt, Irn, SignedQRCode);
         COMMIT();
         IF Info <> '' THEN
             MESSAGE(Info)
         ELSE
             IF Irn <> '' THEN
-                MESSAGE(Text50000, SalesCrMemoHeader."No.")
+                MESSAGE(Text50000, SalesInvoiceHeader."No.")
             ELSE
                 ERROR(Text50001, ErrDtls, '');
     end;
@@ -591,6 +588,14 @@ codeunit 50001 "API Consumer E-Invoicing"
         JsonArrayData.Add(JObject);
     end;
 
+    local procedure WriteJsonFileTrans()
+    var
+    begin
+        JObjectFinal.Add('transaction', JObject);
+        Clear(JObject);
+        JObject := JObjectFinal;
+    end;
+
     local procedure ReadTransactionDetails(GSTCustType: Enum "GST Customer Type"; ShipToCode: Code[12])
     begin
         Clear(JsonArrayData);
@@ -611,20 +616,20 @@ codeunit 50001 "API Consumer E-Invoicing"
             exit;
 
         case GSTCustType of
-            SalesInvoiceHeader."GST Customer Type"::Registered, SalesInvoiceHeader."GST Customer Type"::Exempted:
+            SalesCrMemoHeader."GST Customer Type"::Registered, SalesCrMemoHeader."GST Customer Type"::Exempted:
                 NatureOfSupply := 'B2B';
 
-            SalesInvoiceHeader."GST Customer Type"::Export:
-                if SalesInvoiceHeader."GST Without Payment of Duty" then
+            SalesCrMemoHeader."GST Customer Type"::Export:
+                if SalesCrMemoHeader."GST Without Payment of Duty" then
                     NatureOfSupply := 'EXPWOP'
                 else
                     NatureOfSupply := 'EXPWP';
 
-            SalesInvoiceHeader."GST Customer Type"::"Deemed Export":
+            SalesCrMemoHeader."GST Customer Type"::"Deemed Export":
                 NatureOfSupply := 'DEXP';
 
-            SalesInvoiceHeader."GST Customer Type"::"SEZ Development", SalesInvoiceHeader."GST Customer Type"::"SEZ Unit":
-                if SalesInvoiceHeader."GST Without Payment of Duty" then
+            SalesCrMemoHeader."GST Customer Type"::"SEZ Development", SalesCrMemoHeader."GST Customer Type"::"SEZ Unit":
+                if SalesCrMemoHeader."GST Without Payment of Duty" then
                     NatureOfSupply := 'SEZWOP'
                 else
                     NatureOfSupply := 'SEZWP';
@@ -983,6 +988,7 @@ codeunit 50001 "API Consumer E-Invoicing"
         Email := '';
 
         SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        SalesCrMemoLine.SetFilter(Type, '<>%1', SalesCrMemoLine.Type::" ");
         if SalesCrMemoLine.FindFirst() then
             case SalesCrMemoLine."GST Place of Supply" of
 
@@ -1035,9 +1041,9 @@ codeunit 50001 "API Consumer E-Invoicing"
         JBuyerDetails.Add('LglNm', CompanyName);
 
         if StateCode <> '' then
-            JBuyerDetails.Add('POS', StateCode)
+            JBuyerDetails.Add('Pos', StateCode)
         else
-            JBuyerDetails.Add('POS', '96');
+            JBuyerDetails.Add('Pos', '96');
 
         JBuyerDetails.Add('Addr1', Address);
 
@@ -1172,7 +1178,7 @@ codeunit 50001 "API Consumer E-Invoicing"
         RoundOffAmt: Integer;
     begin
         RoundOffAmt := 0;
-        JDocTotalDetails.Add('Assval', AssessableAmount);
+        JDocTotalDetails.Add('AssVal', AssessableAmount);
         JDocTotalDetails.Add('CgstVal', CGSTAmount);
         JDocTotalDetails.Add('SgstVAl', SGSTAmount);
         JDocTotalDetails.Add('IgstVal', IGSTAmount);
@@ -1768,7 +1774,7 @@ codeunit 50001 "API Consumer E-Invoicing"
         JObject.Add('ExpDtls', JExpDetails);
     end;
 
-    procedure GetEInvoiceResponse(var RecRef: RecordRef)
+    procedure GetEInvoiceResponse(var RecRef: RecordRef; AckNo: Text; AckDt: Text; Irn: Text; SignedQRCode: Text)
     var
         JSONManagement: Codeunit "JSON Management";
         QRGenerator: Codeunit "QR Generator";
@@ -1784,15 +1790,13 @@ codeunit 50001 "API Consumer E-Invoicing"
         JsonString := ResponseText;
         if (JsonString = '') or (JsonString = '[]') then
             exit;
-
-        JSONManagement.InitializeObject(JsonString);
-        if JSONManagement.GetValue(IRNTxt) <> '' then begin
+        if Irn <> '' then begin
             FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo("IRN Hash"));
-            FieldRef.Value := JSONManagement.GetValue(IRNTxt);
+            FieldRef.Value := Irn;
             FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo("Acknowledgement No."));
-            FieldRef.Value := JSONManagement.GetValue(AcknowledgementNoTxt);
+            FieldRef.Value := AckNo;
 
-            AcknowledgementDateTimeText := JSONManagement.GetValue(AcknowledgementDateTxt);
+            AcknowledgementDateTimeText := AckDt;
             Evaluate(AcknowledgementDate, CopyStr(AcknowledgementDateTimeText, 1, 10));
             Evaluate(AcknowledgementTime, CopyStr(AcknowledgementDateTimeText, 11, 8));
             TempDateTime := CreateDateTime(AcknowledgementDate, AcknowledgementTime);
@@ -1801,12 +1805,20 @@ codeunit 50001 "API Consumer E-Invoicing"
             FieldRef.Value := TempDateTime;
             FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo(IsJSONImported));
             FieldRef.Value := true;
-            QRGenerator.GenerateQRCodeImage(JSONManagement.GetValue(SignedQRCodeTxt), TempBlob);
+            QRGenerator.GenerateQRCodeImage(SignedQRCode, TempBlob);
             FieldRef := RecRef.Field(SalesInvoiceHeader.FieldNo("QR Code"));
             TempBlob.ToRecordRef(RecRef, SalesInvoiceHeader.FieldNo("QR Code"));
             RecRef.Modify();
         end else
             Error(IRNHashErr, TempIRNTxt);
+    end;
+
+    LOCAL procedure GetJsonNodeValue(NodeId: Text[250]): Text
+    begin
+        JsonBuffer.SetFilter("Token type", '%1|%2', JsonBuffer."Token type"::String, JsonBuffer."Token type"::Integer);
+        JsonBuffer.SETRANGE(Path, NodeId);
+        IF JsonBuffer.FindFirst() THEN
+            EXIT(JsonBuffer.Value);
     end;
 
 }
