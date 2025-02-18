@@ -17,6 +17,7 @@ tableextension 50026 BankAccountLedgerEntry extends "Bank Account Ledger Entry"
             Editable = false;
             FieldClass = FlowField;
             TableRelation = "G/L Entry"."Payee Name" WHERE("Entry No." = FIELD("Entry No."));
+
         }
     }
 }

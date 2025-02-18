@@ -300,7 +300,6 @@ report 50003 "Purchase Order"
             begin
                 RecLocation.GET("Location Code");
                 Vendor.GET("Buy-from Vendor No.");
-                Customer.GET("Sell-to Customer No.");
 
                 IF RecLocation."Phone No." <> '' THEN
                     RecPhone := 'Phone No.: ' + RecLocation."Phone No."
@@ -407,7 +406,6 @@ report 50003 "Purchase Order"
     var
         CompanyInformation: Record "Company Information";
         Vendor: Record Vendor;
-        Customer: Record Customer;
         ReportCheck: Report "Check Report";
         ServiceTax: Decimal;
         SBTax: Decimal;
