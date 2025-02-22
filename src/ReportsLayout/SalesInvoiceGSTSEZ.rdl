@@ -2884,6 +2884,9 @@ End Function
         <Field Name="Work_Order_No">
           <DataField>Work_Order_No</DataField>
         </Field>
+        <Field Name="ReportCaption">
+          <DataField>ReportCaption</DataField>
+        </Field>
         <Field Name="Customer_Contact">
           <DataField>Customer_Contact</DataField>
         </Field>
