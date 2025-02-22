@@ -300,7 +300,6 @@ report 50003 "Purchase Order"
             begin
                 RecLocation.GET("Location Code");
                 Vendor.GET("Buy-from Vendor No.");
-                Customer.GET("Sell-to Customer No.");
 
                 IF RecLocation."Phone No." <> '' THEN
                     RecPhone := 'Phone No.: ' + RecLocation."Phone No."
@@ -406,44 +405,43 @@ report 50003 "Purchase Order"
 
     var
         CompanyInformation: Record "Company Information";
+        PayTerms: Record "Payment Terms";
+        PurPerson: Record "Salesperson/Purchaser";
+        RecLocation: Record Location;
         Vendor: Record Vendor;
-        Customer: Record Customer;
         ReportCheck: Report "Check Report";
-        ServiceTax: Decimal;
-        SBTax: Decimal;
-        KKCTax: Decimal;
-        SubTotal: Decimal;
+        IsDuplicate: Boolean;
+        IsRent: Boolean;
+        CurrencyCode: Code[10];
+        LocGstNo: Code[20];
+        PayCode: Code[20];
+        CGST_Amt: Decimal;
+        CGST_Rate: Decimal;
+        DiscountAmt: Decimal;
         GrandTotal: Decimal;
+        GrossTotal: Decimal;
+        IGST_Amt: Decimal;
+        IGST_Rate: Decimal;
+        KKCTax: Decimal;
+        SBTax: Decimal;
+        ServiceTax: Decimal;
+        SGST_Amt: Decimal;
+        SGST_Rate: Decimal;
+        SubTotal: Decimal;
+        TotCGST: Decimal;
+        TotIGST: Decimal;
+        TotSGST: Decimal;
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
-        IsRent: Boolean;
-        IsDuplicate: Boolean;
-        DuplicateCap: Text;
-        CurrencyCode: Code[10];
-        CGST_Rate: Decimal;
-        CGST_Amt: Decimal;
-        SGST_Rate: Decimal;
-        SGST_Amt: Decimal;
-        IGST_Rate: Decimal;
-        IGST_Amt: Decimal;
-        TotCGST: Decimal;
-        TotSGST: Decimal;
-        TotIGST: Decimal;
-        StateName: Text[50];
         CountryName: Text[50];
-        LocGstNo: Code[20];
-        RecLocation: Record Location;
-        PayTerms: Record "Payment Terms";
-        PayTermsDesc: Text[100];
-        PayCode: Code[20];
-        PurPersonName: Text[50];
-        PurPerson: Record "Salesperson/Purchaser";
-        PurchaseCode: Text[20];
+        DuplicateCap: Text;
         LocFax: Text[30];
-        DiscountAmt: Decimal;
-        GrossTotal: Decimal;
-        RecPhone: Text[45];
+        PayTermsDesc: Text[100];
+        PurchaseCode: Text[20];
+        PurPersonName: Text[50];
         RecFax: Text[45];
+        RecPhone: Text[45];
+        StateName: Text[50];
 
     local procedure GetHsnDesc(GstGroupCode: Code[20]; HsnCode: Code[20]): Text
     var
