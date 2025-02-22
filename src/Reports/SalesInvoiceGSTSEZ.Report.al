@@ -46,6 +46,8 @@ report 50004 "Sales Invoice GST SEZ"
             column(Work_Order_No; "Sales Invoice Header"."Work Order No.")
             {
             }
+            column(ReportCaption; ReportCaption)
+            { }
             column(Customer_Contact; Customer.Contact)
             {
             }
@@ -328,9 +330,17 @@ report 50004 "Sales Invoice GST SEZ"
                 StateL: Record State;
                 CountryL: Record "Country/Region";
             begin
+
+                If "Invoice Types" = "Invoice Types"::Expenses then
+                    ReportCaption := 'EXPENSE INVOICE'
+                ELSE
+                    ReportCaption := 'TAX INVOICE';
+
                 RecLocation.GET("Location Code");
                 Customer.GET("Bill-to Customer No.");
                 BankDetails();
+
+
 
                 IF RecLocation."Phone No." <> '' THEN
                     RecPhone := 'Phone No.: ' + RecLocation."Phone No."
@@ -466,6 +476,7 @@ report 50004 "Sales Invoice GST SEZ"
         TotIGST: Decimal;
         StateName: Text[50];
         CountryName: Text[50];
+        ReportCaption: Text[100];
         RecLocation: Record Location;
         MSMENo: Code[20];
         MSMEText: Text[10];

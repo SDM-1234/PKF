@@ -17,6 +17,9 @@ report 50010 "Sales Invoice GST"
             column(Document_No; "Sales Invoice Header"."No.")
             {
             }
+            column(ReportCaption; ReportCaption)
+            {
+            }
             column(Posting_Date; FORMAT("Sales Invoice Header"."Posting Date", 0, 1))
             {
             }
@@ -348,6 +351,12 @@ report 50010 "Sales Invoice GST"
                 StateL: Record State;
                 CountryL: Record "Country/Region";
             begin
+
+                If "Invoice Types" = "Invoice Types"::Expenses then
+                    ReportCaption := 'EXPENSE INVOICE'
+                ELSE
+                    ReportCaption := 'TAX INVOICE';
+
                 RecLocation.GET("Location Code");
                 Customer.GET("Bill-to Customer No.");
                 BankDetails();
@@ -494,6 +503,8 @@ report 50010 "Sales Invoice GST"
         TotIGST: Decimal;
         StateName: Text[50];
         CountryName: Text[50];
+        ReportCaption: Text[100];
+
         RecLocation: Record Location;
         PayTerms: Record "Payment Terms";
         PayTermsDesc: Text[100];
