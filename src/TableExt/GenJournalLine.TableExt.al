@@ -5,6 +5,7 @@ tableextension 50045 GenJournalLine extends "Gen. Journal Line"
         field(50003; Narration; Text[200])
         {
             DataClassification = CustomerContent;
+
         }
         field(50004; "Payee Name"; Text[90])
         {
