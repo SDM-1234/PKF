@@ -1051,7 +1051,10 @@ codeunit 50001 "API Consumer E-Invoicing"
             JBuyerDetails.Add('Addr2', Address2);
 
         JBuyerDetails.Add('Loc', City);
-        JBuyerDetails.Add('Stcd', StateCode);
+        if StateCode <> '' then
+            JBuyerDetails.Add('Stcd', StateCode)
+        else
+            JBuyerDetails.Add('Stcd', '96');
         JBuyerDetails.Add('Pin', Pin);
 
         if PhoneNumber <> '' then
@@ -1524,8 +1527,36 @@ codeunit 50001 "API Consumer E-Invoicing"
         TotalItemValue: Decimal;
         IsServc: Text[1])
     var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
         JItem: JsonObject;
     begin
+        if IsInvoice then begin
+            UnitPrice := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                      WorkDate(), SalesInvoiceHeader."Currency Code", UnitPrice, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            TotAmount := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(), SalesInvoiceHeader."Currency Code", TotAmount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            Discount := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                     WorkDate(), SalesInvoiceHeader."Currency Code", Discount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            OtherCharges := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(), SalesInvoiceHeader."Currency Code", OtherCharges, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            AssessableAmount := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                     WorkDate(), SalesInvoiceHeader."Currency Code", AssessableAmount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            TotalItemValue := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(), SalesInvoiceHeader."Currency Code", TotalItemValue, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+        end Else begin
+            UnitPrice := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                      WorkDate(), SalesCrMemoHeader."Currency Code", UnitPrice, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            TotAmount := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(), SalesCrMemoHeader."Currency Code", TotAmount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            Discount := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                     WorkDate(), SalesCrMemoHeader."Currency Code", Discount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            OtherCharges := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(), SalesCrMemoHeader."Currency Code", OtherCharges, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            AssessableAmount := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                     WorkDate(), SalesCrMemoHeader."Currency Code", AssessableAmount, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+            TotalItemValue := Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                    WorkDate(), SalesCrMemoHeader."Currency Code", TotalItemValue, SalesInvoiceHeader."Currency Factor"), 0.01, '=');
+        end;
         JItem.Add('SlNo', SlNo);
         JItem.Add('PrdDesc', ProductName);
         JItem.Add('IsServc', IsServc);
