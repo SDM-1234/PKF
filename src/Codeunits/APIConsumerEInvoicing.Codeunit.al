@@ -1180,7 +1180,7 @@ codeunit 50001 "API Consumer E-Invoicing"
         RoundOffAmt := 0;
         JDocTotalDetails.Add('AssVal', AssessableAmount);
         JDocTotalDetails.Add('CgstVal', CGSTAmount);
-        JDocTotalDetails.Add('SgstVAl', SGSTAmount);
+        JDocTotalDetails.Add('SgstVal', SGSTAmount);
         JDocTotalDetails.Add('IgstVal', IGSTAmount);
         JDocTotalDetails.Add('CesVal', CessAmount);
         JDocTotalDetails.Add('CesNonAdVal', CessNonAdvanceVal);
