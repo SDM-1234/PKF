@@ -1,11 +1,14 @@
 
-pageextension 50011 CashPaymentVoucher extends "Cash Payment Voucher"
+using Microsoft.Finance.GeneralLedger.Journal;
+
+pageextension 50012 CashReceiptJournal extends "Cash Receipt Journal"
 {
     layout
     {
-        addafter("Account No.")
+        addlast("Account Name")
         {
-            field(PKFNarration; Rec.Narration)
+
+            field(Narration; Rec.Narration)
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies the value of the Narration field.', Comment = '%';
