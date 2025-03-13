@@ -16,8 +16,14 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
                 END;
             end;
         }
+
         addlast(General)
         {
+            field("Location GST Reg. No."; Rec."Location GST Reg. No.")
+            {
+                ApplicationArea = ALl;
+                Editable = false;
+            }
             field(LOB; Rec.LOB)
             {
                 ApplicationArea = All;

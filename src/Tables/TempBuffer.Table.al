@@ -1,7 +1,7 @@
 /// <summary>
 /// Table Temp Buffer (ID 50014).
 /// </summary>
-table 50014 "Temp Buffer"
+table 50038 "Temp Buffer"
 {
     Caption = 'Temp Buffer';
     DataClassification = ToBeClassified;

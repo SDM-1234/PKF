@@ -2,6 +2,7 @@
 /// Unknown PKFPermisionsSet.
 /// </summary>
 namespace PKFPermisionsSet;
+using PKF.PKF;
 
 permissionset 50000 "pkf_Permission"
 {
@@ -21,6 +22,7 @@ permissionset 50000 "pkf_Permission"
         tabledata "Reminder List Buffer" = RIMD,
         tabledata "Reminder Type" = RIMD,
         tabledata "Segment Master" = RIMD,
+        tabledata "LUT / ARN Master" = RIMD,
         table Beneficiary = X,
         table "Customer Group" = X,
         table "Customer Group Code" = X,
@@ -36,6 +38,7 @@ permissionset 50000 "pkf_Permission"
         table "Reminder List Buffer" = X,
         table "Reminder Type" = X,
         table "Segment Master" = X,
+        table "LUT / ARN Master" = X,
         codeunit "Email Reminder-Monthly" = X,
         codeunit "Email Reminder-Weekely" = X,
         codeunit "GL Filter Single Instance" = X,
@@ -58,6 +61,7 @@ permissionset 50000 "pkf_Permission"
         page "Reminders List" = X,
         page "Segment Master" = X,
         page "User GL Setup" = X,
+        page "LUT ARN List" = X,
         codeunit "Common Subscriber" = X,
         tabledata EmailParameter = RIMD,
         table EmailParameter = X,

@@ -19,6 +19,14 @@ table 50006 "Employee LOB"
         field(3; "Emp No."; Code[20])
         {
             TableRelation = Employee;
+
+            trigger OnValidate()
+            var
+                Employee: Record Employee;
+            begin
+                Employee.Get("Emp No.");
+                "Emp Name" := Employee."First Name";
+            end;
         }
         field(4; "Emp Name"; Text[30])
         {

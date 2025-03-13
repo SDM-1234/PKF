@@ -51,7 +51,7 @@ pageextension 50070 PurchaseJournal extends "Purchase Journal"
                 ApplicationArea = All;
             }
         }
-        addafter(Control1)
+        addafter("Account No.")
         {
             field(Narration; Rec.Narration)
             {
