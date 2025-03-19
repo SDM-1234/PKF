@@ -17,6 +17,7 @@ report 50010 "Sales Invoice GST"
             column(Document_No; "Sales Invoice Header"."No.")
             {
             }
+            column(LUTARNNo; LUTARNNo) { }
             column(ReportCaption; ReportCaption)
             {
             }
@@ -352,6 +353,7 @@ report 50010 "Sales Invoice GST"
                 CountryL: Record "Country/Region";
             begin
 
+                LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
                 If "Invoice Types" = "Invoice Types"::Expenses then
                     ReportCaption := 'EXPENSE INVOICE'
                 ELSE
@@ -476,6 +478,7 @@ report 50010 "Sales Invoice GST"
     var
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
+        LUTARN: Record "LUT / ARN Master";
         ReportCheck: Report "Check Report";
         ServiceTax: Decimal;
         SBTax: Decimal;
@@ -491,6 +494,7 @@ report 50010 "Sales Invoice GST"
         DuplicateCap: Text;
         CurrencyCode: Code[10];
         GetSalesInvoiceHeader: Code[20];
+        LUTARNNo: Code[50];
         LocGstNo: Code[20];
         CGST_Rate: Decimal;
         CGST_Amt: Decimal;

@@ -469,6 +469,7 @@ report 50004 "Sales Invoice GST SEZ"
         DuplicateCap: Text;
         CurrencyCode: Code[10];
         GetSalesInvoiceHeader: Code[20];
+        LUTARNNo: Code[50];
         LocGstNo: Code[20];
         CGST_Rate: Decimal;
         CGST_Amt: Decimal;
