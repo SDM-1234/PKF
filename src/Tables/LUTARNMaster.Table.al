@@ -12,6 +12,7 @@ table 50014 "LUT / ARN Master"
         {
             Caption = 'Location Code';
             DataClassification = CustomerContent;
+            TableRelation = Location.Code;
         }
         field(2; "Start Date"; Date)
         {
