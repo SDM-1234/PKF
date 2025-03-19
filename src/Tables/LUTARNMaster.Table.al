@@ -36,4 +36,19 @@ table 50014 "LUT / ARN Master"
             Clustered = true;
         }
     }
+
+    /// <summary>
+    /// GetARNNo.
+    /// </summary>
+    /// <param name="PostingDate">Date.</param>
+    /// <param name="LocCode">Code[10].</param>
+    /// <returns>Return value of type Code[50].</returns>
+    procedure GetARNNo(PostingDate: Date; LocCode: Code[10]): Code[50]
+    begin
+        Rec.setFilter("Start Date", '>=', PostingDate);
+        Rec.setFilter("End Date", '<=', PostingDate);
+        Rec.SetRange("Location Code", LocCode);
+        if Rec.FindFirst() then
+            exit("ARN / LUT No.")
+    end;
 }
