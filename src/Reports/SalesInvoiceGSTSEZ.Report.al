@@ -16,6 +16,7 @@ report 50004 "Sales Invoice GST SEZ"
             column(Document_No; "Sales Invoice Header"."No.")
             {
             }
+            column(ARNNo; ARNNo) { }
             column(Posting_Date; FORMAT("Sales Invoice Header"."Posting Date", 0, 1))
             {
             }
@@ -329,8 +330,12 @@ report 50004 "Sales Invoice GST SEZ"
                 LocationL: Record Location;
                 StateL: Record State;
                 CountryL: Record "Country/Region";
+                LUTARN: Record "LUT / ARN Master";
+                ARNNo: Code[50];
+
             begin
 
+                ARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
                 If "Invoice Types" = "Invoice Types"::Expenses then
                     ReportCaption := 'EXPENSE INVOICE'
                 ELSE
@@ -485,6 +490,8 @@ report 50004 "Sales Invoice GST SEZ"
         SalesPerson: Record "Salesperson/Purchaser";
         SalesCode: Code[10];
         SalesPersonName: Text[30];
+        ARNNo: Code[50];
+
 
     local procedure BankDetails()
     begin
