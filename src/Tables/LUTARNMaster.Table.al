@@ -46,8 +46,8 @@ table 50014 "LUT / ARN Master"
     /// <returns>Return value of type Code[50].</returns>
     procedure GetARNNo(PostingDate: Date; LocCode: Code[10]): Code[50]
     begin
-        Rec.setFilter("Start Date", '>=', PostingDate);
-        Rec.setFilter("End Date", '<=', PostingDate);
+        Rec.setFilter("Start Date", '>=%1', PostingDate);
+        Rec.setFilter("End Date", '<=%1', PostingDate);
         Rec.SetRange("Location Code", LocCode);
         if Rec.FindFirst() then
             exit("ARN / LUT No.")
