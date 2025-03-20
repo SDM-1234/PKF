@@ -16,6 +16,11 @@ pageextension 50066 CustomerList extends "Customer List"
             {
                 ApplicationArea = All;
             }
+            field("Registration Number"; Rec."Registration Number")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the registration number of the customer. You can enter a maximum of 20 characters, both numbers and letters.';
+            }
         }
         addafter("Post Code")
         {
