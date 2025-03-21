@@ -36,23 +36,17 @@ table 50010 "E-Inv Integration Setup"
         {
             DataClassification = ToBeClassified;
         }
-        field(9; "Mode of E-Invoice - Sales"; Option)
+        field(9; "Mode of E-Invoice - Sales"; Enum ModeOfEInvoice)
         {
             DataClassification = ToBeClassified;
-            OptionCaption = 'On Post,BackGround Posting';
-            OptionMembers = "On Post","BackGround Posting";
         }
-        field(10; "Mode of E-Invoice - Purchase"; Option)
+        field(10; "Mode of E-Invoice - Purchase"; Enum ModeOfEinvoicePurchase)
         {
             DataClassification = ToBeClassified;
-            OptionCaption = 'On Post,BackGround Posting';
-            OptionMembers = "On Post","BackGround Posting";
         }
-        field(11; "Mode of E-Invoice - Transfer"; Option)
+        field(11; "Mode of E-Invoice - Transfer"; Enum ModeOfEInvTransfer)
         {
             DataClassification = ToBeClassified;
-            OptionCaption = 'On Post,BackGround Posting';
-            OptionMembers = "On Post","BackGround Posting";
         }
         field(12; "Access Token URL"; Text[250])
         {
