@@ -2,10 +2,8 @@ tableextension 50030 Dimension extends Dimension
 {
     fields
     {
-        field(51001; "Print Dimension"; Option)
+        field(51001; "Print Dimension"; Enum PrintDimension)
         {
-            OptionCaption = ' ,Line,Header';
-            OptionMembers = " ",Line,Header;
         }
     }
 }

@@ -55,11 +55,9 @@ table 50013 "Reminder List Buffer"
             DataClassification = ToBeClassified;
             TableRelation = Company.Name;
         }
-        field(12; Status; Option)
+        field(12; Status; Enum "Reminder List Status Type")
         {
             DataClassification = ToBeClassified;
-            OptionCaption = 'Open,Closed';
-            OptionMembers = Open,Closed;
 
             trigger OnValidate()
             begin

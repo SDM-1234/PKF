@@ -17,6 +17,9 @@ pageextension 50065 CustomerCard extends "Customer Card"
         {
             Importance = Promoted;
         }
+
+        moveafter("Country/Region Code"; "State Code")
+
     }
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean

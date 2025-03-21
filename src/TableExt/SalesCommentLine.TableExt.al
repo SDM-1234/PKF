@@ -2,11 +2,9 @@ tableextension 50036 SalesCommentLine extends "Sales Comment Line"
 {
     fields
     {
-        field(50000; Type; Option)
+        field(50000; Type; Enum SalesCommentLineType)
         {
             Description = 'AD_SD';
-            OptionCaption = ' ,Partner,Leader,CA1,CA2,CA3,CA4,CA5,Assistants1,Assistants2,Assistants3,Assistants4,Assistants5,Assistants6,Assistants7,Assistants8,Assistants9,Assistants10,Assistants11,Assistants12,Assistants13,Assistants14,Assistants15,Assistants16,Assistants17,Assistants18,Assistants19,Assistants20,Associate1,Associate2,Associate3,Associate4,Expense to be billed';
-            OptionMembers = " ",Partner,Leader,CA1,CA2,CA3,CA4,CA5,Assistants1,Assistants2,Assistants3,Assistants4,Assistants5,Assistants6,Assistants7,Assistants8,Assistants9,Assistants10,Assistants11,Assistants12,Assistants13,Assistants14,Assistants15,Assistants16,Assistants17,Assistants18,Assistants19,Assistants20,Associate1,Associate2,Associate3,Associate4,"Expense to be billed";
         }
         field(50001; "Type Code"; Code[20])
         {
