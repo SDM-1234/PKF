@@ -19,6 +19,7 @@ pageextension 50066 CustomerList extends "Customer List"
             field("Registration Number"; Rec."Registration Number")
             {
                 ApplicationArea = All;
+                Caption = 'TAN No.';
                 ToolTip = 'Specifies the registration number of the customer. You can enter a maximum of 20 characters, both numbers and letters.';
             }
         }

@@ -13,6 +13,10 @@ pageextension 50065 CustomerCard extends "Customer Card"
                 ApplicationArea = All;
             }
         }
+        modify("Registration Number")
+        {
+            Importance = Promoted;
+        }
     }
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
