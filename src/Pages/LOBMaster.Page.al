@@ -14,7 +14,6 @@ page 50004 "LOB Master"
             {
                 field(LOB; Rec.LOB)
                 {
-                    ToolTip = 'Line of Business';
                 }
             }
         }

@@ -42,6 +42,7 @@ tableextension 50024 VendorLedgerEntry extends "Vendor Ledger Entry"
         }
         field(50005; Narration; Text[200])
         {
+            ToolTip = 'Specifies the value of the Narration field.', Comment = '%';
         }
 
     }

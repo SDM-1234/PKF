@@ -9,6 +9,7 @@ tableextension 50026 BankAccountLedgerEntry extends "Bank Account Ledger Entry"
             Editable = false;
             FieldClass = FlowField;
             TableRelation = "G/L Entry".Narration WHERE("Entry No." = FIELD("Entry No."));
+            ToolTip = 'Specifies the value of the Narration field.', Comment = '%';
         }
         field(50004; "Payee Name"; Text[100])
         {
@@ -17,7 +18,7 @@ tableextension 50026 BankAccountLedgerEntry extends "Bank Account Ledger Entry"
             Editable = false;
             FieldClass = FlowField;
             TableRelation = "G/L Entry"."Payee Name" WHERE("Entry No." = FIELD("Entry No."));
-
+            ToolTip = 'Specifies the value of the Payee Name field.', Comment = '%';
         }
     }
 }

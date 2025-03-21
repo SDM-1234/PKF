@@ -29,10 +29,12 @@ tableextension 50018 GLEntry extends "G/L Entry"
         field(50003; Narration; Text[200])
         {
             Description = 'AD_SD';
+            ToolTip = 'Specifies the value of the Narration field.', Comment = '%';
         }
         field(50004; "Payee Name"; Text[100])
         {
             Description = 'AD_SD';
+            ToolTip = 'Specifies the value of the Payee Name field.', Comment = '%';
         }
         field(50005; "TDS Account Amount"; Decimal)
         {
@@ -77,6 +79,7 @@ tableextension 50018 GLEntry extends "G/L Entry"
             Description = 'Santosh';
             FieldClass = FlowField;
             TableRelation = "Dimension Value".Name WHERE(Code = FIELD("Global Dimension 1 Code"));
+            ToolTip = 'Specifies the value of the Employee Name field.', Comment = '%';
         }
         field(50011; "Sales Code"; Code[20])
         {
@@ -144,6 +147,7 @@ tableextension 50018 GLEntry extends "G/L Entry"
             Editable = false;
             FieldClass = FlowField;
             TableRelation = Beneficiary."Beneficiary Name" WHERE("Beneficiary Code" = FIELD("Beneficiary Code"));
+            ToolTip = 'Specifies the value of the Beneficiary Name field.', Comment = '%';
         }
         field(50020; "Source Customer Name"; Text[130])
         {

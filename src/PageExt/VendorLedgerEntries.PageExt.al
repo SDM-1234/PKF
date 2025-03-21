@@ -46,7 +46,6 @@ pageextension 50077 VendorLedgerEntries extends "Vendor Ledger Entries"
             field(Narration; Rec.Narration)
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the value of the Narration field.', Comment = '%';
             }
         }
     }

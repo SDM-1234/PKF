@@ -5,11 +5,12 @@ tableextension 50045 GenJournalLine extends "Gen. Journal Line"
         field(50003; Narration; Text[200])
         {
             DataClassification = CustomerContent;
-
+            ToolTip = 'Specifies the value of the Narration field.', Comment = '%';
         }
         field(50004; "Payee Name"; Text[90])
         {
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the value of the Payee Name field.', Comment = '%';
         }
         field(50005; "Voucher Selection"; Boolean)
         {
@@ -21,6 +22,7 @@ tableextension 50045 GenJournalLine extends "Gen. Journal Line"
             Editable = false;
             FieldClass = FlowField;
             TableRelation = "Dimension Value".Name WHERE("Dimension Code" = CONST('EMPLOYEE'));
+            ToolTip = 'Specifies the value of the Employee Name field.', Comment = '%';
         }
         field(50007; "Sales Code"; Code[20])
         {
@@ -40,6 +42,7 @@ tableextension 50045 GenJournalLine extends "Gen. Journal Line"
         {
             DataClassification = CustomerContent;
             TableRelation = Beneficiary."Beneficiary Code" WHERE("Beneficiary Code" = FIELD("Beneficiary Code"));
+            ToolTip = 'Specifies the value of the Beneficiary Code field.', Comment = '%';
         }
     }
 }
