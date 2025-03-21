@@ -13,21 +13,25 @@ table 50014 "LUT / ARN Master"
             Caption = 'Location Code';
             DataClassification = CustomerContent;
             TableRelation = Location.Code;
+            ToolTip = 'Specifies the value of the Location Code field.', Comment = '%';
         }
         field(2; "Start Date"; Date)
         {
             Caption = 'Start Date';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the value of the Start Date field.', Comment = '%';
         }
         field(3; "End Date"; Date)
         {
             Caption = 'End Date';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the value of the End Date field.', Comment = '%';
         }
         field(4; "ARN / LUT No."; Code[50])
         {
             Caption = 'ARN / LUT No.';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the value of the ARN / LUT No. field.', Comment = '%';
         }
     }
     keys

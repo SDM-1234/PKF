@@ -7,6 +7,7 @@ tableextension 50044 "PKFCompanyInformation" extends "Company Information"
         field(50000; "Bank Logo"; Blob)
         {
             Caption = 'Bank Logo';
+            ToolTip = 'Specifies the value of the Bank Logo field.', Comment = '%';
         }
     }
 }

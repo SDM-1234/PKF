@@ -5,6 +5,7 @@ table 50004 "LOB Master"
     {
         field(1; LOB; Text[60])
         {
+            ToolTip = 'Line of Business';
         }
     }
 

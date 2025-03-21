@@ -9,7 +9,6 @@ pageextension 50001 "CompanyInformation_PKF" extends "Company Information"
             field("Bank Logo"; Rec."Bank Logo")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the value of the Bank Logo field.', Comment = '%';
             }
         }
     }

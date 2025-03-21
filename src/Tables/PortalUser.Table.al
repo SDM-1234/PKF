@@ -5,29 +5,36 @@ table 50002 "Portal User"
     {
         field(1; "User Name"; Code[10])
         {
+            ToolTip = 'Specifies the value of the User Name field.';
         }
         field(2; "Full Name"; Text[100])
         {
+            ToolTip = 'Specifies the value of the Full Name field.';
         }
         field(3; Password; Text[15])
         {
+            ToolTip = 'Specifies the value of the Password field.';
         }
         field(4; State; Option)
         {
             Caption = 'State';
             OptionCaption = 'Enabled,Disabled';
             OptionMembers = Enabled,Disabled;
+            ToolTip = 'Specifies the value of the State field.';
         }
         field(5; "Super User"; Boolean)
         {
+            ToolTip = 'Specifies the value of the Super User field.';
         }
         field(10; "Partner Code"; Code[20])
         {
             TableRelation = Employee;
+            ToolTip = 'Specifies the value of the Partner Code field.';
         }
         field(11; "Contact Email"; Text[250])
         {
             Caption = 'Contact Email';
+            ToolTip = 'Specifies the value of the Contact Email field.';
         }
     }
 
