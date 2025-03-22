@@ -1,12 +1,8 @@
 
-#pragma warning disable DOC0101
 /// <summary>
 /// PageExtension GeneralLedgerEntries (ID 50009) extends Record General Ledger Entries.
 /// </summary>
-#pragma warning disable DOC0101
 pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
-#pragma warning restore DOC0101
-#pragma warning restore DOC0101
 {
     layout
     {
@@ -68,5 +64,40 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        Rec.FILTERGROUP(2);
+        if not GLNos THEN
+            Rec.SETFILTER("G/L Account No.", GLUserSetup.FilterGLAccount())
+        else begin
+            Rec.SETRANGE("Document No.", DocNoVar);
+            Rec.SETRANGE("Posting Date", PostingDateVar);
+        end;
+        Rec.FILTERGROUP(0);
+    end;
+
+    trigger OnOpenPage()
+    begin
+        GLNos := GLFilterSingleInstance.GetGLFilter();
+        PostingDateVar := GLFilterSingleInstance.GetPostingDate();
+        DocNoVar := GLFilterSingleInstance.GetDocNo();
+
+        Rec.FILTERGROUP(2);
+        if NOT GLNos THEN
+            Rec.SETFILTER("G/L Account No.", GLUserSetup.FilterGLAccount())
+        ELSE BEGIN
+            Rec.SETRANGE("Document No.", DocNoVar);
+            Rec.SETRANGE("Posting Date", PostingDateVar);
+        END;
+        Rec.FILTERGROUP(0);
+    end;
+
+    var
+        GLUserSetup: Record "GL User Setup";
+        GLFilterSingleInstance: Codeunit "GL Filter Single Instance";
+        GLNos: Boolean;
+        DocNoVar: Code[20];
+        PostingDateVar: Date;
 }
 
