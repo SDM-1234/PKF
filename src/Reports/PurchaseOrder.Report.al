@@ -170,10 +170,10 @@ report 50003 "Purchase Order"
                 column(KKC_Tax; KKCTax)
                 {
                 }
-                column(AmountInWords_1; AmountInWords[1])
+                column(AmountInWords_1; UpperCase(AmountInWords[1]))
                 {
                 }
-                column(AmountInWords_2; AmountInWords[2])
+                column(AmountInWords_2; UpperCase(AmountInWords[2]))
                 {
                 }
                 column(Grand_Total; ROUND(GrandTotal, 1))

@@ -198,10 +198,10 @@ report 50012 "Expense Invoice GST"
                 column(KKC_Tax; KKCTax)
                 {
                 }
-                column(AmountInWords_1; AmountInWords[1])
+                column(AmountInWords_1; UpperCase(AmountInWords[1]))
                 {
                 }
-                column(AmountInWords_2; AmountInWords[2])
+                column(AmountInWords_2; UpperCase(AmountInWords[2]))
                 {
                 }
                 column(Grand_Total; ROUND(GrandTotal, 1))
@@ -299,7 +299,7 @@ report 50012 "Expense Invoice GST"
                     END;
 
                     DetailedGSTLedgerEntry.SETRANGE("GST Component Code", 'SGST');
-                    IF DetailedGSTLedgerEntry.FINDFIRST THEN BEGIN
+                    IF DetailedGSTLedgerEntry.FINDFIRST() THEN BEGIN
                         SGST_Rate := DetailedGSTLedgerEntry."GST %";
                         SGST_Amt := DetailedGSTLedgerEntry."GST Amount";
                     END;
@@ -420,7 +420,7 @@ report 50012 "Expense Invoice GST"
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
-        ReportCheck: Report Check;
+        ReportCheck: Report "Check Report";
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         IsRent: Boolean;

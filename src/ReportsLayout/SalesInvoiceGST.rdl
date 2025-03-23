@@ -3167,6 +3167,9 @@ End Function
         <Field Name="LUTARNNo">
           <DataField>LUTARNNo</DataField>
         </Field>
+        <Field Name="ARNNo">
+          <DataField>ARNNo</DataField>
+        </Field>
         <Field Name="ReportCaption">
           <DataField>ReportCaption</DataField>
         </Field>

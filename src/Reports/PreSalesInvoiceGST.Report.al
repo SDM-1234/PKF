@@ -215,10 +215,10 @@ report 50011 "Pre Sales Invoice GST"
                 column(KKC_Tax; KKCTax)
                 {
                 }
-                column(AmountInWords_1; AmountInWords[1])
+                column(AmountInWords_1; UpperCase(AmountInWords[1]))
                 {
                 }
-                column(AmountInWords_2; AmountInWords[2])
+                column(AmountInWords_2; UpperCase(AmountInWords[2]))
                 {
                 }
                 column(Grand_Total; ROUND(GrandTotal, 1))
@@ -274,11 +274,6 @@ report 50011 "Pre Sales Invoice GST"
                 var
                     DetailedGSTLedgerEntry: Record "Detailed GST Entry Buffer";
                 begin
-                    //IF ServTaxRegRec.GET(CompanyInformation."Service Tax Registration No.") THEN;
-
-                    //ServiceTax += "Service Tax Amount";
-                    //SBTax += "Service Tax SBC Amount";
-                    //KKCTax += "KK Cess Amount";
                     SubTotal += "Line Amount";
                     DiscountAmt += "Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
@@ -466,7 +461,7 @@ report 50011 "Pre Sales Invoice GST"
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
-        ReportCheck: Report Check;
+        ReportCheck: Report "Check Report";
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         IsRent: Boolean;
