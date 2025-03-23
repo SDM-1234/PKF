@@ -147,6 +147,7 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
                 PromotedIsBig = false;
                 ToolTip = 'Executes the GST Expense Invoice action.';
                 ApplicationArea = All;
+                Visible = false;
 
                 trigger OnAction()
                 var
@@ -172,6 +173,7 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
                 PromotedCategory = Category9;
                 ToolTip = 'Executes the GST Sales Invoice SEZ action.';
                 ApplicationArea = All;
+                Visible = false;
 
                 trigger OnAction()
                 var
@@ -198,6 +200,10 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
                 PromotedIsBig = false;
                 ToolTip = 'Executes the GST Sales Invoice Export action.';
                 ApplicationArea = All;
+                Visible = false;
+
+
+
 
                 trigger OnAction()
                 var
@@ -224,6 +230,7 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
                 PromotedIsBig = false;
                 ToolTip = 'Executes the GST Expense Invoice Export action.';
                 ApplicationArea = All;
+                Visible = false;
 
                 trigger OnAction()
                 var

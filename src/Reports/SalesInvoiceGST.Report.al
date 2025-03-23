@@ -292,10 +292,10 @@ report 50010 "Sales Invoice GST"
 
                     ReportCheck.InitTextVariable();
                     ReportCheckW1.InitTextVariable();
-                    if "Sales Invoice Header"."Currency Code" <> '' then
-                        ReportCheckW1.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code")
-                    else
-                        ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
+                    //if "Sales Invoice Header"."Currency Code" <> '' then
+                    //  ReportCheckW1.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code")
+                    //else
+                    ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
 
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
@@ -359,7 +359,9 @@ report 50010 "Sales Invoice GST"
                 CountryL: Record "Country/Region";
             begin
 
-                LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
+                IF LUTARNNo <> '' then
+                    LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
+
                 If "Invoice Types" = "Invoice Types"::Expenses then
                     ReportCaption := 'EXPENSE INVOICE'
                 ELSE

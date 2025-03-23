@@ -39,6 +39,7 @@ pageextension 50031 PostedSalesCreditMemo extends "Posted Sales Credit Memo"
                 Promoted = true;
                 ToolTip = 'Executes the GST Expense Credit Memo action.';
                 ApplicationArea = All;
+                Visible = false;
 
                 trigger OnAction()
                 var

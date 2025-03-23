@@ -14,6 +14,8 @@ report 50012 "Expense Invoice GST"
             column(Document_No; "Sales Invoice Header"."No.")
             {
             }
+            column(LUTARNNo; LUTARNNo) { }
+
             column(Posting_Date; FORMAT("Sales Invoice Header"."Posting Date", 0, 1))
             {
             }
@@ -328,6 +330,8 @@ report 50012 "Expense Invoice GST"
                 StateL: Record State;
                 CountryL: Record "Country/Region";
             begin
+                LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
+
                 RecLocation.GET("Location Code");
                 Customer.GET("Bill-to Customer No.");
                 BankDetails();
@@ -423,6 +427,9 @@ report 50012 "Expense Invoice GST"
         ReportCheck: Report "Check Report";
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
+        LUTARN: Record "LUT / ARN Master";
+        LUTARNNo: Code[50];
+
         IsRent: Boolean;
         //ServTaxRegRec: Record "Service Tax Registration Nos.";
         VarText: array[10] of Text;

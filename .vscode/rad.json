@@ -1,1 +1,1 @@
-﻿{"Added":[],"Modified":[{"Id":50093,"Kind":16,"Name":"SalesInvoice","Namespace":""}],"Removed":[]}
+﻿{"Added":[],"Modified":[{"Id":50012,"Kind":13,"Name":"Expense Invoice GST","Namespace":""},{"Kind":106,"Name":"RequestOptionsPage","Namespace":""},{"Id":50004,"Kind":13,"Name":"Sales Invoice GST SEZ","Namespace":""},{"Id":50010,"Kind":13,"Name":"Sales Invoice GST","Namespace":""},{"Id":50031,"Kind":16,"Name":"PostedSalesCreditMemo","Namespace":""},{"Id":50093,"Kind":16,"Name":"SalesInvoice","Namespace":""}],"Removed":[]}
