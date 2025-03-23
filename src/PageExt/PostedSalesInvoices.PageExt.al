@@ -8,6 +8,14 @@ pageextension 50037 PostedSalesInvoices extends "Posted Sales Invoices"
             {
                 ApplicationArea = All;
             }
+            field("Invoice Types"; Rec."Invoice Types")
+            {
+                ApplicationArea = All;
+            }
+            field("GST Customer Type"; Rec."GST Customer Type")
+            {
+                ApplicationArea = All;
+            }
         }
         addafter("Sell-to Customer Name")
         {

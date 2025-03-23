@@ -100,6 +100,8 @@ report 50011 "Pre Sales Invoice GST"
             column(RecLoc_Add_2; RecLocation."Address 2")
             {
             }
+            column(RecLoc_Add2; RecLocation."Address 2")
+            { }
             column(RecLoc_City; RecLocation.City)
             {
             }
@@ -176,6 +178,7 @@ report 50011 "Pre Sales Invoice GST"
                 column(Segment_Line; "Sales Header".Segment)
                 {
                 }
+                column(Description; "Sales Line".Description) { }
                 column(Scope1_Line; "Sales Line".Scope1)
                 {
                 }

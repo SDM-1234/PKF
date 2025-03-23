@@ -7,72 +7,48 @@ pageextension 50031 PostedSalesCreditMemo extends "Posted Sales Credit Memo"
             field(Remarks; Rec.Remarks)
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Remarks field.';
             }
         }
     }
     actions
     {
-        // addafter(Print)
-        // {
-        //     action("<Action1000000011>")
-        //     {
-        //         Caption = 'Serv. Tax Fee Credit Memo';
-        //         Image = "Credit Memo";
-        //         Promoted = true;
-        //         PromotedCategory = New;
+        addafter(Print)
+        {
+            action("GST Fee Credit Memo")
+            {
+                Caption = 'GST Fee Credit Memo';
+                Image = CreditMemo;
+                Promoted = true;
+                PromotedCategory = New;
+                ToolTip = 'Executes the GST Fee Credit Memo action.';
+                ApplicationArea = All;
 
-        //         trigger OnAction()
-        //         var
-        //             SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
-        //         begin
-        //             SalesCreditMemoHeader.SETRANGE("No.", "No.");
-        //             REPORT.RUNMODAL(50017, TRUE, FALSE, SalesCreditMemoHeader);
-        //         end;
-        //     }
-        //     action("Serv. Tax Expense Credit Memo")
-        //     {
-        //         Caption = 'Serv. Tax Expense Credit Memo';
-        //         Image = "Credit Memo";
-        //         Promoted = true;
+                trigger OnAction()
+                var
+                    SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
+                begin
+                    SalesCreditMemoHeader.SETRANGE("No.", Rec."No.");
+                    REPORT.RUNMODAL(50016, TRUE, FALSE, SalesCreditMemoHeader);
+                end;
+            }
+            action("GST Expense Credit Memo")
+            {
+                Caption = 'GST Expense Credit Memo';
+                Image = CreditMemo;
+                Promoted = true;
+                ToolTip = 'Executes the GST Expense Credit Memo action.';
+                ApplicationArea = All;
 
-        //         trigger OnAction()
-        //         var
-        //             SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
-        //         begin
-        //             SalesCreditMemoHeader.SETRANGE("No.", "No.");
-        //             REPORT.RUNMODAL(50019, TRUE, FALSE, SalesCreditMemoHeader);
-        //         end;
-        //     }
-        //     action("<Action1000000010>")
-        //     {
-        //         Caption = 'GST Fee Credit Memo';
-        //         Image = CreditMemo;
-        //         Promoted = true;
-        //         PromotedCategory = New;
-
-        //         trigger OnAction()
-        //         var
-        //             SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
-        //         begin
-        //             SalesCreditMemoHeader.SETRANGE("No.", "No.");
-        //             REPORT.RUNMODAL(50016, TRUE, FALSE, SalesCreditMemoHeader);
-        //         end;
-        //     }
-        //     action("GST Expense Credit Memo")
-        //     {
-        //         Caption = 'GST Expense Credit Memo';
-        //         Image = "Credit Memo";
-        //         Promoted = true;
-
-        //         trigger OnAction()
-        //         var
-        //             SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
-        //         begin
-        //             SalesCreditMemoHeader.SETRANGE("No.", "No.");
-        //             REPORT.RUNMODAL(50018, TRUE, FALSE, SalesCreditMemoHeader);
-        //         end;
-        //     }
-        // }
+                trigger OnAction()
+                var
+                    SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
+                begin
+                    SalesCreditMemoHeader.SETRANGE("No.", Rec."No.");
+                    REPORT.RUNMODAL(50018, true, false, SalesCreditMemoHeader);
+                end;
+            }
+        }
         addafter("Import E-Invoice Response")
         {
             action("Generate E-Invoice Cleartax")
@@ -90,8 +66,5 @@ pageextension 50031 PostedSalesCreditMemo extends "Posted Sales Credit Memo"
             }
         }
     }
-
-    var
-        SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
 }
 
