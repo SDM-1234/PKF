@@ -14,7 +14,6 @@
             "enableLongRunningSqlStatements": true,
             "enableSqlInformationDebugger": true,
             "schemaUpdateMode": "ForceSync"
-        
         },
         {
             "name": "AL: Generated Attach request",
@@ -33,7 +32,7 @@
             "type": "al",
             "environmentType": "Production",
             "environmentName": "Production",
-            "sessionId": 93905,
+            "sessionId": 105878,
             "breakOnNext": "WebClient",
             "executionContext": "DebugAndProfile",
             "tenant": "accf4f9d-3eb8-4ecb-9225-309f325fff53",

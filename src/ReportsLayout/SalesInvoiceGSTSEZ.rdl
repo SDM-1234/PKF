@@ -2592,7 +2592,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")</Value>
+                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")+Last(Fields!TotCGST.Value, "DataSet_Result")+Last(Fields!TotSGST.Value, "DataSet_Result")+Last(Fields!TotIGST.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <Format>#,0.00;(#,0.00)</Format>
@@ -2802,7 +2802,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value EvaluationMode="Constant">LUT / ARN No</Value>
+                      <Value EvaluationMode="Constant">LUT / ARN No. :</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <FontWeight>Bold</FontWeight>
@@ -2816,7 +2816,7 @@
               <Top>1.90521in</Top>
               <Left>3.82534in</Left>
               <Height>0.17708in</Height>
-              <Width>0.84723in</Width>
+              <Width>0.90278in</Width>
               <ZIndex>38</ZIndex>
               <Style>
                 <Border>

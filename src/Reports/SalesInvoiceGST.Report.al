@@ -289,7 +289,12 @@ report 50010 "Sales Invoice GST"
                     DiscountAmt += "Sales Invoice Line"."Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
                     GrandTotal += "Sales Invoice Line"."Amount Including VAT";
+
                     ReportCheck.InitTextVariable();
+                    ReportCheckW1.InitTextVariable();
+                    //if "Sales Invoice Header"."Currency Code" <> '' then
+                    //  ReportCheckW1.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code")
+                    //else
                     ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
 
                     IF IsRent = TRUE THEN
@@ -354,7 +359,9 @@ report 50010 "Sales Invoice GST"
                 CountryL: Record "Country/Region";
             begin
 
+                // IF LUTARNNo <> '' then
                 LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
+                Message('%1', LUTARNNo);
                 If "Invoice Types" = "Invoice Types"::Expenses then
                     ReportCaption := 'EXPENSE INVOICE'
                 ELSE
@@ -481,6 +488,7 @@ report 50010 "Sales Invoice GST"
         Customer: Record Customer;
         LUTARN: Record "LUT / ARN Master";
         ReportCheck: Report "Check Report";
+        ReportCheckW1: Report Check;
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;
