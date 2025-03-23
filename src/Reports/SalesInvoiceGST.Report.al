@@ -289,8 +289,13 @@ report 50010 "Sales Invoice GST"
                     DiscountAmt += "Sales Invoice Line"."Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
                     GrandTotal += "Sales Invoice Line"."Amount Including VAT";
+
                     ReportCheck.InitTextVariable();
-                    ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
+                    ReportCheckW1.InitTextVariable();
+                    if "Sales Invoice Header"."Currency Code" <> '' then
+                        ReportCheckW1.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code")
+                    else
+                        ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
 
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
@@ -481,6 +486,7 @@ report 50010 "Sales Invoice GST"
         Customer: Record Customer;
         LUTARN: Record "LUT / ARN Master";
         ReportCheck: Report "Check Report";
+        ReportCheckW1: Report Check;
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;

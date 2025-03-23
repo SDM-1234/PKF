@@ -23,55 +23,67 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
             {
                 ApplicationArea = ALl;
                 Editable = false;
+                ToolTip = 'Specifies the GST registration number of the Location specified on the Sales document.';
             }
             field(LOB; Rec.LOB)
             {
                 ApplicationArea = All;
                 Editable = false;
+                ToolTip = 'Specifies the value of the LOB field.';
             }
             field(Segment; Rec.Segment)
             {
                 ApplicationArea = All;
                 Editable = false;
+                ToolTip = 'Specifies the value of the Segment field.';
             }
             field("Resp. Name"; Rec."Resp. Name")
             {
                 ApplicationArea = All;
                 Editable = false;
+                ToolTip = 'Specifies the value of the Resp. Name field.';
             }
             field(Remarks; Rec.Remarks)
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Remarks field.';
             }
             field("Type of Invoice"; Rec."Type of Invoice")
             {
                 ApplicationArea = All;
                 Visible = false;
+                ToolTip = 'Specifies the value of the Type of Invoice field.';
             }
             field("Invoice Types"; Rec."Invoice Types")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Invoice Types field.';
             }
             field("Team Leader"; Rec."Team Leader")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Team Leader field.';
             }
             field("Sales Currency"; Rec."Sales Currency")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Sales Currency field.';
             }
             field("Work Order No."; Rec."Work Order No.")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Work Order No. field.';
             }
             field("Take Print"; Rec."Take Print")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Take Print field.';
             }
             field("Bank Selection For Report"; Rec."Bank Selection For Report")
             {
                 ApplicationArea = All;
                 Visible = BankTypeSelectionVisible;
+                ToolTip = 'Specifies the value of the Bank Selection For Report field.';
             }
         }
     }
@@ -99,128 +111,137 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
             end;
         }
 
-        // addafter(Preview)
-        // {
-        //     action("GST Sales Invoice")
-        //     {
-        //         Caption = 'GST Sales Invoice';
-        //         Image = Invoice;
-        //         Promoted = true;
-        //         PromotedCategory = Category9;
-        //         PromotedIsBig = false;
+        addafter(Preview)
+        {
+            action("GST Sales Invoice")
+            {
+                Caption = 'GST Sales Invoice';
+                Image = Invoice;
+                Promoted = true;
+                PromotedCategory = Category9;
+                PromotedIsBig = false;
+                ToolTip = 'Executes the GST Sales Invoice action.';
+                ApplicationArea = All;
 
-        //         trigger OnAction()
-        //         var
-        //             SalesHeaderL: Record "Sales Header";
-        //         begin
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - START
-        //             IF ("Posting No." <> "No.") THEN BEGIN
-        //                 ERROR('Invoice No. & Posting No. are not same');
-        //             END
-        //             ELSE BEGIN
-        //                 SalesHeaderL.SETRANGE("Document Type", "Document Type");
-        //                 SalesHeaderL.SETRANGE("No.", "No.");
-        //                 REPORT.RUNMODAL(50011, TRUE, FALSE, SalesHeaderL)
-        //             END;
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
-        //         end;
-        //     }
-        //     action("GST Expense Invoice")
-        //     {
-        //         Caption = 'GST Expense Invoice';
-        //         Image = Invoice;
-        //         Promoted = true;
-        //         PromotedCategory = Category9;
-        //         PromotedIsBig = false;
+                trigger OnAction()
+                var
+                    SalesHeaderL: Record "Sales Header";
+                begin
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - START
+                    IF (Rec."Posting No." <> Rec."No.") THEN
+                        ERROR('Invoice No. & Posting No. are not same')
+                    ELSE BEGIN
+                        SalesHeaderL.SETRANGE("Document Type", Rec."Document Type");
+                        SalesHeaderL.SETRANGE("No.", Rec."No.");
+                        REPORT.RUNMODAL(50011, TRUE, FALSE, SalesHeaderL)
+                    END;
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
+                end;
+            }
+            action("GST Expense Invoice")
+            {
+                Caption = 'GST Expense Invoice';
+                Image = Invoice;
+                Promoted = true;
+                PromotedCategory = Category9;
+                PromotedIsBig = false;
+                ToolTip = 'Executes the GST Expense Invoice action.';
+                ApplicationArea = All;
 
-        //         trigger OnAction()
-        //         var
-        //             SalesHeaderL: Record "Sales Header";
-        //         begin
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - START
-        //             IF ("Posting No." <> "No.") THEN BEGIN
-        //                 ERROR('Invoice No. & Posting No. are not same');
-        //             END
-        //             ELSE BEGIN
-        //                 SalesHeaderL.SETRANGE("Document Type", "Document Type");
-        //                 SalesHeaderL.SETRANGE("No.", "No.");
-        //                 REPORT.RUNMODAL(50013, TRUE, FALSE, SalesHeaderL);
-        //             END;
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
-        //         end;
-        //     }
-        //     action("<Action1000000017>")
-        //     {
-        //         Caption = 'GST Sales Invoice SEZ';
-        //         Image = Invoice;
-        //         Promoted = true;
-        //         PromotedCategory = Category9;
+                trigger OnAction()
+                var
+                    SalesHeaderL: Record "Sales Header";
+                begin
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - START
+                    IF (Rec."Posting No." <> Rec."No.") THEN
+                        ERROR('Invoice No. & Posting No. are not same')
 
-        //         trigger OnAction()
-        //         var
-        //             SalesHeaderL: Record "Sales Header";
-        //         begin
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - START
-        //             IF ("Posting No." <> "No.") THEN BEGIN
-        //                 ERROR('Invoice No. & Posting No. are not same');
-        //             END
-        //             ELSE BEGIN
-        //                 SalesHeaderL.SETRANGE("Document Type", "Document Type");
-        //                 SalesHeaderL.SETRANGE("No.", "No.");
-        //                 REPORT.RUNMODAL(50006, TRUE, FALSE, SalesHeaderL)
-        //             END;
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
-        //         end;
-        //     }
-        //     action("GST Sales Invoice Export")
-        //     {
-        //         Caption = 'GST Sales Invoice Export';
-        //         Image = Invoice;
-        //         Promoted = true;
-        //         PromotedCategory = Category10;
-        //         PromotedIsBig = false;
+                    ELSE BEGIN
+                        SalesHeaderL.SETRANGE("Document Type", Rec."Document Type");
+                        SalesHeaderL.SETRANGE("No.", Rec."No.");
+                        REPORT.RUNMODAL(50013, TRUE, FALSE, SalesHeaderL);
+                    END;
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
+                end;
+            }
+            action("GST Sales Invoice SEZ")
+            {
+                Caption = 'GST Sales Invoice SEZ';
+                Image = Invoice;
+                Promoted = true;
+                PromotedCategory = Category9;
+                ToolTip = 'Executes the GST Sales Invoice SEZ action.';
+                ApplicationArea = All;
 
-        //         trigger OnAction()
-        //         var
-        //             SalesHeaderL: Record "Sales Header";
-        //         begin
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - START
-        //             IF ("Posting No." <> "No.") THEN BEGIN
-        //                 ERROR('Invoice No. & Posting No. are not same');
-        //             END
-        //             ELSE BEGIN
-        //                 SalesHeaderL.SETRANGE("Document Type", "Document Type");
-        //                 SalesHeaderL.SETRANGE("No.", "No.");
-        //                 REPORT.RUNMODAL(50014, TRUE, FALSE, SalesHeaderL)
-        //             END;
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
-        //         end;
-        //     }
-        //     action("<Action1000000010>")
-        //     {
-        //         Caption = 'GST Expense Invoice Export';
-        //         Image = Invoice;
-        //         Promoted = true;
-        //         PromotedCategory = Category10;
-        //         PromotedIsBig = false;
+                trigger OnAction()
+                var
+                    SalesHeaderL: Record "Sales Header";
+                begin
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - START
+                    IF (Rec."Posting No." <> Rec."No.") THEN
+                        ERROR('Invoice No. & Posting No. are not same')
 
-        //         trigger OnAction()
-        //         var
-        //             SalesHeaderL: Record "Sales Header";
-        //         begin
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - START
-        //             IF ("Posting No." <> "No.") THEN BEGIN
-        //                 ERROR('Invoice No. & Posting No. are not same');
-        //             END
-        //             ELSE BEGIN
-        //                 SalesHeaderL.SETRANGE("Document Type", "Document Type");
-        //                 SalesHeaderL.SETRANGE("No.", "No.");
-        //                 REPORT.RUNMODAL(50015, TRUE, FALSE, SalesHeaderL)
-        //             END;
-        //             //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
-        //         end;
-        //     }
-        // }
+                    ELSE BEGIN
+                        SalesHeaderL.SETRANGE("Document Type", Rec."Document Type");
+                        SalesHeaderL.SETRANGE("No.", Rec."No.");
+                        REPORT.RUNMODAL(50006, TRUE, FALSE, SalesHeaderL)
+                    END;
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
+                end;
+            }
+            action("GST Sales Invoice Export")
+            {
+                Caption = 'GST Sales Invoice Export';
+                Image = Invoice;
+                Promoted = true;
+                PromotedCategory = Category10;
+                PromotedIsBig = false;
+                ToolTip = 'Executes the GST Sales Invoice Export action.';
+                ApplicationArea = All;
+
+                trigger OnAction()
+                var
+                    SalesHeaderL: Record "Sales Header";
+                begin
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - START
+                    IF (Rec."Posting No." <> Rec."No.") THEN
+                        ERROR('Invoice No. & Posting No. are not same')
+
+                    ELSE BEGIN
+                        SalesHeaderL.SETRANGE("Document Type", Rec."Document Type");
+                        SalesHeaderL.SETRANGE("No.", Rec."No.");
+                        REPORT.RUNMODAL(50014, TRUE, FALSE, SalesHeaderL)
+                    END;
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
+                end;
+            }
+            action("GST Expense Invoice Export")
+            {
+                Caption = 'GST Expense Invoice Export';
+                Image = Invoice;
+                Promoted = true;
+                PromotedCategory = Category10;
+                PromotedIsBig = false;
+                ToolTip = 'Executes the GST Expense Invoice Export action.';
+                ApplicationArea = All;
+
+                trigger OnAction()
+                var
+                    SalesHeaderL: Record "Sales Header";
+                begin
+                    //SDM BCS on control of Invoice No. & Posting No. should be same - START
+                    IF (Rec."Posting No." <> Rec."No.") THEN
+                        ERROR('Invoice No. & Posting No. are not same')
+                    ELSE BEGIN
+                        SalesHeaderL.SETRANGE("Document Type", Rec."Document Type");
+                        SalesHeaderL.SETRANGE("No.", Rec."No.");
+                        REPORT.RUNMODAL(50015, TRUE, FALSE, SalesHeaderL)
+
+                        //SDM BCS on control of Invoice No. & Posting No. should be same - STOP
+                    end;
+                end;
+            }
+        }
     }
 
     var
