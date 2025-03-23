@@ -359,9 +359,9 @@ report 50010 "Sales Invoice GST"
                 CountryL: Record "Country/Region";
             begin
 
-                IF LUTARNNo <> '' then
-                    LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
-
+                // IF LUTARNNo <> '' then
+                LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
+                Message('%1', LUTARNNo);
                 If "Invoice Types" = "Invoice Types"::Expenses then
                     ReportCaption := 'EXPENSE INVOICE'
                 ELSE
