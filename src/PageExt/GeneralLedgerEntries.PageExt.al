@@ -75,6 +75,7 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
             Rec.SETRANGE("Posting Date", PostingDateVar);
         end;
         Rec.FILTERGROUP(0);
+
     end;
 
     trigger OnOpenPage()
