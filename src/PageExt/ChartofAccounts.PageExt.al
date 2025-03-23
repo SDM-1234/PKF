@@ -8,28 +8,21 @@ pageextension 50039 ChartofAccounts extends "Chart of Accounts"
         GLUserSetup: Record "GL User Setup";
 
 
+
     trigger OnAfterGetRecord()
     begin
         AccountsPermission();//AD_SD
-
-        //RSF.SDM.281024
         Rec.FILTERGROUP(2);
         Rec.SETFILTER("No.", GLUserSetup.FilterGLAccount());
         Rec.FILTERGROUP(0);
-        //RSF.SDM.281024
     end;
 
     trigger OnOpenPage()
     begin
-
         AccountsPermission();//AD_SD
-
-        //RSF.SDM.281024
         Rec.FILTERGROUP(2);
         Rec.SETFILTER("No.", GLUserSetup.FilterGLAccount());
         Rec.FILTERGROUP(0);
-        //RSF.SDM.281024
-
     end;
 
     local procedure AccountsPermission()
