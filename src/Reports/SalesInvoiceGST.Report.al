@@ -7,6 +7,7 @@ report 50010 "Sales Invoice GST"
     Caption = 'Sales Invoice GST';
     PreviewMode = PrintLayout;
     UsageCategory = ReportsAndAnalysis;
+    Permissions = tabledata "Sales Invoice Header" = RM;
 
 
     dataset
@@ -288,14 +289,6 @@ report 50010 "Sales Invoice GST"
                     SubTotal += "Line Amount";
                     DiscountAmt += "Sales Invoice Line"."Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
-                    GrandTotal += "Sales Invoice Line"."Amount Including VAT";
-
-                    ReportCheck.InitTextVariable();
-                    ReportCheckW1.InitTextVariable();
-                    //if "Sales Invoice Header"."Currency Code" <> '' then
-                    //  ReportCheckW1.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code")
-                    //else
-                    ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
 
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
@@ -340,6 +333,9 @@ report 50010 "Sales Invoice GST"
                     TotSGST += SGST_Amt;
                     TotIGST += IGST_Amt;
                     //GST
+                    GrandTotal += "Line Amount" - CGST_Amt - SGST_Amt - IGST_Amt;
+                    ReportCheck.InitTextVariable();
+                    ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Invoice Header"."Currency Code");
                 end;
 
                 trigger OnPreDataItem()
@@ -357,11 +353,25 @@ report 50010 "Sales Invoice GST"
                 LocationL: Record Location;
                 StateL: Record State;
                 CountryL: Record "Country/Region";
+                EInvoiceReq: Record "E-Invoicing Requests";
+                QRGenerator: Codeunit "QR Generator";
+                TempBlob: Codeunit "Temp Blob";
+                RecRef: RecordRef;
             begin
-
-                // IF LUTARNNo <> '' then
+                CalcFields("QR Code");
+                if ("IRN Hash" <> '') and (not "QR Code".HasValue) then begin
+                    EInvoiceReq.SetRange("Document Type", EInvoiceReq."Document Type"::"Sale Invoice");
+                    EInvoiceReq.SetRange("Document No.", "No.");
+                    if EInvoiceReq.FindFirst() then begin
+                        RecRef.GetTable("Sales Invoice Header");
+                        QRGenerator.GenerateQRCodeImage(EInvoiceReq."Signed QR Code" + EInvoiceReq."Signed QR Code2"
+                                                        + EInvoiceReq."Signed QR Code3" + EInvoiceReq."Signed QR Code4", TempBlob);
+                        TempBlob.ToRecordRef(RecRef, "Sales Invoice Header".FieldNo("QR Code"));
+                        RecRef.SetTable("Sales Invoice Header");
+                        "Sales Invoice Header".Modify();
+                    end;
+                end;
                 LUTARNNo := LUTARN.GetARNNo("Sales Invoice Header"."Posting Date", "Sales Invoice Header"."Location Code");
-                Message('%1', LUTARNNo);
                 If "Invoice Types" = "Invoice Types"::Expenses then
                     ReportCaption := 'EXPENSE INVOICE'
                 ELSE
