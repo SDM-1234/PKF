@@ -2,11 +2,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dev01",
+            "name": "Dev02",
             "request": "launch",
             "type": "al",
             "environmentType": "Sandbox",
-            "environmentName": "DEV01",
+            "environmentName": "DEV02",
             "startupObjectId": 22,
             "startupObjectType": "Page",
             "breakOnError": "All",

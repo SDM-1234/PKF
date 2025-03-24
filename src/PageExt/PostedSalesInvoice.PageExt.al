@@ -88,6 +88,7 @@ pageextension 50020 PostedSalesInvoice extends "Posted Sales Invoice"
                 Promoted = true;
                 ToolTip = 'Executes the GST Sales Invoice action.';
                 ApplicationArea = All;
+                PromotedCategory = Report;
 
                 trigger OnAction()
                 var
@@ -104,6 +105,7 @@ pageextension 50020 PostedSalesInvoice extends "Posted Sales Invoice"
                 Promoted = true;
                 ToolTip = 'Executes the GST Expense Invoice action.';
                 ApplicationArea = All;
+                PromotedCategory = Report;
 
                 trigger OnAction()
                 var
@@ -120,6 +122,7 @@ pageextension 50020 PostedSalesInvoice extends "Posted Sales Invoice"
                 Image = PostedTaxInvoice;
                 ToolTip = 'Executes the GST Sales Invoice Export & SEZ action.';
                 ApplicationArea = All;
+                PromotedCategory = Report;
 
                 trigger OnAction()
                 var
