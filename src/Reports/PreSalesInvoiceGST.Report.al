@@ -236,13 +236,31 @@ report 50011 "Pre Sales Invoice GST"
                 column(SGST_Rate; 'SGST')
                 {
                 }
-                column(TotCGST; TotCGST * -1)
+                column(TotCGST; GSTCompAmount[2] * -1)
                 {
                 }
-                column(TotSGST; TotSGST * -1)
+                column(TotSGST; GSTCompAmount[6] * -1)
                 {
                 }
-                column(TotIGST; TotIGST * -1)
+                column(GSTComponentCodeName; GSTComponentCodeName[j])
+                {
+                }
+                //column(TotIGST; GSTCompAmount[3])
+                //{
+                //}
+                //column(CGSTCompAmount; GSTCompAmount[2])
+                //{
+                //}
+                //column(SGSTCompAmount; GSTCompAmount[6])
+                // {
+                //}
+
+
+                column(GSTComponentCode; GSTComponentCode[GSTCompNo])
+                {
+                }
+
+                column(TotIGST; GSTCompAmount[3] * -1)
                 {
                 }
                 column(CGST_Rate_1; CGST_Rate)
@@ -278,54 +296,73 @@ report 50011 "Pre Sales Invoice GST"
                     DiscountAmt += "Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
 
+
+                    //[-]
+                    CGST_Rate := 9;
+                    SGST_Rate := 9;
+                    IGST_Rate := 18;
+
+                    SalesLine1.SetRange("Document No.", "Sales Header"."No.");
+                    SalesLine1.SetRange("Document Type", "Sales Header"."Document Type");
+                    if SalesLine1.FindSet() then
+                        repeat
+                            GSTCompNo := 1;
+                            TaxTrnasactionValue.Reset();
+                            TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine1.RecordId);
+                            TaxTrnasactionValue.SetRange("Tax Type", 'GST');
+                            TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
+                            TaxTrnasactionValue.SetFilter(Percent, '<>%1', 0);
+                            if TaxTrnasactionValue.FindSet() then
+                                repeat
+                                    GSTCompNo := TaxTrnasactionValue."Value ID";
+                                    GSTComponentCode[GSTCompNo] := TaxTrnasactionValue."Value ID";
+                                    TaxTrnasactionValue1.Reset();
+                                    TaxTrnasactionValue1.SetRange("Tax Record ID", SalesLine1.RecordId);
+                                    TaxTrnasactionValue1.SetRange("Tax Type", 'GST');
+                                    TaxTrnasactionValue1.SetRange("Value Type", TaxTrnasactionValue1."Value Type"::COMPONENT);
+                                    TaxTrnasactionValue1.SetRange("Value ID", GSTComponentCode[GSTCompNo]);
+                                    if TaxTrnasactionValue1.FindSet() then begin
+                                        repeat
+                                            GSTCompAmount[GSTCompNo] += TaxTrnasactionValue1."Amount";
+                                            TotGSTAmt += TaxTrnasactionValue1.Amount;
+                                        until TaxTrnasactionValue1.Next() = 0;
+                                        GSTCompNo += 1;
+                                    end;
+                                until TaxTrnasactionValue.Next() = 0;
+
+                            TaxTrnasactionValue.Reset();
+                            TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine1.RecordId);
+                            TaxTrnasactionValue.SetRange("Tax Type", 'GST');
+                            TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
+                            TaxTrnasactionValue.SetFilter(Percent, '<>%1', 0);
+                            if TaxTrnasactionValue.FindSet() then
+                                repeat
+                                    j := TaxTrnasactionValue."Value ID";
+                                    case TaxTrnasactionValue."Value ID" of
+                                        6:
+                                            GSTComponentCodeName[j] := 'SGST';
+                                        2:
+                                            GSTComponentCodeName[j] := 'CGST';
+                                        3:
+                                            GSTComponentCodeName[j] := 'IGST';
+                                        5:
+                                            GSTComponentCodeName[j] := 'UTGST';
+                                    end;
+                                    j += 1;
+                                until TaxTrnasactionValue.Next() = 0;
+                        until SalesLine1.Next() = 0;
+
+                    //[+]
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
                     ELSE
                         CatofSer := CompanyInformation."Industrial Classification";
 
-                    //GST
-                    CGST_Rate := 0;
-                    CGST_Amt := 0;
-                    SGST_Rate := 0;
-                    SGST_Amt := 0;
-                    IGST_Rate := 0;
-                    IGST_Amt := 0;
 
-                    DetailedGSTLedgerEntry.RESET();
-                    DetailedGSTLedgerEntry.SETCURRENTKEY("Transaction Type", "Document Type", "Document No.", "Line No.");
-                    DetailedGSTLedgerEntry.SETRANGE("Transaction Type", DetailedGSTLedgerEntry."Transaction Type"::Sales);
-                    DetailedGSTLedgerEntry.SETRANGE("Document Type", DetailedGSTLedgerEntry."Document Type"::Invoice);
-                    DetailedGSTLedgerEntry.SETRANGE("Document No.", "Document No.");
-                    DetailedGSTLedgerEntry.SETRANGE("Line No.", "Line No.");
-                    DetailedGSTLedgerEntry.SETRANGE("No.", "No.");
-                    DetailedGSTLedgerEntry.SETRANGE("GST Component Code", 'CGST');
-                    IF DetailedGSTLedgerEntry.FINDFIRST() THEN BEGIN
-                        CGST_Rate := DetailedGSTLedgerEntry."GST %";
-                        CGST_Amt := DetailedGSTLedgerEntry."GST Amount";
-                    END;
-                    DetailedGSTLedgerEntry.SETRANGE("GST Component Code", 'IGST');
-                    IF DetailedGSTLedgerEntry.FINDFIRST() THEN BEGIN
-                        IGST_Rate := DetailedGSTLedgerEntry."GST %";
-                        IGST_Amt := DetailedGSTLedgerEntry."GST Amount";
-                    END;
 
-                    DetailedGSTLedgerEntry.SETRANGE("GST Component Code", 'SGST');
-                    IF DetailedGSTLedgerEntry.FINDFIRST() THEN BEGIN
-                        SGST_Rate := DetailedGSTLedgerEntry."GST %";
-                        SGST_Amt := DetailedGSTLedgerEntry."GST Amount";
-                    END;
-                    //GST
-
-                    //GST
-                    TotCGST += CGST_Amt;
-                    TotSGST += SGST_Amt;
-                    TotIGST += IGST_Amt;
-                    //GST
-
-                    GrandTotal += "Line Amount" - CGST_Amt - SGST_Amt - IGST_Amt;
+                    GrandTotal += "Line Amount" + TotGSTAmt;
                     ReportCheck.InitTextVariable();
                     ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Header"."Currency Code");
-
                 end;
 
                 trigger OnPreDataItem()
@@ -476,6 +513,15 @@ report 50011 "Pre Sales Invoice GST"
         CGST_Amt: Decimal;
         SGST_Rate: Decimal;
         SGST_Amt: Decimal;
+        TaxTrnasactionValue: Record "Tax Transaction Value";
+        TaxTrnasactionValue1: Record "Tax Transaction Value";
+        SalesLine1: Record "Sales Line";
+        GSTComponentCodeName: array[10] of Code[20];
+        GSTCompAmount: array[20] of Decimal;
+        GSTComponentCode: array[20] of Integer;
+        GSTCompNo, j : Integer;
+        TotGSTAmt: Decimal;
+
         IGST_Rate: Decimal;
         IGST_Amt: Decimal;
         TotCGST: Decimal;

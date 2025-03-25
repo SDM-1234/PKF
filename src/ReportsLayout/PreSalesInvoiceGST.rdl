@@ -2461,7 +2461,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")+Last(Fields!TotCGST.Value, "DataSet_Result")+Last(Fields!TotSGST.Value, "DataSet_Result")+Last(Fields!TotIGST.Value, "DataSet_Result")</Value>
+                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <Format>#,0.00;(#,0.00)</Format>
@@ -3291,6 +3291,12 @@ End Function
         </Field>
         <Field Name="TotSGSTFormat">
           <DataField>TotSGSTFormat</DataField>
+        </Field>
+        <Field Name="GSTComponentCodeName">
+          <DataField>GSTComponentCodeName</DataField>
+        </Field>
+        <Field Name="GSTComponentCode">
+          <DataField>GSTComponentCode</DataField>
         </Field>
         <Field Name="TotIGST">
           <DataField>TotIGST</DataField>

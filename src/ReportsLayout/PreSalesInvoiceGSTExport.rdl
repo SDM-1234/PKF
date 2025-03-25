@@ -993,7 +993,7 @@
               <Top>1.30486in</Top>
               <Left>1.40383in</Left>
               <Height>0.18889in</Height>
-              <Width>5.09027in</Width>
+              <Width>5.69756in</Width>
               <ZIndex>9</ZIndex>
               <Style>
                 <Border>
@@ -1026,7 +1026,7 @@
               <Top>1.46875in</Top>
               <Left>1.40383in</Left>
               <Height>0.18889in</Height>
-              <Width>5.09027in</Width>
+              <Width>5.69756in</Width>
               <ZIndex>10</ZIndex>
               <Style>
                 <Border>
@@ -2915,7 +2915,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=LAST(Fields!TotIGST.Value, "DataSet_Result")-LAST(Fields!TotIGST.Value, "DataSet_Result")</Value>
+                      <Value>=LAST(Fields!TotIGST.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <Format>#,0.00;(#,0.00)</Format>
