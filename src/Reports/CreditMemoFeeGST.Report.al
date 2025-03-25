@@ -322,7 +322,27 @@ report 50016 "Credit Memo Fee GST"
                 LocationL: Record Location;
                 StateL: Record State;
                 CountryL: Record "Country/Region";
+                EInvoiceReq: Record "E-Invoicing Requests";
+                QRGenerator: Codeunit "QR Generator";
+                TempBlob: Codeunit "Temp Blob";
+                RecRef: RecordRef;
+
             begin
+                //
+                CalcFields("QR Code");
+                if ("IRN Hash" <> '') and (not "QR Code".HasValue) then begin
+                    EInvoiceReq.SetRange("Document Type", EInvoiceReq."Document Type"::"Sale Cr. Memo");
+                    EInvoiceReq.SetRange("Document No.", "No.");
+                    if EInvoiceReq.FindFirst() then begin
+                        RecRef.GetTable("Sales Cr.Memo Header");
+                        QRGenerator.GenerateQRCodeImage(EInvoiceReq."Signed QR Code" + EInvoiceReq."Signed QR Code2"
+                                                        + EInvoiceReq."Signed QR Code3" + EInvoiceReq."Signed QR Code4", TempBlob);
+                        TempBlob.ToRecordRef(RecRef, "Sales Cr.Memo Header".FieldNo("QR Code"));
+                        RecRef.SetTable("Sales Cr.Memo Header");
+                        "Sales Cr.Memo Header".Modify();
+                    end;
+                end;
+                //
                 RecLocation.GET("Location Code");
                 Customer.GET("Bill-to Customer No.");
                 BankDetails();
