@@ -498,7 +498,6 @@ report 50010 "Sales Invoice GST"
         Customer: Record Customer;
         LUTARN: Record "LUT / ARN Master";
         ReportCheck: Report "Check Report";
-        ReportCheckW1: Report Check;
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;

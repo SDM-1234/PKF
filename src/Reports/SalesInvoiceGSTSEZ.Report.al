@@ -7,6 +7,7 @@ report 50004 "Sales Invoice GST SEZ"
     Caption = 'Sales Invoice GST SEZ';
     PreviewMode = PrintLayout;
     UsageCategory = ReportsAndAnalysis;
+    Permissions = tabledata "Sales Invoice Header" = RM;
 
     dataset
     {
