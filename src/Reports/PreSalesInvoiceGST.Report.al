@@ -277,9 +277,6 @@ report 50011 "Pre Sales Invoice GST"
                     SubTotal += "Line Amount";
                     DiscountAmt += "Line Discount Amount";
                     GrossTotal := SubTotal + DiscountAmt;
-                    GrandTotal += "Amount Including VAT";
-                    ReportCheck.InitTextVariable();
-                    ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Header"."Currency Code");
 
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
@@ -324,6 +321,11 @@ report 50011 "Pre Sales Invoice GST"
                     TotSGST += SGST_Amt;
                     TotIGST += IGST_Amt;
                     //GST
+
+                    GrandTotal += "Line Amount" - CGST_Amt - SGST_Amt - IGST_Amt;
+                    ReportCheck.InitTextVariable();
+                    ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Header"."Currency Code");
+
                 end;
 
                 trigger OnPreDataItem()
