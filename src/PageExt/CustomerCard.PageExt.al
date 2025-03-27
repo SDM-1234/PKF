@@ -16,6 +16,7 @@ pageextension 50065 CustomerCard extends "Customer Card"
         modify("Registration Number")
         {
             Importance = Promoted;
+            Caption = 'TAN No.';
         }
 
         moveafter("Country/Region Code"; "State Code")

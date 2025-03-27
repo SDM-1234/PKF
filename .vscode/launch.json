@@ -2,11 +2,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dev02",
+            "name": "PKFDev",
             "request": "launch",
             "type": "al",
             "environmentType": "Sandbox",
-            "environmentName": "DEV02",
+            "environmentName": "PKFDev",
             "startupObjectId": 22,
             "startupObjectType": "Page",
             "breakOnError": "All",
@@ -20,7 +20,7 @@
             "request": "attach",
             "type": "al",
             "environmentType": "Sandbox",
-            "environmentName": "DEV01",
+            "environmentName": "PKFDev",
             "sessionId": 22847,
             "breakOnNext": "WebClient",
             "breakOnError": "ExcludeTry",
