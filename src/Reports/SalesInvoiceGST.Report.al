@@ -496,8 +496,7 @@ report 50010 "Sales Invoice GST"
     var
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
-        LUTARN: Record "LUT / ARN Master";
-        ReportCheck: Report "Check Report";
+        ReportCheck: Codeunit AmountToWords;
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;
@@ -513,6 +512,8 @@ report 50010 "Sales Invoice GST"
         CurrencyCode: Code[10];
         GetSalesInvoiceHeader: Code[20];
         LUTARNNo: Code[50];
+        LUTARN: Record "LUT / ARN Master";
+
         LocGstNo: Code[20];
         CGST_Rate: Decimal;
         CGST_Amt: Decimal;

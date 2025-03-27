@@ -3031,6 +3031,9 @@ End Function
         <Field Name="Document_No">
           <DataField>Document_No</DataField>
         </Field>
+        <Field Name="LUTARNNo">
+          <DataField>LUTARNNo</DataField>
+        </Field>
         <Field Name="Posting_Date">
           <DataField>Posting_Date</DataField>
         </Field>

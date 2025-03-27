@@ -444,7 +444,7 @@ report 50016 "Credit Memo Fee GST"
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
         RecLocation: Record Location;
-        ReportCheck: Report "Check Report";
+        ReportCheck: Codeunit AmountToWords;
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;
