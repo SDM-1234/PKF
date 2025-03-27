@@ -25,6 +25,15 @@ pageextension 50068 CustomerLedgerEntries extends "Customer Ledger Entries"
         {
             Visible = true;
         }
+        addafter("Customer No.")
+        {
+            field(CustomerName; Rec."Customer Name")
+            {
+                ApplicationArea = All;
+            }
+
+        }
+
         addafter("Remaining Amt. (LCY)")
         {
             field(Control1000000000; Rec.Narration)
