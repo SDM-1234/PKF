@@ -32,13 +32,13 @@ pageextension 50039 ChartofAccounts extends "Chart of Accounts"
         RecUserSetup.RESET();
         RecUserSetup.SETRANGE(RecUserSetup."User ID", UPPERCASE(USERID));
         IF RecUserSetup.FINDFIRST() THEN
-            IF RecUserSetup."Super Super User" = FALSE THEN BEGIN
+            IF RecUserSetup."Super Super User" = FALSE THEN //BEGIN
                 Rec.SETRANGE("Super User Hide", FALSE);
-                IF RecUserSetup."Super User" = FALSE THEN
-                    Rec.SETRANGE("Normal User Hide", FALSE);
-            END ELSE
-                IF RecUserSetup."Super User" = FALSE THEN
-                    Rec.SETRANGE("Super User Hide", TRUE);
+        //  IF RecUserSetup."Super User" = FALSE THEN
+        //    Rec.SETRANGE("Normal User Hide", FALSE);
+        //END ELSE
+        //  IF RecUserSetup."Super User" = FALSE THEN
+        //    Rec.SETRANGE("Super User Hide", TRUE);
     end;
 }
 
