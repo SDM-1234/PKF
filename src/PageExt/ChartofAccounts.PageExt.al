@@ -11,10 +11,10 @@ pageextension 50039 ChartofAccounts extends "Chart of Accounts"
 
     trigger OnAfterGetRecord()
     begin
-        AccountsPermission();//AD_SD
-        Rec.FILTERGROUP(2);
-        Rec.SETFILTER("No.", GLUserSetup.FilterGLAccount());
-        Rec.FILTERGROUP(0);
+        // AccountsPermission();//AD_SD
+        // Rec.FILTERGROUP(2);
+        // Rec.SETFILTER("No.", GLUserSetup.FilterGLAccount());
+        // Rec.FILTERGROUP(0);
     end;
 
     trigger OnOpenPage()

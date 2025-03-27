@@ -28,6 +28,21 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
                 ApplicationArea = All;
             }
         }
+        addafter(Amount)
+        {
+            field("PKF-Debit Amount"; Rec."Debit Amount")
+            {
+                ApplicationArea = All;
+                Caption = 'Debit Amount';
+                ToolTip = 'Specifies the value of the Debit Amount field.';
+            }
+            field("PKF-Credit Amount"; Rec."Credit Amount")
+            {
+                ApplicationArea = All;
+                Caption = 'Credit Amount';
+                ToolTip = 'Specifies the value of the Credit Amount field.';
+            }
+        }
     }
     actions
     {
