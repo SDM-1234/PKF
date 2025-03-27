@@ -13,6 +13,10 @@ report 50011 "Pre Sales Invoice GST"
             column(Document_No; "Sales Header"."Posting No.")
             {
             }
+            column(LUTARNNo; LUTARNNo)
+            {
+
+            }
             column(Posting_Date; FORMAT("Sales Header"."Posting Date", 0, 1))
             {
             }
@@ -358,9 +362,10 @@ report 50011 "Pre Sales Invoice GST"
                     ELSE
                         CatofSer := CompanyInformation."Industrial Classification";
 
+                    LUTARNNo := LUTARN.GetARNNo("Sales Header"."Posting Date", "Sales Header"."Location Code");
 
 
-                    GrandTotal += "Line Amount" + TotGSTAmt;
+                    GrandTotal += "Amount Including VAT" + TotGSTAmt;
                     ReportCheck.InitTextVariable();
                     ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Header"."Currency Code");
                 end;
@@ -500,7 +505,7 @@ report 50011 "Pre Sales Invoice GST"
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
-        ReportCheck: Report "Check Report";
+        ReportCheck: Codeunit AmountToWords;
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         IsRent: Boolean;
@@ -533,6 +538,9 @@ report 50011 "Pre Sales Invoice GST"
         RecLocation: Record Location;
         PayTerms: Record "Payment Terms";
         PayTermsDesc: Text[100];
+        LUTARNNo: Code[50];
+        LUTARN: Record "LUT / ARN Master";
+
         PayCode: Text[20];
         SalesPersonName: Text[50];
         SalesPerson: Record "Salesperson/Purchaser";

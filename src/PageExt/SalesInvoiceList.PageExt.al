@@ -16,6 +16,17 @@ pageextension 50151 SalesInvoiceList extends "Sales Invoice List"
             {
                 ApplicationArea = All;
             }
+            field("Invoice Type"; Rec."Invoice Type")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the Invoice type as GST Laws.';
+            }
+            field("GST Customer Type"; Rec."GST Customer Type")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the type of the customer. For example, Registered/Unregistered/Export etc..';
+            }
+
         }
     }
     actions

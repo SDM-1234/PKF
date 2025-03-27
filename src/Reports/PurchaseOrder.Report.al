@@ -409,7 +409,7 @@ report 50003 "Purchase Order"
         PurPerson: Record "Salesperson/Purchaser";
         RecLocation: Record Location;
         Vendor: Record Vendor;
-        ReportCheck: Report "Check Report";
+        ReportCheck: Codeunit AmountToWords;
         IsDuplicate: Boolean;
         IsRent: Boolean;
         CurrencyCode: Code[10];

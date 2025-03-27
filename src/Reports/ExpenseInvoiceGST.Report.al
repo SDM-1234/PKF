@@ -438,7 +438,7 @@ report 50012 "Expense Invoice GST"
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
-        ReportCheck: Report "Check Report";
+        ReportCheck: Codeunit AmountToWords;
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         LUTARN: Record "LUT / ARN Master";
