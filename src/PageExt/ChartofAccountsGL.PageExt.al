@@ -8,7 +8,7 @@ pageextension 50122 ChartofAccountsGL extends "Chart of Accounts (G/L)"
     trigger OnOpenPage()
     begin
 
-        AccountsPermission();//SDMBCS on 02022019
+        //AccountsPermission();//SDMBCS on 02022019
 
     end;
 

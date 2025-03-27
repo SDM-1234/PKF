@@ -468,7 +468,7 @@ report 50004 "Sales Invoice GST SEZ"
     var
         CompanyInformation: Record "Company Information";
         Customer: Record Customer;
-        ReportCheck: Report "Check Report";
+        ReportCheck: Codeunit AmountToWords;
         ServiceTax: Decimal;
         SBTax: Decimal;
         KKCTax: Decimal;
