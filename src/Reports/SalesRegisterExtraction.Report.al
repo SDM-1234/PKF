@@ -274,9 +274,6 @@ report 50090 "Sales Register Extraction"
                     End;
                 END;
 
-                IF ABS(VarAmt3) = VarAmt THEN
-                    CurrReport.Skip();
-
                 IF ("Sales Invoice Header"."Amount Including VAT"
                  - "Sales Invoice Header".Amount) <> 0 THEN
                     NATUREOFSERVICE := 'TAXABLE SERVICE'
