@@ -3367,9 +3367,6 @@ End Function
         <Field Name="TotSGSTFormat">
           <DataField>TotSGSTFormat</DataField>
         </Field>
-        <Field Name="GSTComponentCodeName">
-          <DataField>GSTComponentCodeName</DataField>
-        </Field>
         <Field Name="GSTComponentCode">
           <DataField>GSTComponentCode</DataField>
         </Field>

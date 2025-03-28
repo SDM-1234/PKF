@@ -248,9 +248,6 @@ report 50011 "Pre Sales Invoice GST"
                 column(TotSGST; GSTCompAmount[6] * -1)
                 {
                 }
-                column(GSTComponentCodeName; GSTComponentCodeName[j])
-                {
-                }
                 //column(TotIGST; GSTCompAmount[3])
                 //{
                 //}
@@ -336,26 +333,26 @@ report 50011 "Pre Sales Invoice GST"
                                     end;
                                 until TaxTrnasactionValue.Next() = 0;
 
-                            TaxTrnasactionValue.Reset();
-                            TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine1.RecordId);
-                            TaxTrnasactionValue.SetRange("Tax Type", 'GST');
-                            TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
-                            TaxTrnasactionValue.SetFilter(Percent, '<>%1', 0);
-                            if TaxTrnasactionValue.FindSet() then
-                                repeat
-                                    j := TaxTrnasactionValue."Value ID";
-                                    case TaxTrnasactionValue."Value ID" of
-                                        6:
-                                            GSTComponentCodeName[j] := 'SGST';
-                                        2:
-                                            GSTComponentCodeName[j] := 'CGST';
-                                        3:
-                                            GSTComponentCodeName[j] := 'IGST';
-                                        5:
-                                            GSTComponentCodeName[j] := 'UTGST';
-                                    end;
-                                    j += 1;
-                                until TaxTrnasactionValue.Next() = 0;
+                        // TaxTrnasactionValue.Reset();
+                        // TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine1.RecordId);
+                        // TaxTrnasactionValue.SetRange("Tax Type", 'GST');
+                        // TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
+                        // TaxTrnasactionValue.SetFilter(Percent, '<>%1', 0);
+                        // if TaxTrnasactionValue.FindSet() then
+                        //     repeat
+                        //         j := TaxTrnasactionValue."Value ID";
+                        //         case TaxTrnasactionValue."Value ID" of
+                        //             6:
+                        //                 GSTComponentCodeName[j] := 'SGST';
+                        //             2:
+                        //                 GSTComponentCodeName[j] := 'CGST';
+                        //             3:
+                        //                 GSTComponentCodeName[j] := 'IGST';
+                        //             5:
+                        //                 GSTComponentCodeName[j] := 'UTGST';
+                        //         end;
+                        //         j += 1;
+                        //     until TaxTrnasactionValue.Next() = 0;
                         until SalesLine1.Next() = 0;
 
                     //[+]
@@ -367,7 +364,7 @@ report 50011 "Pre Sales Invoice GST"
                     LUTARNNo := LUTARN.GetARNNo("Sales Header"."Posting Date", "Sales Header"."Location Code");
 
 
-                    GrandTotal += "Amount Including VAT" + TotGSTAmt;
+                    GrandTotal += Amount + TotGSTAmt;
                     ReportCheck.InitTextVariable();
                     ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Header"."Currency Code");
                 end;
@@ -523,7 +520,7 @@ report 50011 "Pre Sales Invoice GST"
         TaxTrnasactionValue: Record "Tax Transaction Value";
         TaxTrnasactionValue1: Record "Tax Transaction Value";
         SalesLine1: Record "Sales Line";
-        GSTComponentCodeName: array[10] of Code[20];
+        GSTComponentCodeName: array[20] of Code[20];
         GSTCompAmount: array[20] of Decimal;
         GSTComponentCode: array[20] of Integer;
         GSTCompNo, j : Integer;
