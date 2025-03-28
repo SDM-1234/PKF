@@ -8,7 +8,7 @@ pageextension 50151 SalesInvoiceList extends "Sales Invoice List"
             {
                 ApplicationArea = All;
             }
-            field("Tax Amount"; Rec."Amount Including VAT" - Rec.Amount)
+            field("Tax Amount"; GetTaxAmount())
             {
                 ApplicationArea = All;
             }
@@ -182,5 +182,25 @@ pageextension 50151 SalesInvoiceList extends "Sales Invoice List"
         IF Rec."Posting No." = '' THEN
             ERROR('Please take print out');
     End;
+
+    local procedure GetTaxAmount() Return: Decimal
+    var
+        TaxTrnasactionValue: Record "Tax Transaction Value";
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.SetRange("Document Type", rec."Document Type");
+        SalesLine.SetRange("Document No.", Rec."No.");
+        if SalesLine.FindSet() then
+            repeat
+                TaxTrnasactionValue.Reset();
+                TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine.RecordId);
+                TaxTrnasactionValue.SetRange("Tax Type", 'GST');
+                TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
+                TaxTrnasactionValue.setfilter("Value ID", '2|3|5|6');
+                if TaxTrnasactionValue.FindFirst() then
+                    Return += TaxTrnasactionValue.Amount;
+            until SalesLine.Next() = 0;
+
+    end;
 }
 
