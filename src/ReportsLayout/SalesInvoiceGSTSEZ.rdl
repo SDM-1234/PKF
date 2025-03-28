@@ -1493,6 +1493,9 @@
               <Height>0.54271in</Height>
               <Width>1.07324in</Width>
               <ZIndex>33</ZIndex>
+              <Visibility>
+                <Hidden>=iif(Fields!CompanyLogoVisible.Value,false,true)</Hidden>
+              </Visibility>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -2987,6 +2990,9 @@ End Function
         </Field>
         <Field Name="Comp_PAN">
           <DataField>Comp_PAN</DataField>
+        </Field>
+        <Field Name="CompanyLogoVisible">
+          <DataField>CompanyLogoVisible</DataField>
         </Field>
         <Field Name="Comp_Picture">
           <DataField>Comp_Picture</DataField>

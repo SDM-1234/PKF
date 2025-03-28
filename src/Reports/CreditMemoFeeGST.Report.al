@@ -56,6 +56,8 @@ report 50016 "Credit Memo Fee GST"
             column(Comp_Name; CompanyInformation.Name)
             {
             }
+            column(CompanyLogoVisible; CompanyLogoVisible) { }
+
             column(Comp_Add; CompanyInformation.Address)
             {
             }
@@ -447,6 +449,8 @@ report 50016 "Credit Memo Fee GST"
         ReportCheck: Codeunit AmountToWords;
         ServiceTax: Decimal;
         SBTax: Decimal;
+        CompanyLogoVisible: Boolean;
+
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
@@ -506,30 +510,31 @@ report 50016 "Credit Memo Fee GST"
             END;
 
         IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN
-            IF "Sales Cr.Memo Header"."Location Code" = 'MUM' THEN BEGIN
+            CompanyLogoVisible := true;
+        IF "Sales Cr.Memo Header"."Location Code" = 'MUM' THEN BEGIN
+            VarText[10] := 'Bank Details:';
+            VarText[1] := 'Bank Account No. 003605001058';
+            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+            VarText[3] := 'Bank: ICICI Bank';
+            VarText[4] := 'Branch: Maratha Mandir';
+            VarText[5] := 'IFSC: ICIC0000036';
+            VarText[6] := 'SWIFT Code: ICICNBBCTS';
+            VarText[7] := '';
+            VarText[8] := '';
+            VarText[9] := '';
+        END ELSE
+            IF "Sales Cr.Memo Header"."Location Code" = 'CHN' THEN BEGIN
                 VarText[10] := 'Bank Details:';
-                VarText[1] := 'Bank Account No. 003605001058';
+                VarText[1] := 'Bank Account No. 000105006757';
                 VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                VarText[3] := 'Bank: ICICI Bank';
-                VarText[4] := 'Branch: Maratha Mandir';
-                VarText[5] := 'IFSC: ICIC0000036';
+                VarText[3] := 'Bank: ICICI BANK';
+                VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
+                VarText[5] := 'IFSC: ICIC0000001';
                 VarText[6] := 'SWIFT Code: ICICNBBCTS';
                 VarText[7] := '';
                 VarText[8] := '';
                 VarText[9] := '';
-            END ELSE
-                IF "Sales Cr.Memo Header"."Location Code" = 'CHN' THEN BEGIN
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 000105006757';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: ICICI BANK';
-                    VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
-                    VarText[5] := 'IFSC: ICIC0000001';
-                    VarText[6] := 'SWIFT Code: ICICNBBCTS';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                END;
+            END;
 
         IF CompanyInformation.Name = 'PROBOTIQ SOLUTIONS PRIVATE LIMITED' THEN BEGIN
             VarText[10] := 'Bank Details:';
@@ -571,6 +576,7 @@ report 50016 "Credit Memo Fee GST"
         END;
 
         IF CompanyInformation.Name = 'PKF CONSULTING PRIVATE LIMITED' THEN BEGIN
+            CompanyLogoVisible := true;
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 11000200090188';
             VarText[2] := 'A/c Name: PKF CONSULTING PRIVATE LIMITED';

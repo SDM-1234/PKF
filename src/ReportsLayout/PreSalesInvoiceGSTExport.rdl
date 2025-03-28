@@ -1776,6 +1776,9 @@
               <Height>0.54271in</Height>
               <Width>1.07324in</Width>
               <ZIndex>33</ZIndex>
+              <Visibility>
+                <Hidden>=iif(Fields!CompanyLogoVisible.Value,false,true)</Hidden>
+              </Visibility>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -2188,7 +2191,7 @@
               <Top>1.87882in</Top>
               <Left>1.90383in</Left>
               <Height>0.1875in</Height>
-              <Width>4.60417in</Width>
+              <Width>1.90277in</Width>
               <ZIndex>11</ZIndex>
               <Style>
                 <Border>
@@ -3002,6 +3005,72 @@
               <Height>0.17708in</Height>
               <Width>1.90277in</Width>
               <ZIndex>37</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox81">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value EvaluationMode="Constant">LUT / ARN No. :</Value>
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox5</rd:DefaultName>
+              <Top>1.89201in</Top>
+              <Left>3.82049in</Left>
+              <Height>0.17431in</Height>
+              <Width>0.87848in</Width>
+              <ZIndex>38</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox82">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=First(Fields!LUTARNNo.Value, "DataSet_Result")</Value>
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Normal</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox5</rd:DefaultName>
+              <Top>1.89201in</Top>
+              <Left>4.72674in</Left>
+              <Height>0.17431in</Height>
+              <Width>1.75347in</Width>
+              <ZIndex>39</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>

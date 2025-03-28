@@ -2,7 +2,8 @@ report 50001 "Proforma Invoice"
 {
     DefaultLayout = RDLC;
     RDLCLayout = 'src/ReportsLayout/ProformaInvoice.rdl';
-
+    UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
     dataset
     {
         dataitem("Sales Header"; "Sales Header")
@@ -62,6 +63,8 @@ report 50001 "Proforma Invoice"
             column(Comp_Name; CompanyInformation.Name)
             {
             }
+            column(CompanyLogoVisible; CompanyLogoVisible) { }
+
             column(Comp_Add; CompanyInformation.Address)
             {
             }
@@ -463,6 +466,8 @@ report 50001 "Proforma Invoice"
         TotIGST: Decimal;
         StateName: Text[50];
         CountryName: Text[50];
+        CompanyLogoVisible: Boolean;
+
         LocGstNo: Code[20];
         PayTermsDesc: Text[100];
         PayCode: Text[20];
@@ -505,30 +510,31 @@ report 50001 "Proforma Invoice"
             END;
 
         IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN
-            IF "Sales Header"."Location Code" = 'MUM' THEN BEGIN
+            CompanyLogoVisible := true;
+        IF "Sales Header"."Location Code" = 'MUM' THEN BEGIN
+            VarText[10] := 'Bank Details:';
+            VarText[1] := 'Bank Account No. 003605001058';
+            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+            VarText[3] := 'Bank: ICICI Bank';
+            VarText[4] := 'Branch: Maratha Mandir';
+            VarText[5] := 'IFSC: ICIC0000036';
+            VarText[6] := 'SWIFT Code: ICICNBBCTS';
+            VarText[7] := '';
+            VarText[8] := '';
+            VarText[9] := '';
+        END ELSE
+            IF "Sales Header"."Location Code" = 'CHN' THEN BEGIN
                 VarText[10] := 'Bank Details:';
-                VarText[1] := 'Bank Account No. 003605001058';
+                VarText[1] := 'Bank Account No. 000105006757';
                 VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                VarText[3] := 'Bank: ICICI Bank';
-                VarText[4] := 'Branch: Maratha Mandir';
-                VarText[5] := 'IFSC: ICIC0000036';
+                VarText[3] := 'Bank: ICICI BANK';
+                VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
+                VarText[5] := 'IFSC: ICIC0000001';
                 VarText[6] := 'SWIFT Code: ICICNBBCTS';
                 VarText[7] := '';
                 VarText[8] := '';
                 VarText[9] := '';
-            END ELSE
-                IF "Sales Header"."Location Code" = 'CHN' THEN BEGIN
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 000105006757';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: ICICI BANK';
-                    VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
-                    VarText[5] := 'IFSC: ICIC0000001';
-                    VarText[6] := 'SWIFT Code: ICICNBBCTS';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                END;
+            END;
 
         IF CompanyInformation.Name = 'PROBOTIQ SOLUTIONS PRIVATE LIMITED' THEN BEGIN
             VarText[10] := 'Bank Details:';
@@ -570,6 +576,7 @@ report 50001 "Proforma Invoice"
         END;
 
         IF CompanyInformation.Name = 'PKF CONSULTING PRIVATE LIMITED' THEN BEGIN
+            CompanyLogoVisible := true;
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 11000200090188';
             VarText[2] := 'A/c Name: PKF CONSULTING PRIVATE LIMITED';
