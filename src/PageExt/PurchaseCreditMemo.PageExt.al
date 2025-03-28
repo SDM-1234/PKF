@@ -24,9 +24,15 @@ pageextension 50112 PurchaseCreditMemo extends "Purchase Credit Memo"
         }
         addafter("Assigned User ID")
         {
+
             field("Posting No. Series"; Rec."Posting No. Series")
             {
                 ApplicationArea = All;
+            }
+            field("Posting No."; Rec."Posting No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Posting No. field.', Comment = '%';
             }
             field(State; Rec.State)
             {
@@ -35,10 +41,12 @@ pageextension 50112 PurchaseCreditMemo extends "Purchase Credit Memo"
         }
         addafter(Status)
         {
+
             field(Remarks; Rec.Remarks)
             {
                 ApplicationArea = All;
             }
+
         }
     }
 }

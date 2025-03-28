@@ -13,6 +13,11 @@ pageextension 50094 SalesCreditMemo extends "Sales Credit Memo"
                 ApplicationArea = All;
                 ToolTip = 'Specifies the value of the Posting No. field.', Comment = '%';
             }
+            field("Posting No. Series"; Rec."Posting No. Series")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Posting No. Series field.', Comment = '%';
+            }
         }
     }
 }
