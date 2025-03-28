@@ -547,21 +547,20 @@ report 50004 "Sales Invoice GST SEZ"
             END;
 
 
-        IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN
+        IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN begin
             CompanyLogoVisible := True;
-        IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
-            VarText[10] := 'Bank Details:';
-            VarText[1] := 'Bank Account No. 003605001058';
-            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-            VarText[3] := 'Bank: ICICI Bank';
-            VarText[4] := 'Branch: Maratha Mandir';
-            VarText[5] := 'IFSC: ICIC0000036';
-            VarText[6] := 'SWIFT Code: ICICNBBCTS';
-            VarText[7] := '';
-            VarText[8] := '';
-            VarText[9] := '';
-        END ELSE
-            IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
+            IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
+                VarText[10] := 'Bank Details:';
+                VarText[1] := 'Bank Account No. 003605001058';
+                VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+                VarText[3] := 'Bank: ICICI Bank';
+                VarText[4] := 'Branch: Maratha Mandir';
+                VarText[5] := 'IFSC: ICIC0000036';
+                VarText[6] := 'SWIFT Code: ICICNBBCTS';
+                VarText[7] := '';
+                VarText[8] := '';
+                VarText[9] := '';
+            END ELSE IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
                 VarText[10] := 'Bank Details:';
                 VarText[1] := 'Bank Account No. 000105006757';
                 VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
@@ -573,6 +572,7 @@ report 50004 "Sales Invoice GST SEZ"
                 VarText[8] := '';
                 VarText[9] := '';
             END;
+        end;
         //ZOHO.RSF.1471[-]
         case "Sales Invoice Header"."Bank Selection For Report" of
             "Sales Invoice Header"."Bank Selection For Report"::ICICI2:
