@@ -80,6 +80,8 @@ report 50004 "Sales Invoice GST SEZ"
             column(Comp_PAN; CompanyInformation."P.A.N. No.")
             {
             }
+            column(CompanyLogoVisible; CompanyLogoVisible) { }
+
             column(Comp_Picture; CompanyInformation.Picture)
             {
             }
@@ -471,6 +473,8 @@ report 50004 "Sales Invoice GST SEZ"
         ReportCheck: Codeunit AmountToWords;
         ServiceTax: Decimal;
         SBTax: Decimal;
+        CompanyLogoVisible: Boolean;
+
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
@@ -525,6 +529,10 @@ report 50004 "Sales Invoice GST SEZ"
                 VarText[9] := '';
 
             END
+
+            //
+            // DOOR NO 39, 23 1ST FLOOR, DR RADHAKRISHNAN SALAI, CHENNAI 600004
+            //
             ELSE BEGIN
                 VarText[10] := 'Bank Details:';
                 VarText[1] := 'Bank Name: HDFC BANK LIMITED';
@@ -532,38 +540,39 @@ report 50004 "Sales Invoice GST SEZ"
                 VarText[3] := 'Beneficiary Name and address: PKF SRIDHAR AND SANTHANAM LLP';
                 VarText[4] := 'KRD GEE GEE Crystal, No. 91-92, 7th Floor, Dr. Radhakrishnan Salai,';
                 VarText[5] := 'Mylapore, Chennai - 600 004';
-                VarText[6] := 'Beneficiary Branch Address: HDFC BANK LIMITED, NO.115, R.K. Salai,';
-                VarText[7] := 'Opp Kalyani Hospital, Chennai - 600 004';
+                VarText[6] := 'Beneficiary Branch Address: HDFC BANK LIMITED, DOOR NO 39,';
+                VarText[7] := ' 23 1ST FLOOR, DR RADHAKRISHNAN SALAI, Chennai - 600 004';
                 VarText[8] := 'Beneficiary bank swift code: HDFCINBBCHE';
                 VarText[9] := 'IFSC Code: HDFC 000 1097';
             END;
 
 
         IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN
-            IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
+            CompanyLogoVisible := True;
+        IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
+            VarText[10] := 'Bank Details:';
+            VarText[1] := 'Bank Account No. 003605001058';
+            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+            VarText[3] := 'Bank: ICICI Bank';
+            VarText[4] := 'Branch: Maratha Mandir';
+            VarText[5] := 'IFSC: ICIC0000036';
+            VarText[6] := 'SWIFT Code: ICICNBBCTS';
+            VarText[7] := '';
+            VarText[8] := '';
+            VarText[9] := '';
+        END ELSE
+            IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
                 VarText[10] := 'Bank Details:';
-                VarText[1] := 'Bank Account No. 003605001058';
+                VarText[1] := 'Bank Account No. 000105006757';
                 VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                VarText[3] := 'Bank: ICICI Bank';
-                VarText[4] := 'Branch: Maratha Mandir';
-                VarText[5] := 'IFSC: ICIC0000036';
+                VarText[3] := 'Bank: ICICI BANK';
+                VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
+                VarText[5] := 'IFSC: ICIC0000001';
                 VarText[6] := 'SWIFT Code: ICICNBBCTS';
                 VarText[7] := '';
                 VarText[8] := '';
                 VarText[9] := '';
-            END ELSE
-                IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
-                    VarText[10] := 'Bank Details:';
-                    VarText[1] := 'Bank Account No. 000105006757';
-                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                    VarText[3] := 'Bank: ICICI BANK';
-                    VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
-                    VarText[5] := 'IFSC: ICIC0000001';
-                    VarText[6] := 'SWIFT Code: ICICNBBCTS';
-                    VarText[7] := '';
-                    VarText[8] := '';
-                    VarText[9] := '';
-                END;
+            END;
         //ZOHO.RSF.1471[-]
         case "Sales Invoice Header"."Bank Selection For Report" of
             "Sales Invoice Header"."Bank Selection For Report"::ICICI2:
@@ -674,6 +683,7 @@ report 50004 "Sales Invoice GST SEZ"
         END;
 
         IF CompanyInformation.Name = 'PKF CONSULTING PRIVATE LIMITED' THEN BEGIN
+            CompanyLogoVisible := true;
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 11000200090188';
             VarText[2] := 'A/c Name: PKF CONSULTING PRIVATE LIMITED';

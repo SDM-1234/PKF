@@ -74,6 +74,7 @@ report 50010 "Sales Invoice GST"
             column(Comp_Name; CompanyInformation.Name)
             {
             }
+            column(CompanyLogoVisible; CompanyLogoVisible) { }
             column(Comp_Add; CompanyInformation.Address)
             {
             }
@@ -487,6 +488,7 @@ report 50010 "Sales Invoice GST"
         CompanyInformation.GET();
         CompanyInformation.CALCFIELDS(Picture);
 
+
         IF IsDuplicate THEN
             DuplicateCap := 'Duplicate'
         ELSE
@@ -527,7 +529,7 @@ report 50010 "Sales Invoice GST"
         StateName: Text[50];
         CountryName: Text[50];
         ReportCaption: Text[100];
-
+        CompanyLogoVisible: Boolean;
         RecLocation: Record Location;
         PayTerms: Record "Payment Terms";
         PayTermsDesc: Text[100];
@@ -573,29 +575,30 @@ report 50010 "Sales Invoice GST"
 
 
         IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN
-            IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
-                VarText[10] := 'Bank Details:';
-                VarText[1] := 'Bank Account No. 003605001058';
-                VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                VarText[3] := 'Bank: ICICI Bank';
-                VarText[4] := 'Branch: Maratha Mandir';
-                VarText[5] := 'IFSC: ICIC0000036';
-                VarText[6] := 'SWIFT Code: ICICNBBCTS';
-                VarText[7] := '';
-                VarText[8] := '';
-                VarText[9] := '';
-            END ELSE IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
-                VarText[10] := 'Bank Details:';
-                VarText[1] := 'Bank Account No. 000105006757';
-                VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                VarText[3] := 'Bank: ICICI BANK';
-                VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
-                VarText[5] := 'IFSC: ICIC0000001';
-                VarText[6] := 'SWIFT Code: ICICNBBCTS';
-                VarText[7] := '';
-                VarText[8] := '';
-                VarText[9] := '';
-            END;
+            CompanyLogoVisible := True;
+        IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
+            VarText[10] := 'Bank Details:';
+            VarText[1] := 'Bank Account No. 003605001058';
+            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+            VarText[3] := 'Bank: ICICI Bank';
+            VarText[4] := 'Branch: Maratha Mandir';
+            VarText[5] := 'IFSC: ICIC0000036';
+            VarText[6] := 'SWIFT Code: ICICNBBCTS';
+            VarText[7] := '';
+            VarText[8] := '';
+            VarText[9] := '';
+        END ELSE IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
+            VarText[10] := 'Bank Details:';
+            VarText[1] := 'Bank Account No. 000105006757';
+            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+            VarText[3] := 'Bank: ICICI BANK';
+            VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
+            VarText[5] := 'IFSC: ICIC0000001';
+            VarText[6] := 'SWIFT Code: ICICNBBCTS';
+            VarText[7] := '';
+            VarText[8] := '';
+            VarText[9] := '';
+        END;
 
 
         IF CompanyInformation.Name = 'PROBOTIQ SOLUTIONS PRIVATE LIMITED' THEN BEGIN
@@ -638,6 +641,7 @@ report 50010 "Sales Invoice GST"
         END;
 
         IF CompanyInformation.Name = 'PKF CONSULTING PRIVATE LIMITED' THEN BEGIN
+            CompanyLogoVisible := True;
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 11000200090188';
             VarText[2] := 'A/c Name: PKF CONSULTING PRIVATE LIMITED';
