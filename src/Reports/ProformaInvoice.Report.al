@@ -509,33 +509,33 @@ report 50001 "Proforma Invoice"
                 VarText[9] := 'IFSC Code: HDFC 000 1284';
             END;
 
-        IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN
+        IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN begin
             CompanyLogoVisible := true;
-        IF "Sales Header"."Location Code" = 'MUM' THEN BEGIN
-            VarText[10] := 'Bank Details:';
-            VarText[1] := 'Bank Account No. 003605001058';
-            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-            VarText[3] := 'Bank: ICICI Bank';
-            VarText[4] := 'Branch: Maratha Mandir';
-            VarText[5] := 'IFSC: ICIC0000036';
-            VarText[6] := 'SWIFT Code: ICICNBBCTS';
-            VarText[7] := '';
-            VarText[8] := '';
-            VarText[9] := '';
-        END ELSE
-            IF "Sales Header"."Location Code" = 'CHN' THEN BEGIN
+            IF "Sales Header"."Location Code" = 'MUM' THEN BEGIN
                 VarText[10] := 'Bank Details:';
-                VarText[1] := 'Bank Account No. 000105006757';
+                VarText[1] := 'Bank Account No. 003605001058';
                 VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                VarText[3] := 'Bank: ICICI BANK';
-                VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
-                VarText[5] := 'IFSC: ICIC0000001';
+                VarText[3] := 'Bank: ICICI Bank';
+                VarText[4] := 'Branch: Maratha Mandir';
+                VarText[5] := 'IFSC: ICIC0000036';
                 VarText[6] := 'SWIFT Code: ICICNBBCTS';
                 VarText[7] := '';
                 VarText[8] := '';
                 VarText[9] := '';
-            END;
-
+            END ELSE
+                IF "Sales Header"."Location Code" = 'CHN' THEN BEGIN
+                    VarText[10] := 'Bank Details:';
+                    VarText[1] := 'Bank Account No. 000105006757';
+                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+                    VarText[3] := 'Bank: ICICI BANK';
+                    VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
+                    VarText[5] := 'IFSC: ICIC0000001';
+                    VarText[6] := 'SWIFT Code: ICICNBBCTS';
+                    VarText[7] := '';
+                    VarText[8] := '';
+                    VarText[9] := '';
+                END;
+        end;
         IF CompanyInformation.Name = 'PROBOTIQ SOLUTIONS PRIVATE LIMITED' THEN BEGIN
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 6654304183';

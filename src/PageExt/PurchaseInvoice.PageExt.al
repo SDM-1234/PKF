@@ -36,7 +36,7 @@ pageextension 50105 PurchaseInvoice extends "Purchase Invoice"
                 ApplicationArea = All;
             }
         }
-        addafter("Prices Including VAT")
+        addafter("Posting No. Series")
         {
             field("Posting No."; Rec."Posting No.")
             {
