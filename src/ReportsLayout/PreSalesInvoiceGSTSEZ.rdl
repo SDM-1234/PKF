@@ -2727,9 +2727,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>0.342in</Top>
-              <Left>5.59203in</Left>
+              <Left>5.12675in</Left>
               <Height>0.17708in</Height>
-              <Width>0.90208in</Width>
+              <Width>1.36736in</Width>
               <ZIndex>30</ZIndex>
               <Visibility>
                 <Hidden>=LAST(Fields!TotCGST.Value, "DataSet_Result")=0</Hidden>
@@ -2765,9 +2765,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>0.51006in</Top>
-              <Left>5.59203in</Left>
+              <Left>5.12675in</Left>
               <Height>0.17708in</Height>
-              <Width>0.90208in</Width>
+              <Width>1.36736in</Width>
               <ZIndex>31</ZIndex>
               <Visibility>
                 <Hidden>=LAST(Fields!TotSGST.Value, "DataSet_Result")=0</Hidden>
@@ -3015,7 +3015,7 @@
               <Top>1.87812in</Top>
               <Left>3.82326in</Left>
               <Height>0.17431in</Height>
-              <Width>0.87848in</Width>
+              <Width>0.93404in</Width>
               <ZIndex>38</ZIndex>
               <Style>
                 <Border>
@@ -3046,9 +3046,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>1.87812in</Top>
-              <Left>4.72951in</Left>
+              <Left>4.77118in</Left>
               <Height>0.17431in</Height>
-              <Width>1.75347in</Width>
+              <Width>1.73682in</Width>
               <ZIndex>39</ZIndex>
               <Style>
                 <Border>

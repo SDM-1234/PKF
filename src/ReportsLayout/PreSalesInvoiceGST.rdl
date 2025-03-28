@@ -2464,10 +2464,10 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!Grand_Total.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
-                        <Format>#,0.00;(#,0.00)</Format>
+                        <Format>n2</Format>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -2649,7 +2649,7 @@
                       <Value>= LAST(Fields!TotCGST.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
-                        <Format>#,0.00;(#,0.00)</Format>
+                        <Format>n2</Format>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -2687,7 +2687,7 @@
                       <Value>=LAST(Fields!TotSGST.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
-                        <Format>#,0.00;(#,0.00)</Format>
+                        <Format>n2</Format>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -2722,10 +2722,10 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=LAST(Fields!TotIGST.Value, "DataSet_Result")</Value>
+                      <Value>=Fields!TotIGST.Value</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
-                        <Format>#,0.00;(#,0.00)</Format>
+                        <Format>f2</Format>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -2994,7 +2994,7 @@
               <Top>2.3677in</Top>
               <Left>3.88404in</Left>
               <Height>0.17431in</Height>
-              <Width>0.87848in</Width>
+              <Width>0.90626in</Width>
               <ZIndex>42</ZIndex>
               <Style>
                 <Border>
@@ -3025,9 +3025,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>2.3677in</Top>
-              <Left>4.79029in</Left>
+              <Left>4.83196in</Left>
               <Height>0.17431in</Height>
-              <Width>1.75347in</Width>
+              <Width>1.7118in</Width>
               <ZIndex>43</ZIndex>
               <Style>
                 <Border>

@@ -242,28 +242,18 @@ report 50011 "Pre Sales Invoice GST"
                 column(SGST_Rate; 'SGST')
                 {
                 }
-                column(TotCGST; GSTCompAmount[2] * -1)
+                column(TotCGST; GSTCompAmount[2])
                 {
                 }
-                column(TotSGST; GSTCompAmount[6] * -1)
+                column(TotSGST; GSTCompAmount[6])
                 {
                 }
-                //column(TotIGST; GSTCompAmount[3])
-                //{
-                //}
-                //column(CGSTCompAmount; GSTCompAmount[2])
-                //{
-                //}
-                //column(SGSTCompAmount; GSTCompAmount[6])
-                // {
-                //}
-
 
                 column(GSTComponentCode; GSTComponentCode[GSTCompNo])
                 {
                 }
 
-                column(TotIGST; GSTCompAmount[3] * -1)
+                column(TotIGST; GSTCompAmount[3])
                 {
                 }
                 column(CGST_Rate_1; CGST_Rate)
@@ -292,8 +282,6 @@ report 50011 "Pre Sales Invoice GST"
                 }
 
                 trigger OnAfterGetRecord()
-                var
-                    DetailedGSTLedgerEntry: Record "Detailed GST Entry Buffer";
                 begin
                     SubTotal += "Line Amount";
                     DiscountAmt += "Line Discount Amount";
@@ -305,56 +293,36 @@ report 50011 "Pre Sales Invoice GST"
                     SGST_Rate := 9;
                     IGST_Rate := 18;
 
-                    SalesLine1.SetRange("Document No.", "Sales Header"."No.");
-                    SalesLine1.SetRange("Document Type", "Sales Header"."Document Type");
-                    if SalesLine1.FindSet() then
-                        repeat
-                            GSTCompNo := 1;
-                            TaxTrnasactionValue.Reset();
-                            TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine1.RecordId);
-                            TaxTrnasactionValue.SetRange("Tax Type", 'GST');
-                            TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
-                            TaxTrnasactionValue.SetFilter(Percent, '<>%1', 0);
-                            if TaxTrnasactionValue.FindSet() then
-                                repeat
-                                    GSTCompNo := TaxTrnasactionValue."Value ID";
-                                    GSTComponentCode[GSTCompNo] := TaxTrnasactionValue."Value ID";
-                                    TaxTrnasactionValue1.Reset();
-                                    TaxTrnasactionValue1.SetRange("Tax Record ID", SalesLine1.RecordId);
-                                    TaxTrnasactionValue1.SetRange("Tax Type", 'GST');
-                                    TaxTrnasactionValue1.SetRange("Value Type", TaxTrnasactionValue1."Value Type"::COMPONENT);
-                                    TaxTrnasactionValue1.SetRange("Value ID", GSTComponentCode[GSTCompNo]);
-                                    if TaxTrnasactionValue1.FindSet() then begin
-                                        repeat
-                                            GSTCompAmount[GSTCompNo] += TaxTrnasactionValue1."Amount";
-                                            TotGSTAmt += TaxTrnasactionValue1.Amount;
-                                        until TaxTrnasactionValue1.Next() = 0;
-                                        GSTCompNo += 1;
-                                    end;
-                                until TaxTrnasactionValue.Next() = 0;
-
-                        // TaxTrnasactionValue.Reset();
-                        // TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine1.RecordId);
-                        // TaxTrnasactionValue.SetRange("Tax Type", 'GST');
-                        // TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
-                        // TaxTrnasactionValue.SetFilter(Percent, '<>%1', 0);
-                        // if TaxTrnasactionValue.FindSet() then
-                        //     repeat
-                        //         j := TaxTrnasactionValue."Value ID";
-                        //         case TaxTrnasactionValue."Value ID" of
-                        //             6:
-                        //                 GSTComponentCodeName[j] := 'SGST';
-                        //             2:
-                        //                 GSTComponentCodeName[j] := 'CGST';
-                        //             3:
-                        //                 GSTComponentCodeName[j] := 'IGST';
-                        //             5:
-                        //                 GSTComponentCodeName[j] := 'UTGST';
-                        //         end;
-                        //         j += 1;
-                        //     until TaxTrnasactionValue.Next() = 0;
-                        until SalesLine1.Next() = 0;
-
+                    If TotGSTAmt = 0 then begin
+                        SalesLine1.SetRange("Document No.", "Sales Header"."No.");
+                        SalesLine1.SetRange("Document Type", "Sales Header"."Document Type");
+                        if SalesLine1.FindSet() then
+                            repeat
+                                GSTCompNo := 1;
+                                TaxTrnasactionValue.Reset();
+                                TaxTrnasactionValue.SetRange("Tax Record ID", SalesLine1.RecordId);
+                                TaxTrnasactionValue.SetRange("Tax Type", 'GST');
+                                TaxTrnasactionValue.SetRange("Value Type", TaxTrnasactionValue."Value Type"::COMPONENT);
+                                TaxTrnasactionValue.SetFilter(Percent, '<>%1', 0);
+                                if TaxTrnasactionValue.FindSet() then
+                                    repeat
+                                        GSTCompNo := TaxTrnasactionValue."Value ID";
+                                        GSTComponentCode[GSTCompNo] := TaxTrnasactionValue."Value ID";
+                                        TaxTrnasactionValue1.Reset();
+                                        TaxTrnasactionValue1.SetRange("Tax Record ID", SalesLine1.RecordId);
+                                        TaxTrnasactionValue1.SetRange("Tax Type", 'GST');
+                                        TaxTrnasactionValue1.SetRange("Value Type", TaxTrnasactionValue1."Value Type"::COMPONENT);
+                                        TaxTrnasactionValue1.SetRange("Value ID", GSTComponentCode[GSTCompNo]);
+                                        if TaxTrnasactionValue1.FindSet() then begin
+                                            repeat
+                                                GSTCompAmount[GSTCompNo] += TaxTrnasactionValue1."Amount";
+                                                TotGSTAmt += TaxTrnasactionValue1.Amount;
+                                            until TaxTrnasactionValue1.Next() = 0;
+                                            GSTCompNo += 1;
+                                        end;
+                                    until TaxTrnasactionValue.Next() = 0;
+                            until SalesLine1.Next() = 0;
+                    end;
                     //[+]
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
@@ -364,7 +332,7 @@ report 50011 "Pre Sales Invoice GST"
                     LUTARNNo := LUTARN.GetARNNo("Sales Header"."Posting Date", "Sales Header"."Location Code");
 
 
-                    GrandTotal += Amount + TotGSTAmt;
+                    GrandTotal := SubTotal + TotGSTAmt - TotIGST - TotSGST - TotCGST;
                     ReportCheck.InitTextVariable();
                     ReportCheck.FormatNoText(AmountInWords, ROUND(GrandTotal, 1), "Sales Header"."Currency Code");
                 end;
@@ -583,33 +551,32 @@ report 50011 "Pre Sales Invoice GST"
             END;
 
 
-        IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' then
+        IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' then begin
             CompanyLogoVisible := True;
-
-        IF "Sales Header"."Location Code" = 'MUM' THEN BEGIN
-            VarText[10] := 'Bank Details:';
-            VarText[1] := 'Bank Account No. 003605001058';
-            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-            VarText[3] := 'Bank: ICICI Bank';
-            VarText[4] := 'Branch: Maratha Mandir';
-            VarText[5] := 'IFSC: ICIC0000036';
-            VarText[6] := 'SWIFT Code: ICICNBBCTS';
-            VarText[7] := '';
-            VarText[8] := '';
-            VarText[9] := '';
-        END ELSE IF "Sales Header"."Location Code" = 'CHN' THEN BEGIN
-            VarText[10] := 'Bank Details:';
-            VarText[1] := 'Bank Account No. 000105006757';
-            VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-            VarText[3] := 'Bank: ICICI BANK';
-            VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
-            VarText[5] := 'IFSC: ICIC0000001';
-            VarText[6] := 'SWIFT Code: ICICNBBCTS';
-            VarText[7] := '';
-            VarText[8] := '';
-            VarText[9] := '';
-        END;
-
+            IF "Sales Header"."Location Code" = 'MUM' THEN BEGIN
+                VarText[10] := 'Bank Details:';
+                VarText[1] := 'Bank Account No. 003605001058';
+                VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+                VarText[3] := 'Bank: ICICI Bank';
+                VarText[4] := 'Branch: Maratha Mandir';
+                VarText[5] := 'IFSC: ICIC0000036';
+                VarText[6] := 'SWIFT Code: ICICNBBCTS';
+                VarText[7] := '';
+                VarText[8] := '';
+                VarText[9] := '';
+            END ELSE IF "Sales Header"."Location Code" = 'CHN' THEN BEGIN
+                VarText[10] := 'Bank Details:';
+                VarText[1] := 'Bank Account No. 000105006757';
+                VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+                VarText[3] := 'Bank: ICICI BANK';
+                VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
+                VarText[5] := 'IFSC: ICIC0000001';
+                VarText[6] := 'SWIFT Code: ICICNBBCTS';
+                VarText[7] := '';
+                VarText[8] := '';
+                VarText[9] := '';
+            END;
+        end;
         //RSF.ZOHO-1471[-]
 
         Case "Sales Header"."Bank Selection For Report" of

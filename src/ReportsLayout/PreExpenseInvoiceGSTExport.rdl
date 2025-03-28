@@ -2641,7 +2641,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")+Last(Fields!TotCGST.Value, "DataSet_Result")+Last(Fields!TotSGST.Value, "DataSet_Result")+Last(Fields!TotIGST.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!Grand_Total.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <Format>#,0.00;(#,0.00)</Format>
@@ -3017,7 +3017,7 @@
               <Top>1.89201in</Top>
               <Left>3.85383in</Left>
               <Height>0.17431in</Height>
-              <Width>0.87848in</Width>
+              <Width>0.93404in</Width>
               <ZIndex>38</ZIndex>
               <Style>
                 <Border>
@@ -3048,9 +3048,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>1.89201in</Top>
-              <Left>4.76008in</Left>
+              <Left>4.80175in</Left>
               <Height>0.17431in</Height>
-              <Width>1.75347in</Width>
+              <Width>1.7118in</Width>
               <ZIndex>39</ZIndex>
               <Style>
                 <Border>

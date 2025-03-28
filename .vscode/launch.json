@@ -16,6 +16,21 @@
             "schemaUpdateMode": "ForceSync"
         },
         {
+            "name": "PKFUAT",
+            "request": "launch",
+            "type": "al",
+            "environmentType": "Sandbox",
+            "environmentName": "PKFUAT",
+            "startupObjectId": 22,
+            "startupObjectType": "Page",
+            "breakOnError": "All",
+            "launchBrowser": true,
+            "enableLongRunningSqlStatements": true,
+            "enableSqlInformationDebugger": true,
+            "schemaUpdateMode": "Synchronize"
+        },
+
+        {
             "name": "AL: Generated Attach request",
             "request": "attach",
             "type": "al",
