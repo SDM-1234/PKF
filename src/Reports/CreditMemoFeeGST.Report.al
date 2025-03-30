@@ -142,6 +142,7 @@ report 50016 "Credit Memo Fee GST"
             column(ServTaxRegRec_Description; LocGstNo)
             {
             }
+
             column(Cus_GST_No; Customer."GST Registration No.")
             {
             }
@@ -182,6 +183,10 @@ report 50016 "Credit Memo Fee GST"
                 column(Scope3_Line; "Sales Cr.Memo Line".Scope3)
                 {
                 }
+                column(Description; "Sales Cr.Memo Line".Description)
+                {
+                }
+
                 column(Scope4_Line; "Sales Cr.Memo Line".Scope4)
                 {
                 }
@@ -259,10 +264,10 @@ report 50016 "Credit Memo Fee GST"
                 var
                     DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
                 begin
+
                     SubTotal += "Line Amount";
-                    GrandTotal += "Sales Cr.Memo Line"."Amount Including VAT";
-                    ReportCheck.InitTextVariable();
-                    ReportCheck.FormatNoText(AmountInWords, GrandTotal, "Sales Cr.Memo Header"."Currency Code");
+
+                    //GrandTotal := "Line Amount" + CGST_Amt + SGST_Amt + IGST_Amt;
 
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
@@ -270,11 +275,11 @@ report 50016 "Credit Memo Fee GST"
                         CatofSer := CompanyInformation."Industrial Classification";
 
                     //GST
-                    CGST_Rate := 0;
+                    CGST_Rate := 9;
                     CGST_Amt := 0;
-                    SGST_Rate := 0;
+                    SGST_Rate := 9;
                     SGST_Amt := 0;
-                    IGST_Rate := 0;
+                    IGST_Rate := 18;
                     IGST_Amt := 0;
 
                     DetailedGSTLedgerEntry.SETCURRENTKEY("Transaction Type", "Document Type", "Document No.", "Document Line No.");
@@ -307,6 +312,11 @@ report 50016 "Credit Memo Fee GST"
                     TotSGST += SGST_Amt;
                     TotIGST += IGST_Amt;
                     //GST
+
+                    GrandTotal += "Sales Cr.Memo Line"."Amount Including VAT" + CGST_Amt + SGST_Amt + IGST_Amt;
+                    ReportCheck.InitTextVariable();
+                    ReportCheck.FormatNoText(AmountInWords, GrandTotal, "Sales Cr.Memo Header"."Currency Code");
+
                 end;
 
                 trigger OnPreDataItem()
