@@ -234,7 +234,9 @@
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>HSNSACCode_SalesInvoiceLine</rd:DefaultName>
@@ -248,6 +250,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -2700,7 +2703,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")+Last(Fields!TotCGST.Value, "DataSet_Result")+Last(Fields!TotSGST.Value, "DataSet_Result")+Last(Fields!TotIGST.Value, "DataSet_Result")</Value>
+                      <Value>=last(Fields!Grand_Total.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <Format>#,0.00;(#,0.00)</Format>
@@ -3052,6 +3055,9 @@ End Function
         </Field>
         <Field Name="Scope3_Line">
           <DataField>Scope3_Line</DataField>
+        </Field>
+        <Field Name="Description">
+          <DataField>Description</DataField>
         </Field>
         <Field Name="Scope4_Line">
           <DataField>Scope4_Line</DataField>
