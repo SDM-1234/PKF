@@ -30,6 +30,7 @@ pageextension 50068 CustomerLedgerEntries extends "Customer Ledger Entries"
             field(CustomerName; Rec."Customer Name")
             {
                 ApplicationArea = All;
+                Editable = false;
             }
 
         }

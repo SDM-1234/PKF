@@ -28,6 +28,11 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
                 ApplicationArea = All;
             }
         }
+        modify("Salespers./Purch. Code")
+        {
+            Visible = true;
+        }
+        moveafter("External Document No."; "Salespers./Purch. Code")
         addafter(Amount)
         {
             field("PKF-Debit Amount"; Rec."Debit Amount")
@@ -46,6 +51,21 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
     }
     actions
     {
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+            begin
+                if Rec.FindFirst() then
+                    repeat
+                        //SDM.RSF.01
+                        IF Rec."Account Type" = Rec."Account Type"::Customer THEN
+                            Rec.TESTFIELD("Salespers./Purch. Code")
+                    //SDM.RSF.01
+                    until rec.Next() = 0;
+            end;
+        }
+
         addafter(SuggestVendorPayments)
         {
             action(PrintRTGSReport)

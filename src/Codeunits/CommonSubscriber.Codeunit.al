@@ -5,8 +5,12 @@ codeunit 50100 "Common Subscriber"
 {
     [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", OnAfterCopyCustLedgerEntryFromGenJnlLine, '', false, false)]
     local procedure "Cust. Ledger Entry_OnAfterCopyCustLedgerEntryFromGenJnlLine"(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
+    var
+        Customer: Record Customer;
     begin
+        If Customer.Get(CustLedgerEntry."Customer No.") then;
         CustLedgerEntry.Narration := GenJournalLine.Narration;
+        CustLedgerEntry."Customer Name" := Customer.Name;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", OnAfterCopyVendLedgerEntryFromGenJnlLine, '', false, false)]
