@@ -34,6 +34,18 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
         {
             Visible = true;
         }
+        modify("Gen. Bus. Posting Group")
+        {
+            Visible = true;
+        }
+        modify("Gen. Posting Type")
+        {
+            Visible = true;
+        }
+        modify("Gen. Prod. Posting Group")
+        {
+            Visible = true;
+        }
         addafter("Document No.")
         {
             field("Line No."; Rec."Line No.")

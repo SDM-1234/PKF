@@ -331,7 +331,7 @@ report 50011 "Pre Sales Invoice GST"
 
                     LUTARNNo := LUTARN.GetARNNo("Sales Header"."Posting Date", "Sales Header"."Location Code");
 
-                    GrandTotal += "Line Amount" + GSTCompAmount[3] + GSTCompAmount[6] + GSTCompAmount[2];
+                    GrandTotal := SubTotal + GSTCompAmount[3] + GSTCompAmount[6] + GSTCompAmount[2];
 
                     //GrandTotal := SubTotal + TotGSTAmt - TotIGST - TotSGST - TotCGST;
                     ReportCheck.InitTextVariable();

@@ -2,8 +2,15 @@ pageextension 50100 SalesInvoiceSubform extends "Sales Invoice Subform"
 {
     layout
     {
+
+        modify("Gen. Prod. Posting Group")
+        {
+            Visible = true;
+        }
         addlast(Control1)
         {
+
+
             field(Scope1; Rec.Scope1)
             {
                 ApplicationArea = All;

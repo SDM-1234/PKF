@@ -37,6 +37,18 @@ pageextension 50070 PurchaseJournal extends "Purchase Journal"
         {
             Visible = true;
         }
+        modify("Gen. Bus. Posting Group")
+        {
+            Visible = true;
+        }
+        modify("Gen. Posting Type")
+        {
+            Visible = true;
+        }
+        modify("Gen. Prod. Posting Group")
+        {
+            Visible = true;
+        }
         addafter("Shortcut Dimension 1 Code")
         {
             field("Employee Name"; Rec."Employee Name")
