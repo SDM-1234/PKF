@@ -28,6 +28,18 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
                 ApplicationArea = All;
             }
         }
+        modify("Gen. Bus. Posting Group")
+        {
+            Visible = true;
+        }
+        modify("Gen. Posting Type")
+        {
+            Visible = true;
+        }
+        modify("Gen. Prod. Posting Group")
+        {
+            Visible = true;
+        }
         modify("Salespers./Purch. Code")
         {
             Visible = true;

@@ -1,1 +1,1 @@
-﻿{"Added":[],"Modified":[],"Removed":[]}
+﻿{"Added":[],"Modified":[{"Id":50100,"Kind":16,"Name":"SalesInvoiceSubform","Namespace":""},{"Id":50007,"Kind":16,"Name":"PaymentJournal","Namespace":""},{"Id":50070,"Kind":16,"Name":"PurchaseJournal","Namespace":""},{"Id":50086,"Kind":16,"Name":"GeneralJournal","Namespace":""},{"Id":50076,"Kind":16,"Name":"RecurringGeneralJournal","Namespace":""}],"Removed":[]}

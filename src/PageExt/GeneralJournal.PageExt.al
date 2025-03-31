@@ -61,6 +61,18 @@ pageextension 50086 GeneralJournal extends "General Journal"
                 ApplicationArea = All;
             }
         }
+        modify("Gen. Bus. Posting Group")
+        {
+            Visible = true;
+        }
+        modify("Gen. Posting Type")
+        {
+            Visible = true;
+        }
+        modify("Gen. Prod. Posting Group")
+        {
+            Visible = true;
+        }
         addafter(Amount)
         {
             field("PKF-Debit Amount"; Rec."Debit Amount")
