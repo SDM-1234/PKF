@@ -6,6 +6,15 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
 {
     layout
     {
+
+        modify("Credit Amount")
+        {
+            Visible = true;
+        }
+        modify("Debit Amount")
+        {
+            Visible = true;
+        }
         addafter("Dimension Set ID")
         {
 
@@ -40,6 +49,7 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
                 ApplicationArea = All;
                 ToolTip = 'Specifies the value of the SystemCreatedBy field.', Comment = '%';
             }
+
         }
     }
 
