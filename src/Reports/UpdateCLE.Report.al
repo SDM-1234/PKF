@@ -19,9 +19,11 @@ report 50006 UpdateCLE
             var
                 Customer: Record Customer;
             begin
-                if Customer.Get("Sell-to Customer No.") then;
-                "Customer Name" := Customer.Name;
-                Modify();
+                if Customer.Get("Sell-to Customer No.") then
+                    if "Customer Name" = '' then begin
+                        "Customer Name" := Customer.Name;
+                        Modify();
+                    end;
             end;
         }
     }
