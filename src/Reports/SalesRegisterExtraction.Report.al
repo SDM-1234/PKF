@@ -114,15 +114,13 @@ report 50090 "Sales Register Extraction"
                 CALCFIELDS(Amount);
                 CALCFIELDS("Amount Including VAT");
 
-                IF "Sales Invoice Header"."Currency Factor" = 0 THEN BEGIN
-                    RecAMT := "Sales Invoice Header".Amount;
-                    RecCustAmt := "Sales Invoice Header"."Amount Including VAT";
-                END
+                IF "Sales Invoice Header"."Currency Factor" = 0 THEN
+                    RecAMT := "Sales Invoice Header".Amount
                 ELSE BEGIN
                     RecExchRate := 1 / "Sales Invoice Header"."Currency Factor";
                     RecAMT := "Sales Invoice Header".Amount * ROUND(RecExchRate, 0.001);
-                    RecCustAmt := "Sales Invoice Header"."Amount Including VAT" * ROUND(RecExchRate, 0.001);
                 END;
+                RecCustAmt := AmtToCustHeader.AmttoCustomerHeader(Database::"Sales Invoice Header", "Sales Invoice Header"."No.");
 
                 RecCommentsheet.RESET();
                 RecEmplop.RESET();
@@ -274,8 +272,7 @@ report 50090 "Sales Register Extraction"
                     End;
                 END;
 
-                IF ("Sales Invoice Header"."Amount Including VAT"
-                 - "Sales Invoice Header".Amount) <> 0 THEN
+                IF (RecCustAmt - RecAMT) <> 0 THEN
                     NATUREOFSERVICE := 'TAXABLE SERVICE'
                 ELSE IF "Sales Invoice Header"."Customer Posting Group" = 'DOMESTIC' THEN
                     NATUREOFSERVICE := 'EXEMPTED SERVICE'
@@ -354,6 +351,7 @@ report 50090 "Sales Register Extraction"
         RecCommentsheet: Record "Sales Comment Line";
         RecEmplop: Record "Employee LOB";
         RecGST: Record "GST Ledger Entry";
+        AmtToCustHeader: Codeunit "Amount To Customer";
         CreBasamt: Decimal;
         RecAMT: Decimal;
         RecCustAmt: Decimal;

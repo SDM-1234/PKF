@@ -29,6 +29,16 @@ pageextension 50038 PostedSalesCreditMemos extends "Posted Sales Credit Memos"
                 Caption = 'Amount to Customer Local Currency';
             }
         }
+        addlast(Control1)
+        {
+            field("QR Code_"; Rec."QR Code".HasValue)
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'QR Code';
+                Caption = 'QR Code';
+            }
+        }
     }
 
     var

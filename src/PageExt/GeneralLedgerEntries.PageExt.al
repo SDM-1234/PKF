@@ -15,12 +15,17 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
         {
             Visible = true;
         }
+        modify(Description)
+        {
+            Editable = false;
+        }
         addafter("Dimension Set ID")
         {
 
             field(Narration; Rec.Narration)
             {
                 ApplicationArea = All;
+                Editable = false;
             }
             field("Beneficiary Name"; Rec."Beneficiary Name")
             {
