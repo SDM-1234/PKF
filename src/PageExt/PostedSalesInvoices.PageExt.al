@@ -37,6 +37,16 @@ pageextension 50037 PostedSalesInvoices extends "Posted Sales Invoices"
                 Caption = 'Amount to Customer Local Currency';
             }
         }
+        addlast(Control1)
+        {
+            field("QR Code_"; Rec."QR Code".HasValue)
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'QR Code';
+                Caption = 'QR Code';
+            }
+        }
 
         addafter(IncomingDocAttachFactBox)
         {
