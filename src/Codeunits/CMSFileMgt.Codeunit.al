@@ -33,7 +33,7 @@ codeunit 50006 CMSFileMgt
         TempExcelBuffer.AddColumn('Payment Mode', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Date', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('IFSC', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn('Employee Name', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        //TempExcelBuffer.AddColumn('Employee Name', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         OnAfterCreateCMSHeader();
 
     end;
@@ -76,7 +76,7 @@ codeunit 50006 CMSFileMgt
                 TempExcelBuffer.AddColumn('N', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
             TempExcelBuffer.AddColumn(Format(BeneficiaryGenJnlLine."Posting Date"), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
             TempExcelBuffer.AddColumn(Beneficiary."Beneficiary IFS Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-            TempExcelBuffer.AddColumn(GenJnlLine."Employee Name", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            //TempExcelBuffer.AddColumn(GenJnlLine."Employee Name", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         end;
         OnAfterCreateCMSDetails();
     end;
