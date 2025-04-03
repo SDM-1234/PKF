@@ -104,12 +104,12 @@ codeunit 50006 CMSFileMgt
         DetailGenJnlLine.SetRange("Account Type", DetailGenJnlLine."Account Type"::"G/L Account");
         if DetailGenJnlLine.FindSet() then
             repeat
-                if EmpName <> DetailGenJnlLine."Beneficiary Code" then begin
+                if EmpName <> DetailGenJnlLine."Shortcut Dimension 1 Code" then begin
                     CreateCMSDetails(DetailGenJnlLine);
-                    EmpName := DetailGenJnlLine."Beneficiary Code";
+                    EmpName := DetailGenJnlLine."Shortcut Dimension 1 Code";
                 end;
             until DetailGenJnlLine.Next() = 0;
-        FileName := 'cms' + GenJnlLine."Journal Batch Name" + Format(Today, 6, '<Day,2><Month,2><Year,2>') + '.xls';
+        FileName := 'cms-' + GenJnlLine."Journal Batch Name" + '-' + Format(Today, 6, '<Day,2><Month,2><Year,2>') + '.xls';
 
         TempExcelBuffer.CreateNewBook('CMS');
         TempExcelBuffer.WriteSheet('CMS', CompanyName, UserId);
