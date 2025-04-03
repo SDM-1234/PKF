@@ -39,20 +39,70 @@ pageextension 50009 GeneralLedgerEntries extends "General Ledger Entries"
             {
                 ApplicationArea = All;
             }
+            field("Source Vendor Name"; Rec."Source Vendor Name")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Source Vendor Name field.', Comment = '%';
+            }
+            field("Source Customer Name"; Rec."Source Customer Name")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Source Customer Name field.', Comment = '%';
+            }
+            field("Remarks Sales Invoice"; Rec."Remarks Sales Invoice")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Remarks Sales Invoice field.', Comment = '%';
+            }
+            field("Account Id"; Rec."Account Id")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Account Id field.', Comment = '%';
+            }
+            field("Remarks Sales Cr. Memo"; Rec."Remarks Sales Cr. Memo")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Remarks Sales Cr. Memo field.', Comment = '%';
+            }
+            field("Remarks Purch. Cr. Memo"; Rec."Remarks Purch. Cr. Memo")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Remarks Purch. Cr. Memo field.', Comment = '%';
+            }
+            field("Remarks Purch. Invoice"; Rec."Remarks Purch. Invoice")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Remarks Purch. Invoice field.', Comment = '%';
+            }
             field("Creation Date"; Rec."Creation Date")
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies the value of the Creation Date field.', Comment = '%';
             }
-            field(SystemCreatedAt; Rec.SystemCreatedAt)
+            field("PAN No."; Rec."PAN No.")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the value of the SystemCreatedAt field.', Comment = '%';
+                ToolTip = 'Specifies the value of the PAN No. field.', Comment = '%';
             }
-            field(SystemCreatedBy; Rec.SystemCreatedBy)
+            field("Team Leader"; Rec."Team Leader")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the value of the SystemCreatedBy field.', Comment = '%';
+                ToolTip = 'Specifies the value of the Team Leader field.', Comment = '%';
+            }
+            field(LOB; Rec.LOB)
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the LOB field.', Comment = '%';
+            }
+            field("Sales Code"; Rec."Sales Code")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Sales Code field.', Comment = '%';
+            }
+            field("Sales Name"; Rec."Sales Name")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Sales Name field.', Comment = '%';
             }
 
         }

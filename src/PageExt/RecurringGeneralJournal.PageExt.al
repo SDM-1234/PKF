@@ -133,9 +133,9 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 ApplicationArea = All;
                 Caption = 'Indian Bank Cheque';
                 Image = Print;
-                Promoted = true;
-                PromotedCategory = New;
-                PromotedIsBig = true;
+                //Promoted = true;
+                //PromotedCategory = New;
+                //PromotedIsBig = true;
 
                 trigger OnAction()
                 var
@@ -150,9 +150,9 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 ApplicationArea = All;
                 Caption = 'Bank Payment Voucher';
                 Image = Print;
-                Promoted = true;
-                PromotedCategory = New;
-                PromotedIsBig = true;
+                //Promoted = true;
+                //PromotedCategory = New;
+                //PromotedIsBig = true;
 
                 trigger OnAction()
                 var
@@ -168,9 +168,9 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 ApplicationArea = All;
                 Caption = 'Indian Bank - Multiple Line Printing';
                 Image = Print;
-                Promoted = true;
-                PromotedCategory = New;
-                PromotedIsBig = true;
+                //Promoted = true;
+                //PromotedCategory = New;
+                //PromotedIsBig = true;
 
                 trigger OnAction()
                 var
@@ -186,9 +186,9 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             action("Print RTGS Report")
             {
                 ApplicationArea = All;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedIsBig = true;
+                //Promoted = true;
+                //PromotedCategory = "Report";
+                //PromotedIsBig = true;
 
                 trigger OnAction()
                 var
@@ -214,12 +214,36 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 Caption = 'ApplyEntries';
                 Ellipsis = true;
                 Image = ApplyEntries;
-                Promoted = true;
-                PromotedCategory = Process;
+                //Promoted = true;
+                //PromotedCategory = Process;
                 RunObject = Codeunit "Gen. Jnl.-Apply";
                 ShortCutKey = 'Shift+F11';
             }
+
+            action(ExportCMSFile)
+            {
+                ApplicationArea = All;
+                Caption = 'Export CMS File';
+                Ellipsis = true;
+                Image = Export;
+                Promoted = true;
+                PromotedCategory = Process;
+                RunObject = Codeunit CMSFileMgt;
+                //ShortCutKey = 'Shift+E';
+
+                //     trigger OnAction()
+                //     var
+                //         CMSFileMgt: Codeunit CMSFileMgt;
+                //     begin
+                //         CMSFileMgt.Run(Rec)
+                //     end;
+            }
+
+
         }
+
+
     }
+
 }
 

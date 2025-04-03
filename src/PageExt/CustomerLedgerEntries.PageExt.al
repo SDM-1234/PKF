@@ -32,7 +32,6 @@ pageextension 50068 CustomerLedgerEntries extends "Customer Ledger Entries"
                 ApplicationArea = All;
                 Editable = false;
             }
-
         }
 
         addafter("Remaining Amt. (LCY)")
