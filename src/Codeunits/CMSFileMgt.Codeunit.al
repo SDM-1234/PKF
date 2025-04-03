@@ -70,7 +70,7 @@ codeunit 50006 CMSFileMgt
             TempExcelBuffer.AddColumn(Beneficiary."Beneficiary Name", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
             TempExcelBuffer.AddColumn(Format(CalculateTotalGenJnlLineAmount(GenJnlLine)), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
 
-            if Beneficiary."Beneficiary Bank Name" = 'ICICI' then
+            if Beneficiary."Beneficiary Bank Name" = 'ICICI BANK' then
                 TempExcelBuffer.AddColumn('I', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
             else
                 TempExcelBuffer.AddColumn('N', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -92,7 +92,7 @@ codeunit 50006 CMSFileMgt
         LineNo: Integer;
         EmpName: Text;
         FileName: Text;
-
+        DocNo: COde[20];
     begin
         TempExcelBuffer.DeleteAll();
 
@@ -104,9 +104,15 @@ codeunit 50006 CMSFileMgt
         DetailGenJnlLine.SetRange("Account Type", DetailGenJnlLine."Account Type"::"G/L Account");
         if DetailGenJnlLine.FindSet() then
             repeat
-                if EmpName <> DetailGenJnlLine."Shortcut Dimension 1 Code" then begin
+                if (EmpName <> DetailGenJnlLine."Shortcut Dimension 1 Code") //OR  
+                    then begin
+
                     CreateCMSDetails(DetailGenJnlLine);
                     EmpName := DetailGenJnlLine."Shortcut Dimension 1 Code";
+                    DocNo := DetailGenJnlLine."Document No.";
+                end else if (DocNo <> '') and (DocNo <> DetailGenJnlLine."Document No.") then begin
+                    CreateCMSDetails(DetailGenJnlLine);
+                    DocNo := DetailGenJnlLine."Document No.";
                 end;
             until DetailGenJnlLine.Next() = 0;
         FileName := 'cms-' + GenJnlLine."Journal Batch Name" + '-' + Format(Today, 6, '<Day,2><Month,2><Year,2>') + '.xls';
@@ -129,16 +135,18 @@ codeunit 50006 CMSFileMgt
 
     begin
         Clear(TotalAmount);
-        GenJnlLineRec.SetCurrentKey("Employee Name");
+        GenJnlLineRec.SetCurrentKey("Shortcut Dimension 1 Code");
         GenJnlLineRec.SetRange("Journal Template Name", GenJnlLine."Journal Template Name");
         GenJnlLineRec.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
-        GenJnlLineRec.SetRange("Employee Name", GenJnlLine."Employee Name");
+        //if GenJnlLine."Shortcut Dimension 1 Code" <> '' then
+        GenJnlLineRec.SetRange("Shortcut Dimension 1 Code", GenJnlLine."Shortcut Dimension 1 Code");
+        //If GenJnlLine."Document No."<>''
+        GenJnlLineRec.SetRange("Document No.", GenJnlLine."Document No.");
         GenJnlLineRec.SetRange("Account Type", GenJnlLine."Account Type"::"G/L Account");
         If GenJnlLineRec.FindSet() then
             repeat
                 TotalAmount += GenJnlLineRec.Amount;
             Until GenJnlLineRec.Next() = 0;
-
         Exit(TotalAmount);
     end;
 
