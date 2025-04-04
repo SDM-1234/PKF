@@ -392,7 +392,7 @@
       <Width>7.72917in</Width>
       <Page>
         <PageHeader>
-          <Height>3.10695in</Height>
+          <Height>3.36737in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -1554,6 +1554,45 @@
                 <Border>
                   <Style>None</Style>
                 </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox70">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value EvaluationMode="Constant">GST WITHOUT PAYMENT OF DUTY</Value>
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox5</rd:DefaultName>
+              <Top>3.13473in</Top>
+              <Left>0.0062cm</Left>
+              <Height>0.17708in</Height>
+              <Width>7.70276in</Width>
+              <ZIndex>36</ZIndex>
+              <Visibility>
+                <Hidden>=iif(Fields!HeadingExport.Value,false,true)</Hidden>
+              </Visibility>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <VerticalAlign>Middle</VerticalAlign>
                 <PaddingLeft>2pt</PaddingLeft>
                 <PaddingRight>2pt</PaddingRight>
                 <PaddingTop>2pt</PaddingTop>
@@ -3036,6 +3075,9 @@ End Function
         </Field>
         <Field Name="MSMEText">
           <DataField>MSMEText</DataField>
+        </Field>
+        <Field Name="HeadingExport">
+          <DataField>HeadingExport</DataField>
         </Field>
         <Field Name="IRN">
           <DataField>IRN</DataField>
