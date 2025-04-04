@@ -509,8 +509,8 @@ report 50004 "Sales Invoice GST SEZ"
         RecPhone: Text[45];
         RecFax: Text[45];
         SalesPerson: Record "Salesperson/Purchaser";
-        SalesCode: Code[10];
-        SalesPersonName: Text[30];
+        SalesCode: Code[100];
+        SalesPersonName: Text[50];
 
     local procedure BankDetails()
     begin
