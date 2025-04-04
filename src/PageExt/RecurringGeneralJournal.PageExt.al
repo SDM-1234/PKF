@@ -229,7 +229,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 Promoted = true;
                 PromotedCategory = Process;
                 RunObject = Codeunit CMSFileMgt;
-                Visible = false;
+                //Visible = false;
                 //ShortCutKey = 'Shift+E';
 
                 //     trigger OnAction()

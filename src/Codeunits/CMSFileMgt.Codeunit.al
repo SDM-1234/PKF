@@ -18,13 +18,11 @@ codeunit 50006 CMSFileMgt
     local procedure CreateCMSHeader()
     var
         IsHandled: Boolean;
-        LineNo: Integer;
 
     begin
         OnBeforeCreateCMSHeader(IsHandled);
         if IsHandled then
             exit;
-        //LineNo := 1;
         TempExcelBuffer.NewRow();
         TempExcelBuffer.AddColumn('Debit Ac No.', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Beneficiary Ac No', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -45,6 +43,7 @@ codeunit 50006 CMSFileMgt
         BeneficiaryGenJnlLine: Record "Gen. Journal Line";
         IsHandled: Boolean;
         Executed: Boolean;
+        TotalAmount: Decimal;
     begin
         OnBeforeCreateCMSDetails(IsHandled);
         if IsHandled then
@@ -63,12 +62,13 @@ codeunit 50006 CMSFileMgt
         Beneficiary.Reset();
         if Beneficiary.Get(GenJnlLine."Beneficiary Code") then;
 
-        If CalculateTotalGenJnlLineAmount(GenJnlLine) <> 0 then begin
+        TotalAmount := CalculateTotalGenJnlLineAmount(GenJnlLine);
+        If TotalAmount <> 0 then begin
             TempExcelBuffer.NewRow();
             TempExcelBuffer.AddColumn(BankAccount."Bank Account No.", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
             TempExcelBuffer.AddColumn(Beneficiary."Beneficiary A/C No.", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
             TempExcelBuffer.AddColumn(Beneficiary."Beneficiary Name", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-            TempExcelBuffer.AddColumn(Format(CalculateTotalGenJnlLineAmount(GenJnlLine)), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            TempExcelBuffer.AddColumn(Format(TotalAmount), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
 
             if Beneficiary."Beneficiary Bank Name" = 'ICICI BANK' then
                 TempExcelBuffer.AddColumn('I', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
@@ -104,9 +104,7 @@ codeunit 50006 CMSFileMgt
         DetailGenJnlLine.SetRange("Account Type", DetailGenJnlLine."Account Type"::"G/L Account");
         if DetailGenJnlLine.FindSet() then
             repeat
-                if (EmpName <> DetailGenJnlLine."Shortcut Dimension 1 Code") //OR  
-                    then begin
-
+                if (EmpName <> DetailGenJnlLine."Shortcut Dimension 1 Code") then begin
                     CreateCMSDetails(DetailGenJnlLine);
                     EmpName := DetailGenJnlLine."Shortcut Dimension 1 Code";
                     DocNo := DetailGenJnlLine."Document No.";
@@ -115,8 +113,18 @@ codeunit 50006 CMSFileMgt
                     DocNo := DetailGenJnlLine."Document No.";
                 end;
             until DetailGenJnlLine.Next() = 0;
-        FileName := 'cms-' + GenJnlLine."Journal Batch Name" + '-' + Format(Today, 6, '<Day,2><Month,2><Year,2>') + '.xls';
-
+        case GenJnlLine."Journal Batch Name" of
+            'SAL-BLR':
+                FileName := 'Livepayment-file-Bangalore-Feb25' + '.xls';
+            'SAL-CHN':
+                FileName := 'Livepayment-file-Chennai-Feb25' + '.xls';
+            'SAL-DEL':
+                FileName := 'Livepayment-file-Delhi-Feb25' + '.xls';
+            'SAL-HYD':
+                FileName := 'Livepayment-file-Delhi-Feb25' + '.xls';
+            'SAL-MUM':
+                FileName := 'Livepayment-file-Delhi-Feb25' + '.xls';
+        end;
         TempExcelBuffer.CreateNewBook('CMS');
         TempExcelBuffer.WriteSheet('CMS', CompanyName, UserId);
         TempExcelBuffer.CloseBook();
