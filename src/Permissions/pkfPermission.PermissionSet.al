@@ -63,6 +63,7 @@ permissionset 50000 "pkf_Permission"
         page "User GL Setup" = X,
         page "LUT ARN List" = X,
         codeunit "Common Subscriber" = X,
+        Codeunit CMSFileMgt = X,
         tabledata EmailParameter = RIMD,
         table EmailParameter = X,
         tabledata "Temp Buffer" = RIMD,
