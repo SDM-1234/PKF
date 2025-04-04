@@ -21,6 +21,7 @@ pageextension 50158 SalesQuoteSubform extends "Sales Quote Subform"
                 ApplicationArea = All;
             }
         }
+
     }
 }
 

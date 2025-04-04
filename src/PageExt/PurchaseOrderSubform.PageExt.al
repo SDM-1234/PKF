@@ -48,6 +48,10 @@ pageextension 50119 pkf_PurchaseOrderSubform extends "Purchase Order Subform"
         {
             Visible = false;
         }
+        modify("Line No.")
+        {
+            Visible = true;
+        }
 
     }
 }

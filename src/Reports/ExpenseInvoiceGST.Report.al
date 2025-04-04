@@ -157,6 +157,11 @@ report 50012 "Expense Invoice GST"
             column(MSMEText; MSMEText)
             {
             }
+            column(HeadingExport; HeadingExport)
+            {
+
+            }
+
             column(IRN; "IRN Hash")
             {
             }
@@ -173,6 +178,7 @@ report 50012 "Expense Invoice GST"
                 column(Segment_Line; "Sales Invoice Header".Segment)
                 {
                 }
+
                 column(Scope1_Line; "Sales Invoice Line".Scope1)
                 {
                 }
@@ -265,6 +271,8 @@ report 50012 "Expense Invoice GST"
                     SubTotal += "Line Amount";
                     //GrandTotal += "Sales Invoice Line"."Amount Including VAT";
 
+
+
                     IF IsRent = TRUE THEN
                         CatofSer := 'RENTAL INCOME ON IMMOVABLE PROPERTIES'
                     ELSE
@@ -333,6 +341,9 @@ report 50012 "Expense Invoice GST"
                 TempBlob: Codeunit "Temp Blob";
                 RecRef: RecordRef;
             begin
+
+                if "Invoice Type" = "Invoice Type"::Export then
+                    HeadingExport := true;
                 CalcFields("QR Code");
                 if ("IRN Hash" <> '') and (not "QR Code".HasValue) then begin
                     EInvoiceReq.SetRange("Document Type", EInvoiceReq."Document Type"::"Sale Invoice");
@@ -440,6 +451,8 @@ report 50012 "Expense Invoice GST"
         KKCTax: Decimal;
         SubTotal: Decimal;
         GrandTotal: Decimal;
+        HeadingExport: Boolean;
+
         ReportCheck: Codeunit AmountToWords;
         CompanyLogoVisible: Boolean;
 

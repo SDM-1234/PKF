@@ -9,6 +9,15 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
         {
             Visible = true;
         }
+        addafter("Document No.")
+        {
+            field("Line No."; Rec."Line No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Line No. field.', Comment = '%';
+                Editable = false;
+            }
+        }
         addafter("Account No.")
         {
             field(Narration; Rec.Narration)
