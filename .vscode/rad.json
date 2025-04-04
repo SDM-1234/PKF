@@ -1,1 +1,1 @@
-﻿{"Added":[],"Modified":[],"Removed":[]}
+﻿{"Added":[],"Modified":[{"Id":50120,"Kind":16,"Name":"PurchInvoiceSubform","Namespace":""},{"Id":50119,"Kind":16,"Name":"pkf_PurchaseOrderSubform","Namespace":""},{"Id":50100,"Kind":16,"Name":"SalesInvoiceSubform","Namespace":""},{"Id":50007,"Kind":16,"Name":"PaymentJournal","Namespace":""},{"Id":50098,"Kind":16,"Name":"SalesOrderSubform","Namespace":""},{"Id":50070,"Kind":16,"Name":"PurchaseJournal","Namespace":""},{"Id":50158,"Kind":16,"Name":"SalesQuoteSubform","Namespace":""}],"Removed":[]}

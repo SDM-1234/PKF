@@ -6,6 +6,10 @@ pageextension 50098 SalesOrderSubform extends "Sales Order Subform"
         {
             Visible = true;
         }
+        modify("Line No.")
+        {
+            Visible = true;
+        }
     }
 }
 

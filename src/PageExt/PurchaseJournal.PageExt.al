@@ -70,6 +70,16 @@ pageextension 50070 PurchaseJournal extends "Purchase Journal"
                 ApplicationArea = All;
             }
         }
+        addafter("Document No.")
+        {
+
+            field("Line No."; Rec."Line No.")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Line No. field.', Comment = '%';
+                Editable = false;
+            }
+        }
         addafter(Amount)
         {
             field("PKF-Debit Amount"; Rec."Debit Amount")

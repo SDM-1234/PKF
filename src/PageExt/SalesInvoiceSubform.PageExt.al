@@ -7,6 +7,10 @@ pageextension 50100 SalesInvoiceSubform extends "Sales Invoice Subform"
         {
             Visible = true;
         }
+        modify("Line No.")
+        {
+            Visible = true;
+        }
         addlast(Control1)
         {
 
