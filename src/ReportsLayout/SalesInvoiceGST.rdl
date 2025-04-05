@@ -234,7 +234,9 @@
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>HSNSACCode_SalesInvoiceLine</rd:DefaultName>
@@ -242,6 +244,7 @@
                             <Border>
                               <Style>None</Style>
                             </Border>
+                            <VerticalAlign>Top</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -385,7 +388,7 @@
       <Width>7.72917in</Width>
       <Page>
         <PageHeader>
-          <Height>3.38786in</Height>
+          <Height>3.58577in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -409,7 +412,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox1</rd:DefaultName>
-              <Top>0.01958in</Top>
+              <Top>0.20486in</Top>
               <Height>0.22917in</Height>
               <Width>7.72917in</Width>
               <Style>
@@ -440,9 +443,9 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox1</rd:DefaultName>
-              <Top>0.21562in</Top>
+              <Top>0.54617in</Top>
               <Height>0.17917in</Height>
-              <Width>7.72917in</Width>
+              <Width>7.70519in</Width>
               <ZIndex>1</ZIndex>
               <Style>
                 <Border>
@@ -472,7 +475,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox1</rd:DefaultName>
-              <Top>0.50312in</Top>
+              <Top>0.75312in</Top>
               <Height>0.17292in</Height>
               <Width>7.72917in</Width>
               <ZIndex>2</ZIndex>
@@ -503,7 +506,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox1</rd:DefaultName>
-              <Top>0.70625in</Top>
+              <Top>0.95625in</Top>
               <Height>0.17292in</Height>
               <Width>7.72917in</Width>
               <ZIndex>3</ZIndex>
@@ -536,7 +539,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>0.94861in</Top>
+              <Top>1.19861in</Top>
               <Height>0.17708in</Height>
               <Width>1.34375in</Width>
               <ZIndex>4</ZIndex>
@@ -568,7 +571,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.11667in</Top>
+              <Top>1.36667in</Top>
               <Height>0.17708in</Height>
               <Width>1.34375in</Width>
               <ZIndex>5</ZIndex>
@@ -600,7 +603,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>0.94862in</Top>
+              <Top>1.19862in</Top>
               <Left>1.39931in</Left>
               <Height>0.17708in</Height>
               <Width>2.96875in</Width>
@@ -633,7 +636,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.11667in</Top>
+              <Top>1.36667in</Top>
               <Left>1.39931in</Left>
               <Height>0.28541in</Height>
               <Width>2.96875in</Width>
@@ -666,7 +669,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.425in</Top>
+              <Top>1.675in</Top>
               <Height>0.19375in</Height>
               <Width>1.34375in</Width>
               <ZIndex>8</ZIndex>
@@ -698,7 +701,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.42986in</Top>
+              <Top>1.67986in</Top>
               <Left>1.39931in</Left>
               <Height>0.18889in</Height>
               <Width>4.425in</Width>
@@ -731,7 +734,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.59375in</Top>
+              <Top>1.84375in</Top>
               <Left>1.39931in</Left>
               <Height>0.18889in</Height>
               <Width>4.7375in</Width>
@@ -764,7 +767,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.75764in</Top>
+              <Top>2.00764in</Top>
               <Left>1.39931in</Left>
               <Height>0.18889in</Height>
               <Width>4.7375in</Width>
@@ -797,7 +800,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.92153in</Top>
+              <Top>2.17153in</Top>
               <Left>1.39931in</Left>
               <Height>0.18889in</Height>
               <Width>4.7375in</Width>
@@ -830,7 +833,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>0.89583in</Top>
+              <Top>1.14583in</Top>
               <Left>5.08437in</Left>
               <Height>0.17708in</Height>
               <Width>0.90208in</Width>
@@ -863,7 +866,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.06389in</Top>
+              <Top>1.31389in</Top>
               <Left>5.08437in</Left>
               <Height>0.17708in</Height>
               <Width>0.90208in</Width>
@@ -896,7 +899,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.22847in</Top>
+              <Top>1.47847in</Top>
               <Left>5.08437in</Left>
               <Height>0.1875in</Height>
               <Width>0.90208in</Width>
@@ -929,7 +932,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>0.89583in</Top>
+              <Top>1.14583in</Top>
               <Left>6.02812in</Left>
               <Height>0.17708in</Height>
               <Width>0.68541in</Width>
@@ -962,7 +965,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.06389in</Top>
+              <Top>1.31389in</Top>
               <Left>6.02812in</Left>
               <Height>0.17708in</Height>
               <Width>1.20208in</Width>
@@ -995,7 +998,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>1.22847in</Top>
+              <Top>1.47847in</Top>
               <Left>6.02812in</Left>
               <Height>0.1875in</Height>
               <Width>1.20208in</Width>
@@ -1028,7 +1031,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.74967in</Top>
+              <Top>2.99967in</Top>
               <Left>3.74306in</Left>
               <Height>0.17708in</Height>
               <Width>1.17465in</Width>
@@ -1061,7 +1064,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.61355in</Top>
+              <Top>2.86355in</Top>
               <Left>0.00244in</Left>
               <Height>0.17708in</Height>
               <Width>1.34375in</Width>
@@ -1094,7 +1097,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.84619in</Top>
+              <Top>3.09619in</Top>
               <Left>0.00244in</Left>
               <Height>0.1875in</Height>
               <Width>1.34375in</Width>
@@ -1127,7 +1130,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.74967in</Top>
+              <Top>2.99967in</Top>
               <Left>4.91771in</Left>
               <Height>0.17708in</Height>
               <Width>2.31249in</Width>
@@ -1160,7 +1163,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.61355in</Top>
+              <Top>2.86355in</Top>
               <Left>1.40175in</Left>
               <Height>0.17708in</Height>
               <Width>2.34131in</Width>
@@ -1193,7 +1196,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.84619in</Top>
+              <Top>3.09619in</Top>
               <Left>1.40175in</Left>
               <Height>0.1875in</Height>
               <Width>2.34131in</Width>
@@ -1227,8 +1230,8 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>0.07167in</Top>
-              <Left>0.00244in</Left>
+              <Top>0in</Top>
+              <Left>6.50244in</Left>
               <Height>0.17708in</Height>
               <Width>1.21561in</Width>
               <ZIndex>25</ZIndex>
@@ -1260,7 +1263,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.14758in</Top>
+              <Top>2.39758in</Top>
               <Left>0.0062cm</Left>
               <Height>0.17708in</Height>
               <Width>1.34375in</Width>
@@ -1293,7 +1296,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.31216in</Top>
+              <Top>2.56216in</Top>
               <Left>0.0062cm</Left>
               <Height>0.17708in</Height>
               <Width>1.34375in</Width>
@@ -1326,7 +1329,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.5205in</Top>
+              <Top>2.7705in</Top>
               <Left>9.54265cm</Left>
               <Height>0.1875in</Height>
               <Width>0.81145in</Width>
@@ -1359,7 +1362,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.14758in</Top>
+              <Top>2.39758in</Top>
               <Left>1.39931in</Left>
               <Height>0.17708in</Height>
               <Width>2.34375in</Width>
@@ -1392,7 +1395,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.31216in</Top>
+              <Top>2.56216in</Top>
               <Left>1.39931in</Left>
               <Height>0.17708in</Height>
               <Width>2.34375in</Width>
@@ -1425,7 +1428,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.5205in</Top>
+              <Top>2.7705in</Top>
               <Left>4.65382in</Left>
               <Height>0.1875in</Height>
               <Width>0.45833in</Width>
@@ -1445,8 +1448,8 @@
               <Value>=First(Fields!Comp_Picture.Value, "DataSet_Result")</Value>
               <MIMEType>image/jpeg</MIMEType>
               <Sizing>FitProportional</Sizing>
-              <Top>0.03854in</Top>
-              <Left>6.65593in</Left>
+              <Top>0in</Top>
+              <Left>0in</Left>
               <Height>0.54271in</Height>
               <Width>1.07324in</Width>
               <ZIndex>32</ZIndex>
@@ -1477,7 +1480,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.13856in</Top>
+              <Top>2.38856in</Top>
               <Left>3.74306in</Left>
               <Height>0.17708in</Height>
               <Width>1.17465in</Width>
@@ -1510,7 +1513,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.13856in</Top>
+              <Top>2.38856in</Top>
               <Left>4.91771in</Left>
               <Height>0.17708in</Height>
               <Width>1.36666in</Width>
@@ -1543,7 +1546,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.31564in</Top>
+              <Top>2.56564in</Top>
               <Left>3.74306in</Left>
               <Height>0.17708in</Height>
               <Width>1.17465in</Width>
@@ -1576,7 +1579,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>2.31564in</Top>
+              <Top>2.56564in</Top>
               <Left>4.91771in</Left>
               <Height>0.17708in</Height>
               <Width>1.36666in</Width>
@@ -1609,7 +1612,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>3.03369in</Top>
+              <Top>3.28369in</Top>
               <Left>0.00244in</Left>
               <Height>0.1875in</Height>
               <Width>1.34131in</Width>
@@ -1643,7 +1646,7 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
-              <Top>3.03369in</Top>
+              <Top>3.28369in</Top>
               <Left>1.40175in</Left>
               <Height>0.1875in</Height>
               <Width>5.82845in</Width>
@@ -1663,7 +1666,7 @@
               <Value>=System.Convert.ToBase64String(Fields!QRCode.Value)</Value>
               <MIMEType>image/bmp</MIMEType>
               <Sizing>FitProportional</Sizing>
-              <Top>3.59085cm</Top>
+              <Top>4.22585cm</Top>
               <Left>6.53019in</Left>
               <Height>25.4mm</Height>
               <Width>25.4mm</Width>

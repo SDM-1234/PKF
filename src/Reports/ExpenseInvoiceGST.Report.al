@@ -652,7 +652,6 @@ report 50012 "Expense Invoice GST"
         END;
 
         IF CompanyInformation.Name = 'PKF CONSULTING PRIVATE LIMITED' THEN BEGIN
-            CompanyLogoVisible := true;
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 11000200090188';
             VarText[2] := 'A/c Name: PKF CONSULTING PRIVATE LIMITED';
@@ -692,6 +691,8 @@ report 50012 "Expense Invoice GST"
         END;
 
         IF CompanyInformation.Name = 'PKF CONSULTING SERVICES LLP' THEN BEGIN
+            CompanyLogoVisible := true;
+
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 003605006317';
             VarText[2] := 'A/c Name: PKF CONSULTING SERVICES LLP';
