@@ -89,9 +89,10 @@ codeunit 50006 CMSFileMgt
                 TempExcelBuffer.AddColumn('I', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
             else
                 TempExcelBuffer.AddColumn('N', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-            TempExcelBuffer.AddColumn(Format(BeneficiaryGenJnlLine."Posting Date", 8, '<Day,2><Month,2><Year,4>'), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            TempExcelBuffer.AddColumn(BeneficiaryGenJnlLine."Posting Date", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
             TempExcelBuffer.AddColumn(Beneficiary."Beneficiary IFS Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         end;
+
         OnAfterCreateCMSDetails();
     end;
 
