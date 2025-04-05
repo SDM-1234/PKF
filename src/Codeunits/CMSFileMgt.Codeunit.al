@@ -24,11 +24,11 @@ codeunit 50006 CMSFileMgt
         if IsHandled then
             exit;
         TempExcelBuffer.NewRow();
-        TempExcelBuffer.AddColumn('Debit Ac No.', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Debit Ac No', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Beneficiary Ac No', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Beneficiary Name', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn('Amount', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        TempExcelBuffer.AddColumn('Payment Mode', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Amt', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Pay Mod', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Date', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('IFSC', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Payable Location', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -87,9 +87,8 @@ codeunit 50006 CMSFileMgt
                 TempExcelBuffer.AddColumn('I', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text)
             else
                 TempExcelBuffer.AddColumn('N', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-            TempExcelBuffer.AddColumn(Format(BeneficiaryGenJnlLine."Posting Date"), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            TempExcelBuffer.AddColumn(Format(BeneficiaryGenJnlLine."Posting Date", 8, '<Day,2><Month,2><Year,4>'), false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
             TempExcelBuffer.AddColumn(Beneficiary."Beneficiary IFS Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-            //TempExcelBuffer.AddColumn(GenJnlLine."Employee Name", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         end;
         OnAfterCreateCMSDetails();
     end;
@@ -102,10 +101,12 @@ codeunit 50006 CMSFileMgt
         TempBlob: Codeunit "Temp Blob";
         CSVInStream: InStream;
         CSVOutStream: OutStream;
-        LineNo: Integer;
         EmpName: Text;
         FileName: Text;
         DocNo: COde[20];
+        Month: Integer;
+        Year: Integer;
+        MonthName: Text;
     begin
         TempExcelBuffer.DeleteAll();
 
@@ -126,17 +127,48 @@ codeunit 50006 CMSFileMgt
                     DocNo := DetailGenJnlLine."Document No.";
                 end;
             until DetailGenJnlLine.Next() = 0;
+
+        Month := Date2DMY(GenJnlLine."Posting Date", 2);
+        Year := Date2DMY(GenJnlLine."Posting Date", 2);
+        Case Month of
+            1:
+                MonthName := 'Jan';
+            2:
+                MonthName := 'Feb';
+            3:
+                MonthName := 'Mar';
+            4:
+                MonthName := 'Apr';
+            5:
+                MonthName := 'May';
+            6:
+                MonthName := 'Jun';
+            7:
+                MonthName := 'Jul';
+            8:
+                MonthName := 'Aug';
+            9:
+                MonthName := 'Sep';
+            10:
+                MonthName := 'Oct';
+            11:
+                MonthName := 'Nov';
+            12:
+                MonthName := 'Dec';
+
+        End;
+
         case GenJnlLine."Journal Batch Name" of
             'SAL-BLR':
-                FileName := 'Livepayment-file-Bangalore-Feb25' + '.xls';
+                FileName := 'Livepayment-file-Bangalore-' + MonthName + Format(Year) + '.xls';
             'SAL-CHN':
-                FileName := 'Livepayment-file-Chennai-Feb25' + '.xls';
+                FileName := 'Livepayment-file-Chennai-' + MonthName + Format(Year) + '.xls';
             'SAL-DEL':
-                FileName := 'Livepayment-file-Delhi-Feb25' + '.xls';
+                FileName := 'Livepayment-file-Delhi-' + MonthName + Format(Year) + '.xls';
             'SAL-HYD':
-                FileName := 'Livepayment-file-Delhi-Feb25' + '.xls';
+                FileName := 'Livepayment-file-Delhi-' + MonthName + Format(Year) + '.xls';
             'SAL-MUM':
-                FileName := 'Livepayment-file-Delhi-Feb25' + '.xls';
+                FileName := 'Livepayment-file-Delhi-' + MonthName + Format(Year) + '.xls';
         end;
         TempExcelBuffer.CreateNewBook('CMS');
         TempExcelBuffer.WriteSheet('CMS', CompanyName, UserId);
@@ -159,9 +191,7 @@ codeunit 50006 CMSFileMgt
         GenJnlLineRec.SetCurrentKey("Shortcut Dimension 1 Code");
         GenJnlLineRec.SetRange("Journal Template Name", GenJnlLine."Journal Template Name");
         GenJnlLineRec.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
-        //if GenJnlLine."Shortcut Dimension 1 Code" <> '' then
         GenJnlLineRec.SetRange("Shortcut Dimension 1 Code", GenJnlLine."Shortcut Dimension 1 Code");
-        //If GenJnlLine."Document No."<>''
         GenJnlLineRec.SetRange("Document No.", GenJnlLine."Document No.");
         GenJnlLineRec.SetRange("Account Type", GenJnlLine."Account Type"::"G/L Account");
         If GenJnlLineRec.FindSet() then
