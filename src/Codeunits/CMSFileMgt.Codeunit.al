@@ -1,6 +1,8 @@
 namespace PKF.PKF;
 
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Dimension;
 using Microsoft.Bank.BankAccount;
 using System.Utilities;
 using System.IO;
@@ -105,8 +107,13 @@ codeunit 50006 CMSFileMgt
         FileName: Text;
         DocNo: COde[20];
         Month: Integer;
-        Year: Integer;
+        Year: Text;
         MonthName: Text;
+        Dimensionvalue: Record "Dimension Value";
+        GeneralLedgSetup: Record "General Ledger Setup";
+        FromChars: Text[50];
+        ToChars: Text[50];
+        NewString: Text[50];
     begin
         TempExcelBuffer.DeleteAll();
 
@@ -128,8 +135,12 @@ codeunit 50006 CMSFileMgt
                 end;
             until DetailGenJnlLine.Next() = 0;
 
+        GeneralLedgSetup.Get();
+        if Dimensionvalue.Get(GeneralLedgSetup."Shortcut Dimension 2 Code", GenJnlLine."Shortcut Dimension 2 Code") then;
+        NewString := ConvertToTitleCase(Dimensionvalue.Name);
         Month := Date2DMY(GenJnlLine."Posting Date", 2);
-        Year := Date2DMY(GenJnlLine."Posting Date", 2);
+        Year := Format(Date2DMY(GenJnlLine."Posting Date", 3));
+        Year := DelStr(Year, 1, 2);
         Case Month of
             1:
                 MonthName := 'Jan';
@@ -155,21 +166,10 @@ codeunit 50006 CMSFileMgt
                 MonthName := 'Nov';
             12:
                 MonthName := 'Dec';
-
         End;
 
-        case GenJnlLine."Journal Batch Name" of
-            'SAL-BLR':
-                FileName := 'Livepayment-file-Bangalore-' + MonthName + Format(Year) + '.xls';
-            'SAL-CHN':
-                FileName := 'Livepayment-file-Chennai-' + MonthName + Format(Year) + '.xls';
-            'SAL-DEL':
-                FileName := 'Livepayment-file-Delhi-' + MonthName + Format(Year) + '.xls';
-            'SAL-HYD':
-                FileName := 'Livepayment-file-Delhi-' + MonthName + Format(Year) + '.xls';
-            'SAL-MUM':
-                FileName := 'Livepayment-file-Delhi-' + MonthName + Format(Year) + '.xls';
-        end;
+        FileName := 'Livepayment-file-' + NewString + '-' + MonthName + Format(Year) + '.xls';
+
         TempExcelBuffer.CreateNewBook('CMS');
         TempExcelBuffer.WriteSheet('CMS', CompanyName, UserId);
         TempExcelBuffer.CloseBook();
@@ -180,6 +180,36 @@ codeunit 50006 CMSFileMgt
         TempBlob.CreateInStream(CSVInStream);
         DownloadFromStream(CSVInStream, '', '', '', FileName)
     end;
+
+    procedure ConvertToTitleCase(InputString: Text[50]): Text[50]
+    var
+        TempString: Text[50];
+        CurrentWord: Text[50];
+        Result: Text[50];
+        i: Integer;
+        Position: Integer;
+    begin
+        TempString := InputString;
+        Result := '';
+        Position := StrPos(TempString, ' ');
+
+        while Position > 0 do begin
+            CurrentWord := CopyStr(TempString, 1, Position - 1); // Extract the word
+            if StrLen(CurrentWord) > 0 then
+                CurrentWord := UpperCase(CopyStr(CurrentWord, 1, 1)) + LowerCase(CopyStr(CurrentWord, 2)); // Title case
+
+            Result := Result + CurrentWord + ' ';
+            TempString := DelStr(TempString, 1, Position); // Remove the processed word
+            Position := StrPos(TempString, ' ');
+        end;
+
+        // Process the last word
+        if StrLen(TempString) > 0 then
+            Result := Result + UpperCase(CopyStr(TempString, 1, 1)) + LowerCase(CopyStr(TempString, 2));
+
+        exit(Result);
+    end;
+
 
     local procedure CalculateTotalGenJnlLineAmount(GenJnlLine: Record "Gen. Journal Line"): Decimal
     var
