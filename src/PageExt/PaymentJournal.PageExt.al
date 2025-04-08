@@ -23,18 +23,22 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
             field(Narration; Rec.Narration)
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Narration field.';
             }
             field("Employee Name"; Rec."Employee Name")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Employee Name field.';
             }
             field("Beneficiary Code"; Rec."Beneficiary Code")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Beneficiary Code field.';
             }
             field("Payee Name"; Rec."Payee Name")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Payee Name field.';
             }
         }
         modify("Gen. Bus. Posting Group")
@@ -175,7 +179,17 @@ pageextension 50007 PaymentJournal extends "Payment Journal"
                 end;
             }
 
-
+            action(ExportCMSFile)
+            {
+                ApplicationArea = All;
+                Caption = 'Export CMS File';
+                Ellipsis = true;
+                Image = Export;
+                Promoted = true;
+                PromotedCategory = Process;
+                RunObject = Codeunit CMSFileMgt;
+                ToolTip = 'Executes the Export CMS File action.';
+            }
         }
 
     }
