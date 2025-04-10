@@ -48,6 +48,12 @@ pageextension 50010 BankAccountCard extends "Bank Account Card"
                 {
                     ApplicationArea = All;
                 }
+                field(MyField; Rec.Loc)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Loc';
+                    ToolTip = 'Specifies the value of the Loc field.';
+                }
             }
         }
     }
