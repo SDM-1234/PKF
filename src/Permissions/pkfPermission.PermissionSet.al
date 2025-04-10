@@ -2,6 +2,7 @@
 /// Unknown PKFPermisionsSet.
 /// </summary>
 namespace PKFPermisionsSet;
+
 using PKF.PKF;
 
 permissionset 50000 "pkf_Permission"
@@ -74,5 +75,22 @@ permissionset 50000 "pkf_Permission"
         report "Responsible Person-wise" = X,
         report "RTGS Report" = X,
         report "RTGS Report Posted" = X,
-        page EmailParamers = X;
+        page EmailParamers = X,
+        tabledata "Payment Posting Buffer" = RIMD,
+        table "Payment Posting Buffer" = X,
+        report "Challan Book" = X,
+        report "Credit Memo Fee GST" = X,
+        report "Expense Invoice GST" = X,
+        report "Indian BanK - Single Line" = X,
+        report "Pre Sales Invoice GST" = X,
+        report "Purchase Order" = X,
+        report "Sales Invoice GST" = X,
+        report "Sales Invoice GST SEZ" = X,
+        report "Sales Register Extraction" = X,
+        report UpdateCLE = X,
+        report UpdatePostedSalesInvoice = X,
+        codeunit "Amount To Customer" = X,
+        codeunit AmountToWords = X,
+        codeunit "API Consumer E-Invoicing" = X,
+        page "LUT/ARN Card" = X;
 }

@@ -47,6 +47,10 @@ tableextension 50025 BankAccount extends "Bank Account"
             Description = 'Santosh';
             ToolTip = 'Specifies the value of the Invoice Hide field.', Comment = '%';
         }
+        field(60000; Loc; Code[10])
+        {
+            DataClassification = ToBeClassified;
+        }
     }
 }
 
