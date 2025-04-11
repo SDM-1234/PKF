@@ -1,4 +1,4 @@
-codeunit 50006 "Payemnt Posting Mgt"
+codeunit 50007 "Payemnt Posting Mgt"
 {
     trigger OnRun()
     begin
