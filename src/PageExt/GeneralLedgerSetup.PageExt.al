@@ -32,6 +32,44 @@ pageextension 50004 GeneralLedgerSetup extends "General Ledger Setup"
                 }
             }
         }
+        addlast(content)
+        {
+            group(AutoPaymentPosting)
+            {
+                Caption = 'Auto Payment Posting';
+                field("Payment Posting Template"; Rec."Payment Posting Template")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Auto Payment Posting field.';
+                }
+                field("Payment Posting Batch"; Rec."Payment Posting Batch")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Auto Payment Posting field.';
+                }
+                field("Payment Posting TDS Acc"; Rec."Payment Posting TDS Acc")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Auto Payment Posting field.';
+                }
+                field("Payment Posting Type"; Rec."Payment Posting Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Auto Payment Posting field.';
+                }
+                field(MyField; Rec."Round off Variance")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Round off Variance';
+                    ToolTip = 'Specifies the value of the Round off Variance field.';
+                }
+                field("Round Off Account"; Rec."Round Off Account")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Round Off Account field.';
+                }
+            }
+        }
     }
     actions
     {
