@@ -2,11 +2,7 @@
   "id": "1b8f128b-fa06-4a89-9cb4-52a46589b7de",
   "name": "PKFBaseapp",
   "publisher": "PKF",
-<<<<<<< HEAD
-  "version": "1.0.0.101",
-=======
-  "version": "1.0.0.102",
->>>>>>> bbf9ef0855de1adf9e3a3d291eb12a316e5f92d5
+  "version": "1.0.0.103",
   "brief": "",
   "description": "",
   "privacyStatement": "",

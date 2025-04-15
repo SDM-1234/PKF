@@ -18,5 +18,7 @@ tableextension 50032 SalesLine extends "Sales Line"
         {
         }
     }
+
+
 }
 
