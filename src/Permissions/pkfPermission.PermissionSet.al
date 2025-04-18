@@ -93,5 +93,8 @@ permissionset 50000 "pkf_Permission"
         codeunit "Amount To Customer" = X,
         codeunit AmountToWords = X,
         codeunit "API Consumer E-Invoicing" = X,
-        page "LUT/ARN Card" = X;
+        page "LUT/ARN Card" = X,
+        codeunit "Payemnt Posting Mgt" = X,
+        codeunit "PKF Portal Web Services" = X,
+        page "Payment Posting Buffer" = X;
 }
