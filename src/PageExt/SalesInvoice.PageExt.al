@@ -336,7 +336,7 @@ pageextension 50093 SalesInvoice extends "Sales Invoice"
                         end;
                     until TaxTrnasactionValue.Next() = 0;
                 if GSTAmountByLineNo = 0 then
-                    Error('GST Amount is not calculated for this line %1. Please check the GST Calculation', SalesLine1."Line No.");
+                    Error('GST Amount is missing for Document No. %1, Line No. %2. Please verify the GST calculation.', SalesLine1."Document No.", SalesLine1."Line No.");
             until SalesLine1.Next() = 0;
     end;
 }
