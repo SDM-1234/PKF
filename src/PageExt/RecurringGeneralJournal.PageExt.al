@@ -52,6 +52,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             {
                 ApplicationArea = all;
                 Editable = false;
+                ToolTip = 'Specifies the value of the Line No. field.', Comment = '%';
             }
         }
         addafter(Description)
@@ -59,10 +60,12 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             field("Payee Name"; Rec."Payee Name")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Payee Name field.';
             }
             field("Beneficiary Code"; Rec."Beneficiary Code")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Beneficiary Code field.';
             }
         }
         addafter("Shortcut Dimension 1 Code")
@@ -70,6 +73,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             field("Employee Name"; Rec."Employee Name")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Employee Name field.';
             }
         }
         addafter(ShortcutDimCode3)
@@ -77,6 +81,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             field("Sales Name"; Rec."Sales Name")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Sales Name field.';
             }
         }
         addafter("Bank Payment Type")
@@ -84,10 +89,12 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             field("Cheque No."; Rec."Cheque No.")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Cheque No. field.';
             }
             field("Cheque Date"; Rec."Cheque Date")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Cheque Date field.';
             }
         }
         addafter("Expiration Date")
@@ -95,6 +102,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             field(Narration; Rec.Narration)
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the value of the Narration field.';
             }
         }
         addafter(Control1)
@@ -102,10 +110,12 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             field("Bal. Account Type"; Rec."Bal. Account Type")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the code for the balancing account type that should be used in this journal line.';
             }
             field("Bal. Account No."; Rec."Bal. Account No.")
             {
                 ApplicationArea = All;
+                ToolTip = 'Specifies the number of the general ledger, customer, vendor, or bank account to which a balancing entry for the journal line will posted (for example, a cash account for cash purchases).';
             }
         }
         addafter(Amount)
@@ -133,6 +143,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 ApplicationArea = All;
                 Caption = 'Indian Bank Cheque';
                 Image = Print;
+                ToolTip = 'Executes the Indian Bank Cheque action.';
                 //Promoted = true;
                 //PromotedCategory = New;
                 //PromotedIsBig = true;
@@ -150,6 +161,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 ApplicationArea = All;
                 Caption = 'Bank Payment Voucher';
                 Image = Print;
+                ToolTip = 'Executes the Bank Payment Voucher action.';
                 //Promoted = true;
                 //PromotedCategory = New;
                 //PromotedIsBig = true;
@@ -168,6 +180,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 ApplicationArea = All;
                 Caption = 'Indian Bank - Multiple Line Printing';
                 Image = Print;
+                ToolTip = 'Executes the Indian Bank - Multiple Line Printing action.';
                 //Promoted = true;
                 //PromotedCategory = New;
                 //PromotedIsBig = true;
@@ -186,6 +199,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
             action("Print RTGS Report")
             {
                 ApplicationArea = All;
+                ToolTip = 'Executes the Print RTGS Report action.';
                 //Promoted = true;
                 //PromotedCategory = "Report";
                 //PromotedIsBig = true;
@@ -218,6 +232,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 //PromotedCategory = Process;
                 RunObject = Codeunit "Gen. Jnl.-Apply";
                 ShortCutKey = 'Shift+F11';
+                ToolTip = 'Executes the ApplyEntries action.';
             }
 
             action(ExportCMSFile)
@@ -229,15 +244,7 @@ pageextension 50076 RecurringGeneralJournal extends "Recurring General Journal"
                 Promoted = true;
                 PromotedCategory = Process;
                 RunObject = Codeunit CMSFileMgt;
-                //Visible = false;
-                //ShortCutKey = 'Shift+E';
-
-                //     trigger OnAction()
-                //     var
-                //         CMSFileMgt: Codeunit CMSFileMgt;
-                //     begin
-                //         CMSFileMgt.Run(Rec)
-                //     end;
+                ToolTip = 'Executes the Export CMS File action.';
             }
 
 

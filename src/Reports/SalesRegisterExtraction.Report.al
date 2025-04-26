@@ -149,8 +149,6 @@ report 50090 "Sales Register Extraction"
                 VarText1 := COPYSTR(VarText, 4, 2);
                 VarText2 := COPYSTR(VarText, 7, 4);
 
-
-
                 case VarText1 of
                     '01':
                         VarText3 := 'JAN-';

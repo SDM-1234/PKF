@@ -547,7 +547,7 @@ report 50004 "Sales Invoice GST SEZ"
             END;
 
 
-        IF CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' THEN begin
+        if CompanyInformation.Name = 'PKF PROSERV PVT. LTD.' then begin
             CompanyLogoVisible := True;
             IF "Sales Invoice Header"."Location Code" = 'MUM' THEN BEGIN
                 VarText[10] := 'Bank Details:';
@@ -560,18 +560,19 @@ report 50004 "Sales Invoice GST SEZ"
                 VarText[7] := '';
                 VarText[8] := '';
                 VarText[9] := '';
-            END ELSE IF "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
-                VarText[10] := 'Bank Details:';
-                VarText[1] := 'Bank Account No. 000105006757';
-                VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
-                VarText[3] := 'Bank: ICICI BANK';
-                VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
-                VarText[5] := 'IFSC: ICIC0000001';
-                VarText[6] := 'SWIFT Code: ICICNBBCTS';
-                VarText[7] := '';
-                VarText[8] := '';
-                VarText[9] := '';
-            END;
+            end else
+                if "Sales Invoice Header"."Location Code" = 'CHN' THEN BEGIN
+                    VarText[10] := 'Bank Details:';
+                    VarText[1] := 'Bank Account No. 000105006757';
+                    VarText[2] := 'A/c Name: PKF PROSERV PRIVATE LIMITED';
+                    VarText[3] := 'Bank: ICICI BANK';
+                    VarText[4] := 'Branch: CENOTAPH ROAD, CHENNAI';
+                    VarText[5] := 'IFSC: ICIC0000001';
+                    VarText[6] := 'SWIFT Code: ICICNBBCTS';
+                    VarText[7] := '';
+                    VarText[8] := '';
+                    VarText[9] := '';
+                END;
         end;
         //ZOHO.RSF.1471[-]
         case "Sales Invoice Header"."Bank Selection For Report" of
