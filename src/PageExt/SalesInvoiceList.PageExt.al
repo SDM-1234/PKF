@@ -49,7 +49,7 @@ pageextension 50151 SalesInvoiceList extends "Sales Invoice List"
                     SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Invoice);
                     if SalesHeader.FindSet() then
                         repeat
-                            SalesCalcDiscountByType.ResetRecalculateInvoiceDisc(Rec);
+                            SalesCalcDiscountByType.ResetRecalculateInvoiceDisc(SalesHeader);
                         until SalesHeader.Next() = 0;
                     SessionSettings.Init();
                     SessionSettings.RequestSessionUpdate(false);
