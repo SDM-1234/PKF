@@ -44,16 +44,11 @@ pageextension 50151 SalesInvoiceList extends "Sales Invoice List"
                 var
                     SalesHeader: Record "Sales Header";
                     SalesCalcDiscountByType: Codeunit "Sales - Calc Discount By Type";
-                    SalesStat: Page "Sales Statistics";
                     SessionSettings: SessionSettings;
                 begin
                     SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Invoice);
                     if SalesHeader.FindSet() then
                         repeat
-                            Commit();
-                            Clear(SalesStat);
-                            Rec.PrepareOpeningDocumentStatistics();
-                            SalesStat.Run();
                             SalesCalcDiscountByType.ResetRecalculateInvoiceDisc(Rec);
                         until SalesHeader.Next() = 0;
                     SessionSettings.Init();
