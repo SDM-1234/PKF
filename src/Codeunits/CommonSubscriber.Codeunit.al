@@ -85,4 +85,17 @@ codeunit 50100 "Common Subscriber"
 
         exit(Confirmed);
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", OnSetUpNewLineOnBeforeSetBalAccount, '', false, false)]
+    local procedure "Gen. Journal Line_OnSetUpNewLineOnBeforeSetBalAccount"(var GenJournalLine: Record "Gen. Journal Line"; LastGenJournalLine: Record "Gen. Journal Line"; var Balance: Decimal; var IsHandled: Boolean; GenJnlTemplate: Record "Gen. Journal Template"; GenJnlBatch: Record "Gen. Journal Batch"; BottomLine: Boolean; var Rec: Record "Gen. Journal Line"; CurrentFieldNo: Integer)
+    begin
+        case GenJnlTemplate.Type of
+            GenJnlTemplate.Type::Payments:
+                begin
+                    Rec."Account Type" := LastGenJournalLine."Account Type";
+                    Rec."Document Type" := LastGenJournalLine."Document Type";
+                end;
+        end;
+    end;
+
 }
