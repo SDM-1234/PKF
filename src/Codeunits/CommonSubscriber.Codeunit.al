@@ -47,19 +47,19 @@ codeunit 50100 "Common Subscriber"
         InputDate: Date;
         IsConfirmed: Boolean;
     begin
-        // Call a helper procedure to get the date input from the user
-        IsConfirmed := GetReversalPostingDate(InputDate);
+        // // Call a helper procedure to get the date input from the user
+        // IsConfirmed := GetReversalPostingDate(InputDate);
 
-        if IsConfirmed then begin
-            // Update the ReversalEntry with the provided date
-            ReversalEntry."Posting Date" := InputDate;
+        // if IsConfirmed then begin
+        //     // Update the ReversalEntry with the provided date
+        //     ReversalEntry."Posting Date" := InputDate;
 
-            // Commit the changes if necessary
-            //Commit();
+        //     // Commit the changes if necessary
+        //     //Commit();
 
-            Message('Reversal Posting Date updated to: %1', InputDate);
-        end else
-            Error('Reversal process canceled by the user.');
+        //     Message('Reversal Posting Date updated to: %1', InputDate);
+        // end else
+        //     Error('Reversal process canceled by the user.');
     end;
 
     // Helper procedure to get the date input from the user
