@@ -47,39 +47,39 @@ codeunit 50100 "Common Subscriber"
         InputDate: Date;
         IsConfirmed: Boolean;
     begin
-        // Prompt the user for a date using a temporary page
-        IsConfirmed := GetInputDate(InputDate);
+        // Call a helper procedure to get the date input from the user
+        IsConfirmed := GetReversalPostingDate(InputDate);
 
         if IsConfirmed then begin
+            // Update the ReversalEntry with the provided date
             ReversalEntry."Posting Date" := InputDate;
-            GenJournalLine."Posting Date" := InputDate;
-            GlEntry."Posting Date" := InputDate;
+
+            // Commit the changes if necessary
+            //Commit();
+
+            Message('Reversal Posting Date updated to: %1', InputDate);
         end else
-            Error('Posting canceled by the user.');
+            Error('Reversal process canceled by the user.');
     end;
 
-    // Helper procedure to open a temporary page for date input
-    local procedure GetInputDate(var InputDate: Date): Boolean
+    // Helper procedure to get the date input from the user
+    local procedure GetReversalPostingDate(var InputDate: Date): Boolean
     var
         InputPage: Page "Date Input Page";
-        TempInputRecord: Record "Input Temp Table"; // Temporary table to store the date
         Confirmed: Boolean;
     begin
-        // Initialize the temporary record
-        TempInputRecord.Init();
-        TempInputRecord."Input Date" := InputDate;
-        TempInputRecord.Insert(true);
+        Commit();
+        // Set the initial date value (optional)
+        InputPage.SetDate(InputDate);
 
-        // Set the temporary record as the source table for the page
-        InputPage.SetTableView(TempInputRecord);
+        // Open the page modally
+        if InputPage.RunModal() = Action::OK then begin
+            commit();
 
-        // Open the page (non-modal)
-        InputPage.Run();
-        InputPage.close();
-        // Retrieve the input date after the page is closed
-        if TempInputRecord.FindFirst() then begin
-            InputDate := TempInputRecord."Input Date";
+            // Retrieve the date entered by the user
+            InputDate := InputPage.GetDate();
             Confirmed := true;
+            //commit();
         end else
             Confirmed := false;
 

@@ -64,6 +64,7 @@ report 50001 "Proforma Invoice"
             {
             }
             column(CompanyLogoVisible; CompanyLogoVisible) { }
+            column(FaxFieldsVisible; FaxFieldsVisible) { }
 
             column(Comp_Add; CompanyInformation.Address)
             {
@@ -467,6 +468,7 @@ report 50001 "Proforma Invoice"
         StateName: Text[50];
         CountryName: Text[50];
         CompanyLogoVisible: Boolean;
+        FaxFieldsVisible: Boolean;
 
         LocGstNo: Code[20];
         PayTermsDesc: Text[100];
@@ -616,6 +618,7 @@ report 50001 "Proforma Invoice"
 
         IF CompanyInformation.Name = 'PKF CONSULTING SERVICES LLP' THEN BEGIN
             CompanyLogoVisible := true;
+            FaxFieldsVisible := true;
 
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 003605006317';

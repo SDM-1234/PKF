@@ -81,6 +81,7 @@ report 50011 "Pre Sales Invoice GST"
             {
             }
             column(CompanyLogoVisible; CompanyLogoVisible) { }
+            column(FaxFieldsVisible; FaxFieldsVisible) { }
 
             column(Comp_FaxNo; CompanyInformation."Fax No.")
             {
@@ -509,6 +510,7 @@ report 50011 "Pre Sales Invoice GST"
         LUTARNNo: Code[50];
         LUTARN: Record "LUT / ARN Master";
         CompanyLogoVisible: Boolean;
+        FaxFieldsVisible: Boolean;
 
         PayCode: Text[20];
         SalesPersonName: Text[50];
@@ -729,6 +731,7 @@ report 50011 "Pre Sales Invoice GST"
 
         IF CompanyInformation.Name = 'PKF CONSULTING SERVICES LLP' THEN BEGIN
             CompanyLogoVisible := True;
+            FaxFieldsVisible := true;
 
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 003605006317';

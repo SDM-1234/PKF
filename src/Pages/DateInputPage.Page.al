@@ -41,4 +41,16 @@ page 50101 "Date Input Page"
             }
         }
     }
+    var
+        TempDate: Date;
+
+    procedure SetDate(NewDate: Date)
+    begin
+        TempDate := NewDate;
+    end;
+
+    procedure GetDate(): Date
+    begin
+        exit(TempDate);
+    end;
 }

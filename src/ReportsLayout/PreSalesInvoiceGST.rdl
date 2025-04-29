@@ -3169,6 +3169,9 @@ End Function
         <Field Name="CompanyLogoVisible">
           <DataField>CompanyLogoVisible</DataField>
         </Field>
+        <Field Name="FaxFieldsVisible">
+          <DataField>FaxFieldsVisible</DataField>
+        </Field>
         <Field Name="Comp_FaxNo">
           <DataField>Comp_FaxNo</DataField>
         </Field>

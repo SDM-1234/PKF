@@ -6,7 +6,7 @@ table 50101 "Input Temp Table"
     {
         field(1; "Input Date"; Date)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = CustomerContent;
         }
     }
 }

@@ -57,6 +57,7 @@ report 50016 "Credit Memo Fee GST"
             {
             }
             column(CompanyLogoVisible; CompanyLogoVisible) { }
+            column(FaxFieldsVisible; FaxFieldsVisible) { }
 
             column(Comp_Add; CompanyInformation.Address)
             {
@@ -460,6 +461,7 @@ report 50016 "Credit Memo Fee GST"
         ServiceTax: Decimal;
         SBTax: Decimal;
         CompanyLogoVisible: Boolean;
+        FaxFieldsVisible: Boolean;
 
         KKCTax: Decimal;
         SubTotal: Decimal;
