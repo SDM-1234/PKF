@@ -306,20 +306,17 @@ report 50003 "Purchase Order"
                 ELSE
                     RecPhone := '';
 
-                IF RecLocation."Fax No." <> '' THEN
-                    RecFax := ', Fax No.: ' + RecLocation."Fax No."
-                ELSE
-                    RecFax := '';
+                IF CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP' THEN
+                    IF RecLocation."Fax No." <> '' THEN
+                        RecFax := ', Fax No.: ' + RecLocation."Fax No."
+                    ELSE
+                        RecFax := '';
 
                 IF "Purchase Header"."Currency Code" = '' THEN
                     CurrencyCode := 'INR'
                 ELSE
                     CurrencyCode := "Currency Code";
 
-                IF RecLocation."Fax No." <> '' THEN
-                    LocFax := ', Fax No. '
-                ELSE
-                    LocFax := '';
 
                 CLEAR(LocGstNo);
                 IF "Location Code" <> '' THEN BEGIN

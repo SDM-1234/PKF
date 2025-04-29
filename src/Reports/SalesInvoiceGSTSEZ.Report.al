@@ -81,7 +81,6 @@ report 50004 "Sales Invoice GST SEZ"
             {
             }
             column(CompanyLogoVisible; CompanyLogoVisible) { }
-            column(FaxFieldsVisible; FaxFieldsVisible) { }
 
             column(Comp_Picture; CompanyInformation.Picture)
             {
@@ -369,10 +368,11 @@ report 50004 "Sales Invoice GST SEZ"
                 ELSE
                     RecPhone := '';
 
-                IF RecLocation."Fax No." <> '' THEN
-                    RecFax := ', Fax No.: ' + RecLocation."Fax No."
-                ELSE
-                    RecFax := '';
+                IF CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP' THEN
+                    IF RecLocation."Fax No." <> '' THEN
+                        RecFax := ', Fax No.: ' + RecLocation."Fax No."
+                    ELSE
+                        RecFax := '';
 
                 IF "Sales Invoice Header"."Currency Code" = '' THEN
                     CurrencyCode := 'INR'
@@ -475,7 +475,6 @@ report 50004 "Sales Invoice GST SEZ"
         ServiceTax: Decimal;
         SBTax: Decimal;
         CompanyLogoVisible: Boolean;
-        FaxFieldsVisible: Boolean;
 
         KKCTax: Decimal;
         SubTotal: Decimal;
@@ -483,7 +482,6 @@ report 50004 "Sales Invoice GST SEZ"
         AmountInWords: array[2] of Text[80];
         CatofSer: Text;
         IsRent: Boolean;
-        //ServTaxRegRec: Record "Service Tax Registration Nos.";
         VarText: array[10] of Text;
         IsDuplicate: Boolean;
         DuplicateCap: Text;
@@ -726,8 +724,6 @@ report 50004 "Sales Invoice GST SEZ"
 
         IF CompanyInformation.Name = 'PKF CONSULTING SERVICES LLP' THEN BEGIN
             CompanyLogoVisible := true;
-            FaxFieldsVisible := true;
-
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 003605006317';
             VarText[2] := 'A/c Name: PKF CONSULTING SERVICES LLP';

@@ -357,6 +357,7 @@ report 50011 "Pre Sales Invoice GST"
             begin
                 RecLocation.GET("Location Code");
                 Customer.GET("Bill-to Customer No.");
+
                 BankDetails();
 
                 IF RecLocation."Phone No." <> '' THEN
@@ -364,20 +365,17 @@ report 50011 "Pre Sales Invoice GST"
                 ELSE
                     RecPhone := '';
 
-                IF RecLocation."Fax No." <> '' THEN
-                    RecFax := ', Fax No.: ' + RecLocation."Fax No."
-                ELSE
-                    RecFax := '';
+
+                IF CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP' THEN
+                    IF RecLocation."Fax No." <> '' THEN
+                        RecFax := ', Fax No.: ' + RecLocation."Fax No."
+                    ELSE
+                        RecFax := '';
 
                 IF "Sales Header"."Currency Code" = '' THEN
                     CurrencyCode := 'INR'
                 ELSE
                     CurrencyCode := "Currency Code";
-
-                IF RecLocation."Fax No." <> '' THEN
-                    LocFax := ', Fax No. '
-                ELSE
-                    LocFax := '';
 
                 CLEAR(MSMENo);
                 CLEAR(LocGstNo);

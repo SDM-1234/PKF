@@ -75,7 +75,6 @@ report 50010 "Sales Invoice GST"
             {
             }
             column(CompanyLogoVisible; CompanyLogoVisible) { }
-            column(FaxFieldsVisible; FaxFieldsVisible) { }
 
             column(Comp_Add; CompanyInformation.Address)
             {
@@ -389,10 +388,11 @@ report 50010 "Sales Invoice GST"
                 ELSE
                     RecPhone := '';
 
-                IF RecLocation."Fax No." <> '' THEN
-                    RecFax := ', Fax No.: ' + RecLocation."Fax No."
-                ELSE
-                    RecFax := '';
+                IF CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP' THEN
+                    IF RecLocation."Fax No." <> '' THEN
+                        RecFax := ', Fax No.: ' + RecLocation."Fax No."
+                    ELSE
+                        RecFax := '';
 
 
                 IF "Sales Invoice Header"."Currency Code" = '' THEN
@@ -531,7 +531,6 @@ report 50010 "Sales Invoice GST"
         CountryName: Text[50];
         ReportCaption: Text[100];
         CompanyLogoVisible: Boolean;
-        FaxFieldsVisible: Boolean;
 
         RecLocation: Record Location;
         PayTerms: Record "Payment Terms";
@@ -685,9 +684,6 @@ report 50010 "Sales Invoice GST"
 
         IF CompanyInformation.Name = 'PKF CONSULTING SERVICES LLP' THEN BEGIN
             CompanyLogoVisible := True;
-            FaxFieldsVisible := true;
-
-
             VarText[10] := 'Bank Details:';
             VarText[1] := 'Bank Account No. 003605006317';
             VarText[2] := 'A/c Name: PKF CONSULTING SERVICES LLP';

@@ -742,7 +742,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>="Phone No. " + First(Fields!RecLoc_Phone.Value, "DataSet_Result") + "," + "Fax No. " + First(Fields!RecLoc_Fax.Value, "DataSet_Result")</Value>
+                      <Value>=First(Fields!RecLoc_Phone.Value, "DataSet_Result") + "," + First(Fields!RecLoc_Fax.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>9pt</FontSize>
                         <FontWeight>Bold</FontWeight>
