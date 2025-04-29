@@ -511,7 +511,9 @@
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>HSNSACCode_SalesLine</rd:DefaultName>
@@ -525,6 +527,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -662,7 +665,7 @@
       <Width>7.72917in</Width>
       <Page>
         <PageHeader>
-          <Height>3.3125in</Height>
+          <Height>3.42708in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -903,6 +906,7 @@
             </Textbox>
             <Textbox Name="Textbox8">
               <CanGrow>true</CanGrow>
+              <CanShrink>true</CanShrink>
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
@@ -921,7 +925,7 @@
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>1.24167in</Top>
               <Left>1.39931in</Left>
-              <Height>0.28541in</Height>
+              <Height>0.17708in</Height>
               <Width>2.96875in</Width>
               <ZIndex>7</ZIndex>
               <Style>
@@ -1323,6 +1327,10 @@
                 <Border>
                   <Style>None</Style>
                 </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
               </Style>
             </Textbox>
             <Textbox Name="Textbox21">
@@ -1416,6 +1424,10 @@
                 <Border>
                   <Style>None</Style>
                 </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
               </Style>
             </Textbox>
             <Textbox Name="Textbox24">

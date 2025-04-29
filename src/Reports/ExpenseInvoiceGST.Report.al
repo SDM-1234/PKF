@@ -369,10 +369,11 @@ report 50012 "Expense Invoice GST"
                 ELSE
                     RecPhone := '';
 
-                IF RecLocation."Fax No." <> '' THEN
-                    RecFax := ', Fax No.: ' + RecLocation."Fax No."
-                ELSE
-                    RecFax := '';
+                If CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP' THEN
+                    IF RecLocation."Fax No." <> '' THEN
+                        RecFax := ', Fax No.: ' + RecLocation."Fax No."
+                    ELSE
+                        RecFax := '';
 
                 IF "Sales Invoice Header"."Currency Code" = '' THEN
                     CurrencyCode := 'INR'
