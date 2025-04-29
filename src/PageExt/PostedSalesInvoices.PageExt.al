@@ -58,6 +58,51 @@ pageextension 50037 PostedSalesInvoices extends "Posted Sales Invoices"
             }
         }
     }
+    actions
+    {
+        addafter(Statistics)
+        {
+            fileuploadaction(BulkAttachment)
+            {
+                ApplicationArea = All;
+                Caption = 'Upload Bulk Attachments';
+                ToolTip = 'Upload Bulk Attachments';
+                AllowMultipleFiles = true;
+                AllowedFileExtensions = '.pdf';
+                Image = Import;
+                trigger OnAction(Files: List of [FileUpload])
+                var
+                    SalesInv: Record "Sales Invoice Header";
+                    DocAttach: Record "Document Attachment";
+                    RecRef: RecordRef;
+                    CurrentFile: FileUpload;
+                    TempInStream: InStream;
+                    FileName: Text;
+                begin
+                    foreach CurrentFile in Files do begin
+                        FileName := CopyStr(ConvertStr(CurrentFile.FileName, '_', '/'), 1, StrLen(CurrentFile.FileName) - 4);
+                        Message('FileName: %1', FileName);
+                        if SalesInv.Get(FileName) then begin
+                            CurrentFile.CreateInStream(TempInStream, TEXTENCODING::UTF8);
+                            DocAttach.Init();
+                            DocAttach.ID := 0;
+                            RecRef.Open(Database::"Sales Invoice Header");
+                            RecRef.GetBySystemId(SalesInv.SystemId);
+                            DocAttach.SaveAttachmentFromStream(TempInStream, RecRef, CurrentFile.FileName, true);
+                            RecRef.Close();
+                        end;
+                    end;
+                end;
+            }
+        }
+        addlast(Category_Category4)
+        {
+            actionref(BulkAttachment_Promoted; BulkAttachment)
+            {
+            }
+        }
+    }
+
 
     var
         DCLE: Record "Detailed Cust. Ledg. Entry";

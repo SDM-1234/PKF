@@ -5,10 +5,11 @@ report 50016 "Credit Memo Fee GST"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
     Caption = 'Credit Memo';
-
+    Permissions = tabledata "Sales Cr.Memo Header" = RM;
     dataset
     {
-        dataitem("Sales Cr.Memo Header"; "Sales Cr.Memo Header")
+        dataitem("Sales Cr.Memo Header";
+        "Sales Cr.Memo Header")
         {
             RequestFilterFields = "No.";
             column(Document_No; "Sales Cr.Memo Header"."No.")
@@ -344,8 +345,9 @@ report 50016 "Credit Memo Fee GST"
                 //
                 CalcFields("QR Code");
                 if ("IRN Hash" <> '') and (not "QR Code".HasValue) then begin
-                    EInvoiceReq.SetRange("Document Type", EInvoiceReq."Document Type"::"Sale Cr. Memo");
+                    //EInvoiceReq.SetRange("Document Type", EInvoiceReq."Document Type"::"Sale Cr. Memo");
                     EInvoiceReq.SetRange("Document No.", "No.");
+                    EInvoiceReq.SetRange("IRN No.", "IRN Hash");
                     if EInvoiceReq.FindFirst() then begin
                         RecRef.GetTable("Sales Cr.Memo Header");
                         QRGenerator.GenerateQRCodeImage(EInvoiceReq."Signed QR Code" + EInvoiceReq."Signed QR Code2"

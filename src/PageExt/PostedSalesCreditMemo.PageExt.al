@@ -20,7 +20,7 @@ pageextension 50031 PostedSalesCreditMemo extends "Posted Sales Credit Memo"
                 Caption = 'GST Fee Credit Memo';
                 Image = CreditMemo;
                 Promoted = true;
-                PromotedCategory = New;
+                PromotedCategory = Report;
                 ToolTip = 'Executes the GST Fee Credit Memo action.';
                 ApplicationArea = All;
 

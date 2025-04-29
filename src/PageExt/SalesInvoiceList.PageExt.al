@@ -31,6 +31,31 @@ pageextension 50151 SalesInvoiceList extends "Sales Invoice List"
     }
     actions
     {
+        addafter(Statistics)
+        {
+            action(BulkStatistics)
+            {
+                ApplicationArea = All;
+                Caption = 'BUlk Statistics';
+                Image = Statistics;
+                ToolTip = 'View statistical information, such as the value of posted entries, for the record.';
+
+                trigger OnAction()
+                var
+                    SalesHeader: Record "Sales Header";
+                    SalesCalcDiscountByType: Codeunit "Sales - Calc Discount By Type";
+                    SessionSettings: SessionSettings;
+                begin
+                    SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Invoice);
+                    if SalesHeader.FindSet() then
+                        repeat
+                            SalesCalcDiscountByType.ResetRecalculateInvoiceDisc(SalesHeader);
+                        until SalesHeader.Next() = 0;
+                    SessionSettings.Init();
+                    SessionSettings.RequestSessionUpdate(false);
+                end;
+            }
+        }
         modify(Post)
         {
             trigger OnBeforeAction()
