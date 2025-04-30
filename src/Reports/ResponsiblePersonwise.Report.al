@@ -112,8 +112,6 @@ report 50005 "Responsible Person-wise"
                     IF ("Posting Date" < 20170107D) THEN
                         SerTxAMT := "Cust. Ledger Entry"."Amount (LCY)" - "Cust. Ledger Entry"."Sales (LCY)";
 
-
-                    //Paid := "Cust. Ledger Entry"."Amount (LCY)" - "Cust. Ledger Entry"."Remaining Amt. (LCY)";
                     VarInvoice := '';
                     RecSalesInvoiceLine.SETRANGE(RecSalesInvoiceLine."Document No.", "Cust. Ledger Entry"."Document No.");
                     RecSalesInvoiceLine.SetFilter(Scope1, '<>%1', '');
@@ -140,39 +138,6 @@ report 50005 "Responsible Person-wise"
                     MONTHNAMEWITHYEAR := '';
 
                     MONTHNAMEWITHYEAR := FORMAT("Posting Date", 0, '<Month Text,3>') + '-' + Format(Date2DMY("Posting Date", 3));
-
-                    // VarText := FORMAT("Posting Date");
-                    // VarText1 := COPYSTR(VarText, 4, 2);
-                    // VarText2 := COPYSTR(VarText, 7, 4);
-
-                    // case VarText1 of
-                    //     '01':
-                    //         VarText3 := 'JAN-';
-                    //     '02':
-                    //         VarText3 := 'FEB-';
-                    //     '03':
-                    //         VarText3 := 'MAR-';
-                    //     '04':
-                    //         VarText3 := 'APR-';
-                    //     '05':
-                    //         VarText3 := 'MAY-';
-                    //     '06':
-                    //         VarText3 := 'JUN-';
-                    //     '07':
-                    //         VarText3 := 'JUL-';
-                    //     '08':
-                    //         VarText3 := 'AUG-';
-                    //     '09':
-                    //         VarText3 := 'SEP-';
-                    //     '10':
-                    //         VarText3 := 'OCT-';
-                    //     '11':
-                    //         VarText3 := 'NOV-';
-                    //     '12':
-                    //         VarText3 := 'DEC-';
-                    // end;
-
-                    // MONTHNAMEWITHYEAR := VarText3 + VarText2;
 
                     VarCGST := 0;
                     VarSGST := 0;
