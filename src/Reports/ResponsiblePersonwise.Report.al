@@ -17,6 +17,7 @@ report 50005 "Responsible Person-wise"
                 DataItemLink = "Salesperson Code" = FIELD("No.");
                 DataItemTableView = SORTING("Entry No.");
                 RequestFilterFields = "Date Filter";
+                CalcFields = Remarks, LOB, "Invoice Types", "Amount (LCY)", "Remaining Amt. (LCY)", Segment;
                 column(Employee_No; Employee."No.")
                 {
                 }
@@ -91,25 +92,17 @@ report 50005 "Responsible Person-wise"
                 }
 
                 trigger OnAfterGetRecord()
+                var
+                    recCommendLine: Record "Sales Comment Line";
+                    RecSalesInvoiceLine: Record "Sales Invoice Line";
+                    RecGST: Record "GST Ledger Entry";
                 begin
-                    CALCFIELDS(Remarks);
-                    CALCFIELDS(LOB);
-                    CALCFIELDS("Invoice Types");
-                    CALCFIELDS("Amount (LCY)");
-                    CALCFIELDS("Remaining Amt. (LCY)");
-                    CALCFIELDS(Segment);
-
-                    IF ("Cust. Ledger Entry"."Due Date" > TODAY) OR ("Cust. Ledger Entry"."Remaining Amt. (LCY)" = 0) THEN
-                        CurrReport.SKIP();
-
-
                     VarTlResName := '';
-                    recCommendLine.RESET();
                     recCommendLine.SETRANGE(recCommendLine."No.", "Cust. Ledger Entry"."Document No.");
                     recCommendLine.SETRANGE(recCommendLine."Document Type", recCommendLine."Document Type"::"Posted Invoice");
                     recCommendLine.SETRANGE(recCommendLine.Type, recCommendLine.Type::Leader);
                     recCommendLine.SETRANGE(recCommendLine."Type Code", Employee."No.");
-                    IF recCommendLine.FINDFIRST() THEN
+                    IF not recCommendLine.IsEmpty THEN
                         VarTlResName := Employee."First Name";
 
 
@@ -122,15 +115,13 @@ report 50005 "Responsible Person-wise"
 
                     //Paid := "Cust. Ledger Entry"."Amount (LCY)" - "Cust. Ledger Entry"."Remaining Amt. (LCY)";
                     VarInvoice := '';
-                    RecSalesInvoiceLine.RESET();
                     RecSalesInvoiceLine.SETRANGE(RecSalesInvoiceLine."Document No.", "Cust. Ledger Entry"."Document No.");
+                    RecSalesInvoiceLine.SetFilter(Scope1, '<>%1', '');
                     IF RecSalesInvoiceLine.FindSet() THEN
                         REPEAT
-                            IF (RecSalesInvoiceLine.Scope1 <> '') THEN BEGIN
-                                VarInvoice := INSSTR(VarInvoice, RecSalesInvoiceLine.Scope1, STRLEN(VarInvoice) + 1);
-                                varSpace := '/';
-                                VarInvoice := INSSTR(VarInvoice, varSpace, STRLEN(VarInvoice) + 1);
-                            END;
+                            VarInvoice := INSSTR(VarInvoice, RecSalesInvoiceLine.Scope1, STRLEN(VarInvoice) + 1);
+                            varSpace := '/';
+                            VarInvoice := INSSTR(VarInvoice, varSpace, STRLEN(VarInvoice) + 1);
                         UNTIL RecSalesInvoiceLine.NEXT() = 0;
 
                     intMonth := DATE2DMY("Cust. Ledger Entry"."Posting Date", 2);
@@ -186,43 +177,32 @@ report 50005 "Responsible Person-wise"
                     VarSGST := 0;
                     VarIGST := 0;
 
-                    RecGST.RESET();
                     RecGST.SETRANGE(RecGST."Document No.", "Cust. Ledger Entry"."Document No.");
                     RecGST.SETRANGE(RecGST."Entry Type", RecGST."Entry Type"::"Initial Entry");
                     RecGST.SETRANGE(RecGST."GST Component Code", 'SGST');
-                    IF RecGST.FINDSET() THEN
+                    IF RecGST.FindFirst() THEN
                         VarSGST := -RecGST."GST Amount";
 
-                    RecGST.RESET();
-                    RecGST.SETRANGE(RecGST."Document No.", "Cust. Ledger Entry"."Document No.");
-                    RecGST.SETRANGE(RecGST."Entry Type", RecGST."Entry Type"::"Initial Entry");
                     RecGST.SETRANGE(RecGST."GST Component Code", 'CGST');
-                    IF RecGST.FINDSET() THEN
+                    IF RecGST.FindFirst() THEN
                         VarCGST := -RecGST."GST Amount";
 
-                    RecGST.RESET();
-                    RecGST.SETRANGE(RecGST."Document No.", "Cust. Ledger Entry"."Document No.");
-                    RecGST.SETRANGE(RecGST."Entry Type", RecGST."Entry Type"::"Initial Entry");
                     RecGST.SETRANGE(RecGST."GST Component Code", 'IGST');
-                    IF RecGST.FINDSET() THEN
+                    IF RecGST.FindFirst() THEN
                         VarIGST := -RecGST."GST Amount";
                 end;
-            }
 
-            trigger OnPreDataItem()
-            begin
-                IF GetEmployeeNo <> '' THEN
-                    SETRANGE(Employee."No.", GetEmployeeNo);
-            end;
+                trigger OnPreDataItem()
+                begin
+                    "Cust. Ledger Entry".SetFilter("Due Date", '<=%1', TODAY);
+                    "Cust. Ledger Entry".SetFilter("Remaining Amt. (LCY)", '<>%1', 0);
+                end;
+            }
         }
     }
 
     var
         CustRec: Record Customer;
-        recCommendLine: Record "Sales Comment Line";
-        RecGST: Record "GST Ledger Entry";
-        RecSalesInvoiceLine: Record "Sales Invoice Line";
-        GetEmployeeNo: Code[20];
         SerTxAMT: Decimal;
         VarCGST: Decimal;
         VarIGST: Decimal;
@@ -238,12 +218,5 @@ report 50005 "Responsible Person-wise"
         VarText3: Text[30];
         VarText: Text[30];
         VarTlResName: Text[30];
-
-
-    procedure SetRecordsVar(SetEmployeeNo: Code[20])
-    begin
-        GetEmployeeNo := SetEmployeeNo;
-    end;
-
 }
 
