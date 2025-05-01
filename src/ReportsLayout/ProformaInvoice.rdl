@@ -3017,9 +3017,6 @@ End Function
         <Field Name="CompanyLogoVisible">
           <DataField>CompanyLogoVisible</DataField>
         </Field>
-        <Field Name="FaxFieldsVisible">
-          <DataField>FaxFieldsVisible</DataField>
-        </Field>
         <Field Name="Comp_Add">
           <DataField>Comp_Add</DataField>
         </Field>

@@ -96,5 +96,8 @@ permissionset 50000 "pkf_Permission"
         page "LUT/ARN Card" = X,
         codeunit "Payemnt Posting Mgt" = X,
         codeunit "PKF Portal Web Services" = X,
-        page "Payment Posting Buffer" = X;
+        page "Payment Posting Buffer" = X,
+        codeunit "Reversal Mgt" = X,
+        codeunit SingleInstance = X,
+        page "Update Narration" = X;
 }

@@ -40,52 +40,6 @@ codeunit 50100 "Common Subscriber"
         GLEntry."Beneficiary Code" := GenJournalLine."Beneficiary Code";
     end;
 
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Reverse", OnReverseOnBeforeStartPosting, '', false, False)]
-    local procedure PKF_OnRunOnAfterConfirmRevereseEntry(var ReversalEntry: Record "Reversal Entry"; var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry")
-    var
-        InputDate: Date;
-        IsConfirmed: Boolean;
-    begin
-        // // Call a helper procedure to get the date input from the user
-        // IsConfirmed := GetReversalPostingDate(InputDate);
-
-        // if IsConfirmed then begin
-        //     // Update the ReversalEntry with the provided date
-        //     ReversalEntry."Posting Date" := InputDate;
-
-        //     // Commit the changes if necessary
-        //     //Commit();
-
-        //     Message('Reversal Posting Date updated to: %1', InputDate);
-        // end else
-        //     Error('Reversal process canceled by the user.');
-    end;
-
-    // Helper procedure to get the date input from the user
-    local procedure GetReversalPostingDate(var InputDate: Date): Boolean
-    var
-        InputPage: Page "Date Input Page";
-        Confirmed: Boolean;
-    begin
-        Commit();
-        // Set the initial date value (optional)
-        InputPage.SetDate(InputDate);
-
-        // Open the page modally
-        if InputPage.RunModal() = Action::OK then begin
-            commit();
-
-            // Retrieve the date entered by the user
-            InputDate := InputPage.GetDate();
-            Confirmed := true;
-            //commit();
-        end else
-            Confirmed := false;
-
-        exit(Confirmed);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", OnSetUpNewLineOnBeforeSetBalAccount, '', false, false)]
     local procedure "Gen. Journal Line_OnSetUpNewLineOnBeforeSetBalAccount"(var GenJournalLine: Record "Gen. Journal Line"; LastGenJournalLine: Record "Gen. Journal Line"; var Balance: Decimal; var IsHandled: Boolean; GenJnlTemplate: Record "Gen. Journal Template"; GenJnlBatch: Record "Gen. Journal Batch"; BottomLine: Boolean; var Rec: Record "Gen. Journal Line"; CurrentFieldNo: Integer)
     begin

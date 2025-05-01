@@ -15,5 +15,7 @@ pageextension 50008 BankAccountLedgerEntries extends "Bank Account Ledger Entrie
                 ApplicationArea = All;
             }
         }
+
+
     }
 }
