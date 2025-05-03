@@ -35,6 +35,10 @@ codeunit 50007 "Payemnt Posting Mgt"
                 BankAcc.SetRange(Loc, PaymentPostBuffer.Loc);
                 if BankAcc.isempty() then
                     PaymentPostBuffer."Error Description" := StrSubstNo('Bank account not found for LOC %1', PaymentPostBuffer.Loc);
+                if (PaymentPostBuffer."Currency Code" = '') and (PaymentPostBuffer."Currency Exchange Rate" <> 0) then
+                    PaymentPostBuffer."Error Description" := 'Currency code not found';
+                if (PaymentPostBuffer."Currency Code" <> '') and (PaymentPostBuffer."Currency Exchange Rate" = 0) then
+                    PaymentPostBuffer."Error Description" := 'Currency exchange rate not found';
                 PaymentPostBuffer."Error" := PaymentPostBuffer."Error Description" <> '';
                 PaymentPostBuffer.Modify();
             until PaymentPostBuffer.Next() = 0;
@@ -77,6 +81,7 @@ codeunit 50007 "Payemnt Posting Mgt"
                     end;
                     DocumentNo := NoSeriesBatch.SimulateGetNextNo(GenJnlBatch."No. Series", PaymentPostBuffer.Date, DocumentNo);
                 end;
+                PaymentPostBuffer."Doc. Ref" := DocumentNo;
                 if Narrarion <> '' then
                     Narrarion := Narrarion + ', ' + PaymentPostBuffer.Reference
                 else
@@ -90,8 +95,8 @@ codeunit 50007 "Payemnt Posting Mgt"
                     CreateJournal(PaymentPostBuffer, AccType::Customer, PaymentPostBuffer."Customer ID", -(PaymentPostBuffer.Total + PaymentPostBuffer.TDS), DocumentNo);
                 CreateJournal(PaymentPostBuffer, AccType::"G/L Account", GlSetup."Payment Posting TDS Acc", PaymentPostBuffer.TDS, DocumentNo);
 
-
                 BankAmount += PaymentPostBuffer.Total;
+                PaymentPostBuffer.Modify();
             until PaymentPostBuffer.Next() = 0;
         if PaymentPostBuffer1.Loc <> '' then begin
             PaymentPostBuffer1.Remarks := Narrarion;
@@ -101,13 +106,17 @@ codeunit 50007 "Payemnt Posting Mgt"
             else
                 Error('Bank account not found for LOC %1', PaymentPostBuffer1.Loc);
         end;
-        Clear(PaymentPostBuffer);
-        PaymentPostBuffer.Reset();
-        PaymentPostBuffer.DeleteAll();
 
         if GlSetup."Payment Posting Type" = GlSetup."Payment Posting Type"::"Create & Post Journal" then
             PostJournal();
+        if GlSetup."Payment Posting Type" = GlSetup."Payment Posting Type"::"Create & Post & Export Journal" then begin
+            PostJournal();
+            ExporttoExcel();
+        end;
 
+        Clear(PaymentPostBuffer);
+        PaymentPostBuffer.Reset();
+        PaymentPostBuffer.DeleteAll();
     end;
 
     local procedure CreateJournal(PaymentPostBuffer: Record "Payment Posting Buffer"; AccType: Enum "Gen. Journal Account Type"; AccNo: Code[20]; Amount: Decimal; DocumentNo: Code[20])
@@ -126,6 +135,10 @@ codeunit 50007 "Payemnt Posting Mgt"
         GenJnlLine.Validate("Document Type", GenJnlLine."Document Type"::Payment);
         GenJnlLine.Validate("Account Type", AccType);
         GenJnlLine.Validate("Account No.", AccNo);
+        if PaymentPostBuffer."Currency Code" <> '' then begin
+            GenJnlLine.Validate("Currency Code", PaymentPostBuffer."Currency Code");
+            GenJnlLine.Validate("Currency Factor", Amount / (Amount * PaymentPostBuffer."Currency Exchange Rate"));
+        end;
         GenJnlLine.Validate("Amount", Amount);
         GenJnlLine.Narration := CopyStr(PaymentPostBuffer.Remarks, 1, 200);
         if AccType = AccType::Customer then begin
@@ -173,6 +186,74 @@ codeunit 50007 "Payemnt Posting Mgt"
         GlSetup.TestField("Payment Posting TDS Acc");
         if GlSetup."Round off Variance" <> 0 then
             GlSetup.TestField("Round Off Account");
+    end;
+
+    local procedure ExportToExcel()
+    var
+        TempExcelBuffer: Record "Excel Buffer" temporary;
+        PaymentPostBuffer: Record "Payment Posting Buffer";
+    begin
+        if PaymentPostBuffer.FindSet() then begin
+            CreateExcelHeader(TempExcelBuffer);
+            repeat
+                TempExcelBuffer.NewRow();
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Serial No.", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.Date, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Date);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.Loc, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Branch Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.FROM, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Customer ID", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Check No.", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Reference", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Invoice Type", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.Amount, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Currency Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Currency Exchange Rate", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."GST Amount", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Bank Charges", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Exchange loss", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.Total, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.TDS, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."GR. Fees", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.RE, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."TDS %", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Doc. Ref", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer.Remarks, false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Employee Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Remaining amount", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
+                TempExcelBuffer.AddColumn(PaymentPostBuffer."Salesperson Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
+            until PaymentPostBuffer.Next() = 0;
+        end;
+    end;
+
+    local procedure CreateExcelHeader(var TempExcelBuffer: Record "Excel Buffer" temporary)
+    begin
+        TempExcelBuffer.NewRow();
+        TempExcelBuffer.AddColumn('Serial No.', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Date', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Loc', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Branch Code', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('FROM', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Customer ID', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Check No.', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Reference', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Invoice Type', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Amount', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Currency Code', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Currency Exchange Rate', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('GST Amount', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Bank Charges', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Exchange loss', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Total', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('TDS', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('GR. Fees', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('RE', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('TDS %', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Doc. Ref', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Remarks', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Employee Code', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Remaining amount', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
+        TempExcelBuffer.AddColumn('Salesperson Code', false, '', true, false, false, '', TempExcelBuffer."Cell Type"::Text);
     end;
 
     var

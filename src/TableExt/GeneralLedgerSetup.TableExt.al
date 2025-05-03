@@ -29,7 +29,7 @@ tableextension 50048 GeneralLedgerSetup extends "General Ledger Setup"
         {
             DataClassification = ToBeClassified;
             Caption = 'Payment Posting Type';
-            OptionMembers = "Create Journal","Create & Post Journal";
+            OptionMembers = "Create Journal","Create & Post Journal","Create & Post & Export Journal";
         }
         field(60004; "Round Off Account"; code[20])
         {

@@ -114,6 +114,16 @@ table 50015 "Payment Posting Buffer"
         {
             Caption = 'Error Description';
         }
+        field(28; "Currency Code"; Code[20])
+        {
+            Caption = 'Currency Code';
+            TableRelation = "Currency";
+        }
+        field(29; "Currency Exchange Rate"; Decimal)
+        {
+            Caption = 'Currency Exchange Rate';
+            DecimalPlaces = 2 : 5;
+        }
     }
     keys
     {

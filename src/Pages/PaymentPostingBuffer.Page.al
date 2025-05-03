@@ -53,6 +53,14 @@ page 50018 "Payment Posting Buffer"
                 {
                     ToolTip = 'Specifies the value of the Amount field.', Comment = '%';
                 }
+                field("Currency Code"; Rec."Currency Code")
+                {
+                    ToolTip = 'Specifies the value of the Currency Code field.', Comment = '%';
+                }
+                field("Currency Exchange Rate"; Rec."Currency Exchange Rate")
+                {
+                    ToolTip = 'Specifies the value of the Currency Exchange Rate field.', Comment = '%';
+                }
                 field("GST Amount"; Rec."GST Amount")
                 {
                     ToolTip = 'Specifies the value of the GST Amount field.', Comment = '%';
