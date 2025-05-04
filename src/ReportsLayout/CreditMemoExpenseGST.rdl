@@ -1962,7 +1962,7 @@
               <Top>1.19271in</Top>
               <Left>0.01145in</Left>
               <Height>0.17708in</Height>
-              <Width>1.82986in</Width>
+              <Width>1.3462in</Width>
               <ZIndex>2</ZIndex>
               <Style>
                 <Border>
@@ -1981,7 +1981,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=last(Fields!AmountInWords_1.Value, "DataSet_Result") + " " + last(Fields!AmountInWords_2.Value, "DataSet_Result")</Value>
+                      <Value>=": "+last(Fields!AmountInWords_1.Value, "DataSet_Result") + " " + last(Fields!AmountInWords_2.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <FontWeight>Normal</FontWeight>
@@ -1993,9 +1993,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>1.19271in</Top>
-              <Left>1.89687in</Left>
+              <Left>1.41321in</Left>
               <Height>0.29166in</Height>
-              <Width>4.60417in</Width>
+              <Width>5.08783in</Width>
               <ZIndex>3</ZIndex>
               <Style>
                 <Border>
@@ -2028,7 +2028,7 @@
               <Top>1.55382in</Top>
               <Left>0.01145in</Left>
               <Height>0.17708in</Height>
-              <Width>1.82986in</Width>
+              <Width>1.3462in</Width>
               <ZIndex>4</ZIndex>
               <Style>
                 <Border>
@@ -2061,7 +2061,7 @@
               <Top>1.72188in</Top>
               <Left>0.01145in</Left>
               <Height>0.17708in</Height>
-              <Width>1.82986in</Width>
+              <Width>1.3462in</Width>
               <ZIndex>5</ZIndex>
               <Style>
                 <Border>
@@ -2094,7 +2094,7 @@
               <Top>1.88646in</Top>
               <Left>0.01145in</Left>
               <Height>0.1875in</Height>
-              <Width>1.82986in</Width>
+              <Width>1.3462in</Width>
               <ZIndex>6</ZIndex>
               <Style>
                 <Border>
@@ -2127,7 +2127,7 @@
               <Top>2.07396in</Top>
               <Left>0.01145in</Left>
               <Height>0.1875in</Height>
-              <Width>1.82986in</Width>
+              <Width>1.3462in</Width>
               <ZIndex>7</ZIndex>
               <Style>
                 <Border>
@@ -2146,7 +2146,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=First(Fields!Remarks_Header.Value, "DataSet_Result")</Value>
+                      <Value>=": "+First(Fields!Remarks_Header.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <FontWeight>Normal</FontWeight>
@@ -2158,9 +2158,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>2.06632in</Top>
-              <Left>1.91076in</Left>
+              <Left>1.41321in</Left>
               <Height>0.2993in</Height>
-              <Width>4.60417in</Width>
+              <Width>5.10172in</Width>
               <ZIndex>8</ZIndex>
               <Style>
                 <Border>
@@ -2179,7 +2179,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=First(Fields!SAC_Desc.Value, "DataSet_Result")</Value>
+                      <Value>=": "+First(Fields!SAC_Desc.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <FontWeight>Normal</FontWeight>
@@ -2191,9 +2191,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>1.54618in</Top>
-              <Left>1.91076in</Left>
+              <Left>1.41321in</Left>
               <Height>0.17708in</Height>
-              <Width>4.59027in</Width>
+              <Width>5.08782in</Width>
               <ZIndex>9</ZIndex>
               <Style>
                 <Border>
@@ -2212,7 +2212,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Last(Fields!ServTaxRegRec_Description.Value, "DataSet_Result")</Value>
+                      <Value>=": "+Last(Fields!ServTaxRegRec_Description.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <FontWeight>Normal</FontWeight>
@@ -2224,9 +2224,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>1.71424in</Top>
-              <Left>1.91076in</Left>
+              <Left>1.41321in</Left>
               <Height>0.17708in</Height>
-              <Width>1.89235in</Width>
+              <Width>2.3899in</Width>
               <ZIndex>10</ZIndex>
               <Style>
                 <Border>
@@ -2245,7 +2245,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=First(Fields!Comp_PAN.Value, "DataSet_Result")</Value>
+                      <Value>=": "+First(Fields!Comp_PAN.Value, "DataSet_Result")</Value>
                       <Style>
                         <FontSize>8pt</FontSize>
                         <FontWeight>Normal</FontWeight>
@@ -2257,9 +2257,9 @@
               </Paragraphs>
               <rd:DefaultName>Textbox5</rd:DefaultName>
               <Top>1.87882in</Top>
-              <Left>1.91076in</Left>
+              <Left>1.41321in</Left>
               <Height>0.1875in</Height>
-              <Width>4.60417in</Width>
+              <Width>5.10172in</Width>
               <ZIndex>11</ZIndex>
               <Style>
                 <Border>
