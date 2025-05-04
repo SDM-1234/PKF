@@ -192,6 +192,10 @@ codeunit 50007 "Payemnt Posting Mgt"
     var
         TempExcelBuffer: Record "Excel Buffer" temporary;
         PaymentPostBuffer: Record "Payment Posting Buffer";
+        TempBlob: Codeunit "Temp Blob";
+        CSVOutStream: OutStream;
+        CSVInStream: InStream;
+        FileName: Text;
     begin
         if PaymentPostBuffer.FindSet() then begin
             CreateExcelHeader(TempExcelBuffer);
@@ -223,6 +227,17 @@ codeunit 50007 "Payemnt Posting Mgt"
                 TempExcelBuffer.AddColumn(PaymentPostBuffer."Remaining amount", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Number);
                 TempExcelBuffer.AddColumn(PaymentPostBuffer."Salesperson Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
             until PaymentPostBuffer.Next() = 0;
+            FileName := 'Receipts_File.xlsx';
+
+            TempExcelBuffer.CreateNewBook('Receipts_File');
+            TempExcelBuffer.WriteSheet('Receipts_File', CompanyName, UserId);
+            TempExcelBuffer.CloseBook();
+
+            TempBlob.CreateOutStream(CSVOutStream);
+            TempExcelBuffer.SaveToStream(CSVOutStream, false);
+
+            TempBlob.CreateInStream(CSVInStream);
+            DownloadFromStream(CSVInStream, '', '', '', FileName)
         end;
     end;
 
