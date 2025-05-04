@@ -369,7 +369,7 @@ report 50012 "Expense Invoice GST"
                 ELSE
                     RecPhone := '';
 
-                If CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP' THEN
+                If (CompanyInformation.Name <> 'PKF CONSULTING SERVICES LLP') OR (CompanyInformation.Name <> 'PKF PROSERV PVT. LTD.') THEN
                     IF RecLocation."Fax No." <> '' THEN
                         RecFax := ', Fax No.: ' + RecLocation."Fax No."
                     ELSE

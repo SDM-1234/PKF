@@ -1,5 +1,3 @@
-
-
 codeunit 50008 "Reversal Mgt"
 {
     Permissions = TableData "Reversal Entry" = RIMD,
@@ -20,14 +18,24 @@ codeunit 50008 "Reversal Mgt"
         PostingDate: Date;
     begin
         Clear(InputDialogPage);
+
+        // Open the dialog page modally
         if InputDialogPage.RunModal() = Action::OK then begin
+            // Retrieve the user's input
             PostingDate := InputDialogPage.GetUserPostingdateInput();
+
+            // Validate the input
             if PostingDate = 0D then
                 Error('Please enter a valid posting date.');
 
+            // Set the posting date in the SingleInstance codeunit
             SingleInstance.SetPostingdate(PostingDate, ReversalEntry."Document No.");
-        end;
+        end else
+            // Handle the case where the user cancels the dialog
+            Error('Reversal process canceled by the user.');
 
+
+        // Additional logic can be added here based on IsConfirmed
     end;
 
     #endregion Setting up UserInput Posting date
