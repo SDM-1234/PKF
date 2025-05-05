@@ -18,13 +18,8 @@ codeunit 50006 CMSFileMgt
 
 
     local procedure CreateCMSHeader()
-    var
-        IsHandled: Boolean;
 
     begin
-        OnBeforeCreateCMSHeader(IsHandled);
-        if IsHandled then
-            exit;
         TempExcelBuffer.NewRow();
         TempExcelBuffer.AddColumn('Debit Ac No', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Beneficiary Ac No', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
@@ -47,7 +42,6 @@ codeunit 50006 CMSFileMgt
         TempExcelBuffer.AddColumn('Add Details 4', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Add Details 5', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         TempExcelBuffer.AddColumn('Remarks', false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
-        OnAfterCreateCMSHeader();
 
     end;
 
@@ -56,13 +50,9 @@ codeunit 50006 CMSFileMgt
         BankAccount: Record "Bank Account";
         Beneficiary: Record Beneficiary;
         BeneficiaryGenJnlLine: Record "Gen. Journal Line";
-        IsHandled: Boolean;
         Executed: Boolean;
         TotalAmount: Decimal;
     begin
-        OnBeforeCreateCMSDetails(IsHandled);
-        if IsHandled then
-            exit;
 
         if Executed = false then begin
             BeneficiaryGenJnlLine.Reset();
@@ -93,7 +83,6 @@ codeunit 50006 CMSFileMgt
             TempExcelBuffer.AddColumn(Beneficiary."Beneficiary IFS Code", false, '', false, false, false, '', TempExcelBuffer."Cell Type"::Text);
         end;
 
-        OnAfterCreateCMSDetails();
     end;
 
 
@@ -101,20 +90,16 @@ codeunit 50006 CMSFileMgt
     local procedure CMSFileExport(GenJnlLine: Record "Gen. Journal Line")
     var
         DetailGenJnlLine: Record "Gen. Journal Line";
+        Dimensionvalue: Record "Dimension Value";
+        GeneralLedgSetup: Record "General Ledger Setup";
         TempBlob: Codeunit "Temp Blob";
         CSVInStream: InStream;
         CSVOutStream: OutStream;
+        DocNo: COde[20];
         EmpName: Text;
         FileName: Text;
-        DocNo: COde[20];
-        Month: Integer;
-        Year: Text;
-        MonthName: Text;
-        Dimensionvalue: Record "Dimension Value";
-        GeneralLedgSetup: Record "General Ledger Setup";
-        FromChars: Text[50];
-        ToChars: Text[50];
-        NewString: Text[50];
+        MonthNameWithYear: Text;
+        NewString: Text;
     begin
         TempExcelBuffer.DeleteAll();
 
@@ -139,37 +124,15 @@ codeunit 50006 CMSFileMgt
         GeneralLedgSetup.Get();
         if Dimensionvalue.Get(GeneralLedgSetup."Shortcut Dimension 2 Code", GenJnlLine."Shortcut Dimension 2 Code") then;
         NewString := ConvertToTitleCase(Dimensionvalue.Name);
-        Month := Date2DMY(GenJnlLine."Posting Date", 2);
-        Year := Format(Date2DMY(GenJnlLine."Posting Date", 3));
-        Year := DelStr(Year, 1, 2);
-        Case Month of
-            1:
-                MonthName := 'Jan';
-            2:
-                MonthName := 'Feb';
-            3:
-                MonthName := 'Mar';
-            4:
-                MonthName := 'Apr';
-            5:
-                MonthName := 'May';
-            6:
-                MonthName := 'Jun';
-            7:
-                MonthName := 'Jul';
-            8:
-                MonthName := 'Aug';
-            9:
-                MonthName := 'Sep';
-            10:
-                MonthName := 'Oct';
-            11:
-                MonthName := 'Nov';
-            12:
-                MonthName := 'Dec';
-        End;
 
-        FileName := 'Livepayment-file-' + NewString + '-' + MonthName + Format(Year) + '.xls';
+        MONTHNAMEWITHYEAR := FORMAT(GenJnlLine."Posting Date", 0, '<Month Text,3>') + DelStr(Format(Date2DMY(GenJnlLine."Posting Date", 3)), 1, 2);
+
+
+
+        If NewString <> '' then
+            FileName := 'Livepayment-file-' + NewString + '-' + MONTHNAMEWITHYEAR + '.xls'
+        else
+            FileName := 'Livepayment-file-' + MONTHNAMEWITHYEAR + '.xls';
 
         TempExcelBuffer.CreateNewBook('CMS');
         TempExcelBuffer.WriteSheet('CMS', CompanyName, UserId);
@@ -182,13 +145,12 @@ codeunit 50006 CMSFileMgt
         DownloadFromStream(CSVInStream, '', '', '', FileName)
     end;
 
-    procedure ConvertToTitleCase(InputString: Text[50]): Text[50]
+    procedure ConvertToTitleCase(InputString: Text): Text
     var
-        TempString: Text[50];
-        CurrentWord: Text[50];
-        Result: Text[50];
-        i: Integer;
         Position: Integer;
+        CurrentWord: Text;
+        Result: Text;
+        TempString: Text;
     begin
         TempString := InputString;
         Result := '';
@@ -235,25 +197,5 @@ codeunit 50006 CMSFileMgt
     var
         TempExcelBuffer: Record "Excel Buffer" temporary;
 
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeCreateCMSHeader(var IsHandled: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateCMSHeader()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeCreateCMSDetails(var IsHandled: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateCMSDetails()
-    begin
-    end;
 
 }
